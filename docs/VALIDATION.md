@@ -20,7 +20,7 @@
 ## CI 暴露與修正
 初次 PR CI run 45546884837 的 npm ci、55 項單元測試、typecheck、build、Chromium 安裝均成功，但 E2E 14 通過/1 失敗：Chrome 159 中 Escape 關閉事件視窗後焦點未回觸發按鈕。本地系統 Chromium 156 原先未暴露此差異。
 
-已改為開窗前記住觸發控制，關窗後待 inert 移除再恢復焦點，避免抓到已被 inert 清除的 activeElement；加入 V2 升級/事件視窗的鍵盤回歸。並在 save/load/import 期間暫停操作，避免非同步載入與編輯相互覆蓋；以 IndexedDB 阻塞情境確認等待時不能前進月份、完成後互動恢復。焦點修正提交 b883fbd 的遠端 CI run 45547402707 已 completed/success；後續表單與精度修正的最新提交仍須另核對 CI。最新本地靜態 E2E 21/21 通過。
+已改為開窗前記住觸發控制，關窗後待 inert 移除再恢復焦點，避免抓到已被 inert 清除的 activeElement；加入 V2 升級/事件視窗的鍵盤回歸。並在 save/load/import 期間暫停操作，避免非同步載入與編輯相互覆蓋；以 IndexedDB 阻塞情境確認等待時不能前進月份、完成後互動恢復。焦點修正提交 b883fbd 的遠端 CI run 45547402707 已 completed/success；後續表單與精度修正提交 dc3c883 的 [CI run 45548770421](https://github.com/Adamguo88/finance_game/actions/runs/45548770421) 亦 completed/success，npm ci、55 單元測試、typecheck、build、Playwright Chromium 安裝與 21 E2E 均成功。最新本地靜態 E2E 21/21 通過。
 
 ## 後續邊界修正
 - 基礎資料表單未套用時，切模式、換方案、建分支、開事件、儲存/讀取/匯入與模型升級均保留草稿並提示先套用或還原。匯出明示只包含已套用資料。取消草稿不增加歷史。
@@ -32,6 +32,9 @@
 共享 Chrome 已操作取消升級、下載原始備份、確認轉換、生活費/租金/負債表單與有息排程。12 萬、年利率 12%、12 期的首期明細為付款 10,661.85 元、利息 1,200 元、餘額 110,538.15 元、現金 809,338.15 元。第 6 月建立分支，兩方案數字一致；子方案第 13 月改薪資 7 萬，只該方案現金增加 2 萬，兩方案貸款都已清償。已保存此合成測試資料，並保留比較頁供檢視。
 
 已檢視 390px E2E 全頁截圖：購屋停租顯示月租金 0、現金 959,777.78 元、房貸付款 22,222.22 元；中文、明細、表單與事件卡沒有水平溢出。這是代理視覺驗證，未冒稱真人測試。共享瀏覽器的 Statsig/extension 錯誤不當作應用錯誤；應用無 pageerror/console error 的證據以隔離 E2E 流程為準。
+
+## PR 交付
+實作已推送 [draft PR #10](https://github.com/Adamguo88/finance_game/pull/10)，包含 PR #9 設計。V1 model 與 main 逐字相同、V1 engine 除 model import 路徑外逐字相同，已再次實際比對。工作成果未合併或部署。審查先核對本契約與利息取整/停租順序，再用原始備份操作取消、確認、保存與還原，最後進行真人驗收；#6 與 #7 保持開啟。
 
 ## 限制與後續
 - #6 真人驗收仍開啟，本輪不自動合併、不關閉 #7。獨立 Code review、Safari/Firefox、讀屏與正式使用者測試尚未執行。
