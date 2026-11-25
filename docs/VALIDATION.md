@@ -1,3 +1,11 @@
+# GitHub Pages 部署設定（2026-11-25，Asia/Taipei）
+
+依使用者明確要求部署，從已合併 PR #10 的 main 建立部署分支。新增 main push / workflow_dispatch 的官方 Actions 靜態部署，部署工作只取得 pages:write / id-token:write，建置工作只讀取程式。Next.js 依 NEXT_PUBLIC_BASE_PATH 在部署建置使用 /finance_game，保留本地根路徑，啟用 trailingSlash。沒有改動財務引擎與資料格式。
+
+本輪已執行 npm test 55/55、typecheck，以及子路徑靜態 build，皆通過。系統 Chromium 對實際 /finance_game/ 靜態 HTTP 網站核對 hydration、JS/CSS/字型請求、月份前進及 V2 備份/確認轉換，無 pageerror 或 HTTP >=400。一般根路徑 build 與完整 21 項 E2E 亦通過（35.1 秒），git diff --check 通過；線上部署是否完成以 GitHub Actions 實際結果為準，不能以本地成功宣稱已發布。
+
+---
+
 # v0.2 財務切片實作（2026-11-25，Asia/Taipei）
 
 依使用者核准的計畫在 `codex/v02-financial-slice` 開發，基準為 main 2acea22 與設計提交 99eb0c9。目標截止為台北時間 13:00。這是未合併的開發成果，不代表 #6 真人驗收或正式發布已完成。
