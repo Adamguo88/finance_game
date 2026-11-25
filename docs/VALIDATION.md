@@ -1,3 +1,14 @@
+# #19 有限動畫與可控音效實測（2026-11-25）
+
+- `npm test`：72/72；`npm run typecheck`、`npm run build` 靜態根路徑輸出通過。沒有新增依賴、財務 domain/公式/版本/Project schema 變更。
+- 根路徑 out/ 由 Python 3110 提供；`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3110 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e -- --workers=1`：43/43 通過，2.6 分鐘。新增 3 項 WebGL/Web Audio E2E，包含暫停/背景/系統減少動態、比較共用時間與 1×/4×/12×、事件音效去重/主動啟用/獨立偏好重載/匯出完整 JSON 內容不變。
+- 早期雙 worker 完整測試 41/43，20 方案與比較轉場因軟體 GPU 爭用超時；找到 idle cue 多餘 state 更新與靜止 canvas 雙重繪製並移除。修正後同樣雙 worker 的全部 8 項 motion/renderer 測試通過（59.4 秒），再跑完整單 worker 43 項通過。未放寬 timeout、未刪測試、未改使用者 CI 觸發；遠端預設 workers 的完整結果另核對。
+- `NEXT_PUBLIC_BASE_PATH=/finance_game npm run build` 通過；3112 真實子目錄掛載驗證體驗設定/減少動態/播放/暫停，pageerror/requestfailed 均 0。
+- 首個動畫測試用一般斷言 polling 會錯過 220ms 短轉場；改用 RAF 觀察轉場中狀態，仍強制要求真 Pixi 畫布，沒有 skip 或只驗 SVG。
+- 已檢視體驗設定與 PC 場景截圖。首屏 gzip JS 260,408 bytes，相較 #18 258,303 增加 2,105；所有 chunks 450,057。沿用 12 個 SVG/15,783 bytes，音效以正弦波原創合成，沒有音檔或額外網路素材。
+- 1440×900 / Chromium 156 / SwiftShader 的月 1–3 RAF 短測：11 timestamp、8 個轉場內間隔，中位 33.3ms、P95 250.1ms，3 個 >33.4ms。此軟體 GPU 含慢幀，不能宣稱真實硬體 60 FPS 已達標；絕對時間轉場逾時直接落定，無補播佇列。詳細控制/生命週期見 [PRESENTATION.md](PRESENTATION.md)。
+- 真 AudioContext 測試記錄 oscillator 啟動：初次載入/偏好還原皆不建立 context，使用者解除靜音/播放才啟用；事件一次雙音，回溯再播放不重複，偏好不寫入財務 JSON。CI 不具真人揚聲器聽感驗收，硬體 FPS/長時間記憶體、多瀏覽器及真人體驗仍由 #24 處理。
+
 # #18 PixiJS 持續世界實測（2026-11-25）
 
 - Node 24.22.3，`npm ci --cache /tmp/life-studio-npm-cache` 乾淨安裝通過；`npm test` 70/70；`npm run typecheck` 通過。
