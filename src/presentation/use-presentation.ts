@@ -19,6 +19,7 @@ export function usePresentation(frame:PlaybackFrame,scenarios:Scenario[],stopPla
   const next={...frame,reduced:frame.reduced||reduced},prior=previous.current;previous.current=next;
   if(seenSession.current!==resetKey){seen.current.clear();seenSession.current=resetKey;}
   const forward=isForwardStep(prior,next)&&!document.hidden;
+  if(!forward)audio.current?.stop();
   const events=forward?scenarios.flatMap(s=>s.events.filter(e=>e.month===next.month).map(e=>({key:s.id+':'+s.revision+':'+e.id,kind:e.type==='buyHouse'?'home' as const:e.type==='unemployment'||e.type==='incomeChange'?'work' as const:'month' as const}))):[];
   const fresh=events.filter(e=>!seen.current.has(e.key));events.forEach(e=>seen.current.add(e.key));
   const kind=events.some(e=>e.kind==='home')?'home':events.some(e=>e.kind==='work')?'work':'month';
