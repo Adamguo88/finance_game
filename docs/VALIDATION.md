@@ -8,11 +8,11 @@
 - npm run typecheck、npm run build：通過，純靜態輸出。
 - 第一輪 E2E：24 通過/1 失敗，新增時間軸卡片與原租金新增卡的 accessible name 前綴相同，讓原測試無法唯一選取。已將時間軸卡片明標「時間軸：…」，保留原操作測試；修正後完整 25/25 通過（43.8 秒），對 out/ 靜態網站使用系統 Chromium 測試。
 - 新增四個 E2E 已實際通過：鍵盤重排與財務/存檔還原；滑鼠拖曳只提交一次及 Escape 取消；同月衝突/鎖定拒絕；未套用草稿、體驗唯讀與 390px 區塊內捲動。
-- git diff --check：通過。遠端 CI 另核對，不以本地結果替代。
+- git diff --check：通過。實作提交 8d40faf 的遠端 [CI run 45554003702](https://github.com/Adamguo88/finance_game/actions/runs/45554003702) completed/success，npm ci、60 單元測試、typecheck、build、Playwright 安裝與 25 E2E 均成功。
 - 已檢視手機全頁截圖：四軌、目前月紅線、薪資卡及定位按鈕可見，整頁無水平溢出。這是代理截圖驗證，非真人驗收。
 
 ## 範圍與交付
-本輪在獨立 PR 審查，未自動合併/發布，#6 真人驗收仍開啟。長跨度需水平捲動，手機可沿空白軌道捲動；遠距調月亦可在原事件視窗輸入。既有負債排程只在初始表單設定；未做新事件庫、縮放、區段長度拖曳、跨軌改類型、多人同步或 PixiJS。Safari/Firefox、原生觸控裝置及讀屏尚未測試。
+本輪交付 [draft PR #12](https://github.com/Adamguo88/finance_game/pull/12)，未自動合併/發布，#6 真人驗收仍開啟。長跨度需水平捲動，手機可沿空白軌道捲動；遠距調月亦可在原事件視窗輸入。既有負債排程只在初始表單設定；未做新事件庫、縮放、區段長度拖曳、跨軌改類型、多人同步或 PixiJS。Safari/Firefox、原生觸控裝置及讀屏尚未測試。
 
 ---
 
