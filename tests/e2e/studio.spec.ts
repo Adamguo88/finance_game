@@ -1,6 +1,7 @@
 import { test,expect } from '@playwright/test';
 test('買房、失業、分支比較與存檔',async({page})=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
  await page.goto('/');
  await page.getByRole('button',{name:'⌂ 建立自己的家'}).click();
  await page.getByRole('button',{name:'儲存事件',exact:true}).click();
@@ -43,7 +44,7 @@ test('買房、失業、分支比較與存檔',async({page})=>{
  await expect(page.getByLabel('目前人生').locator('option')).toHaveCount(2);
  expect(errors).toEqual([]);
 });
-test('手機版沒有水平溢出',async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto('/');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);});
+test('手機版沒有水平溢出',async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto('/');await expect(page.getByRole('button',{name:'儲存',exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);});
 
 test('比較採最短期間並在終點暫停，切換模式保留月份',async({page})=>{
  const {initialProject}=await import('../../src/domain/model');
@@ -64,4 +65,30 @@ test('比較採最短期間並在終點暫停，切換模式保留月份',async(
  await expect(page.locator('.comparisons article').nth(1)).toContainText('第 12 月');
  await page.getByRole('button',{name:'編輯',exact:true}).click();
  await expect(slider).toHaveValue('12');
+});
+
+test('事件設定支援鍵盤循環與 Escape 返回',async({page})=>{
+ await page.goto('/');
+ const trigger=page.getByRole('button',{name:'◷ 職涯暫停'});
+ await trigger.click();
+ const first=page.getByLabel('發生月份');
+ await expect(first).toBeFocused();
+ await first.press('Shift+Tab');
+ await expect(page.getByRole('button',{name:'儲存事件',exact:true})).toBeFocused();
+ await page.keyboard.press('Tab');await expect(first).toBeFocused();
+ await page.keyboard.press('Escape');
+ await expect(page.getByRole('dialog')).toHaveCount(0);await expect(trigger).toBeFocused();
+});
+
+test('比較終點只取已勾選方案',async({page})=>{
+ const {initialProject}=await import('../../src/domain/model');
+ const p=structuredClone(initialProject);p.scenarios[0].profile.age=89;
+ p.scenarios.push({...structuredClone(p.scenarios[0]),id:'long',name:'長期間',profile:{...p.scenarios[0].profile,age:88}});
+ await page.goto('/');
+ await page.getByLabel('匯入人生存檔').setInputFiles({name:'compare.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});
+ await page.getByRole('button',{name:'平行人生',exact:true}).click();
+ await page.getByRole('checkbox',{name:'我的人生',exact:true}).uncheck();
+ await expect(page.getByRole('slider')).toHaveAttribute('max','24');
+ await page.getByRole('slider').focus();await page.keyboard.press('End');
+ await expect(page.locator('.comparisons article')).toContainText('第 24 月');
 });
