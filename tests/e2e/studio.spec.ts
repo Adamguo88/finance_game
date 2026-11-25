@@ -92,3 +92,108 @@ test('比較終點只取已勾選方案',async({page})=>{
  await page.getByRole('slider').focus();await page.keyboard.press('End');
  await expect(page.locator('.comparisons article')).toContainText('第 24 月');
 });
+
+test('零利率購屋顯示分與完整資產，刪除後回復基準',async({page})=>{
+ await page.goto('/');
+ await page.getByRole('spinbutton',{name:'現金（元）',exact:true}).fill('3000000');
+ await page.getByRole('spinbutton',{name:'月收入（元）',exact:true}).fill('0');
+ await page.getByRole('spinbutton',{name:'月支出（元）',exact:true}).fill('0');
+ await page.getByRole('button',{name:'更新基礎資料'}).click();
+ await page.getByRole('button',{name:'⌂ 建立自己的家'}).click();
+ await page.getByLabel('年利率（%）').fill('0');
+ await page.getByRole('button',{name:'儲存事件',exact:true}).click();
+ await page.getByRole('button',{name:'下一月',exact:true}).click();
+ await expect(page.locator('.metrics')).toContainText('$977,777.78');
+ await expect(page.locator('.metrics')).toContainText('其他／房屋資產');
+ await expect(page.locator('.metrics')).toContainText('$10,200,000');
+ await expect(page.locator('.metrics')).toContainText('$7,977,777.78');
+ await expect(page.locator('.metrics')).toContainText('$3,200,000');
+ await expect(page.locator('.ledger')).toContainText('房貸本息 $22,222.22');
+ await page.getByRole('button',{name:'移除',exact:true}).click();
+ await expect(page.locator('.metrics')).toContainText('$3,000,000');
+ await expect(page.locator('svg[role=img]')).toHaveAttribute('aria-label',/租屋生活/);
+});
+
+test('畸形與過大匯入保留月份、參數與瀏覽器存檔',async({page})=>{
+ const {initialProject}=await import('../../src/domain/model');
+ await page.goto('/');
+ await page.getByRole('button',{name:'下一月',exact:true}).click();
+ await page.getByRole('button',{name:'儲存',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('已存入');
+ const cycle=structuredClone(initialProject);cycle.scenarios[0].parentId='original';cycle.scenarios[0].forkMonth=0;
+ const duplicates=structuredClone(initialProject);duplicates.scenarios.push(structuredClone(duplicates.scenarios[0]));
+ for(const body of ['{',JSON.stringify(cycle),JSON.stringify(duplicates),' '.repeat(2_000_001)]){
+  await page.getByLabel('匯入人生存檔').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(body)});
+  await expect(page.getByRole('status')).toContainText('匯入失敗');
+  await expect(page.getByRole('slider')).toHaveValue('1');
+  await expect(page.locator('.metrics')).toContainText('$820,000');
+ }
+ await page.reload();await page.getByRole('button',{name:'讀取',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('已載入');
+ await expect(page.getByLabel('目前人生').locator('option')).toHaveCount(1);
+});
+
+test('儲存容量錯誤與損壞的 IndexedDB 保留目前工作',async({page})=>{
+ await page.addInitScript(()=>{
+  const originalPut=IDBObjectStore.prototype.put;
+  IDBObjectStore.prototype.put=function(...args:Parameters<IDBObjectStore['put']>){
+   if(sessionStorage.getItem('test-quota')==='yes')throw new DOMException('測試容量已滿','QuotaExceededError');
+   return originalPut.apply(this,args);
+  };
+ });
+ await page.goto('/');
+ await page.getByRole('button',{name:'儲存',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('已存入');
+ await page.evaluate(()=>sessionStorage.setItem('test-quota','yes'));
+ await page.getByRole('button',{name:'下一月',exact:true}).click();
+ await page.getByRole('button',{name:'儲存',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('存檔操作失敗');
+ await expect(page.getByRole('slider')).toHaveValue('1');
+ await expect(page.locator('.metrics')).toContainText('$820,000');
+ await page.evaluate(async()=>{
+  sessionStorage.removeItem('test-quota');
+  await new Promise<void>((resolve,reject)=>{
+   const request=indexedDB.open('life-studio');
+   request.onerror=()=>reject(request.error);
+   request.onsuccess=()=>{
+    const db=request.result,tx=db.transaction('projects','readwrite');
+    tx.objectStore('projects').put({id:'current',data:{schemaVersion:99}});
+    tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>{db.close();reject(tx.error);};
+   };
+  });
+ });
+ await page.getByRole('button',{name:'讀取',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('存檔操作失敗');
+ await expect(page.getByRole('slider')).toHaveValue('1');
+ await expect(page.locator('.metrics')).toContainText('$820,000');
+ await expect(page.getByRole('button',{name:'儲存',exact:true})).toBeEnabled();
+});
+
+test('失業區間、回溯重播與版本參數備份',async({page})=>{
+ await page.goto('/');
+ await page.getByRole('button',{name:'◷ 職涯暫停'}).click();
+ await page.getByLabel('發生月份').fill('2');await page.getByLabel('失業月數').fill('2');
+ await page.getByLabel('期間每月替代收入（元）').fill('10000');
+ await page.getByRole('button',{name:'儲存事件',exact:true}).click();
+ const next=page.getByRole('button',{name:'下一月',exact:true});
+ await next.click();await expect(page.locator('.ledger')).toContainText('月收入 $50,000');
+ await next.click();await expect(page.locator('.ledger')).toContainText('月收入 $10,000');
+ await expect(page.locator('svg[role=img]')).toHaveAttribute('aria-label',/暫時休息/);
+ await next.click();await expect(page.locator('.ledger')).toContainText('月收入 $10,000');
+ await next.click();await expect(page.locator('.ledger')).toContainText('月收入 $50,000');
+ await expect(page.locator('svg[role=img]')).toHaveAttribute('aria-label',/工作中/);
+ await page.getByRole('button',{name:'上一月',exact:true}).click();
+ await expect(page.locator('.ledger')).toContainText('月收入 $10,000');
+ await next.click();await expect(page.locator('.ledger')).toContainText('月收入 $50,000');
+ await page.getByRole('button',{name:'編輯事件',exact:true}).click();
+ await page.getByLabel('失業月數').fill('3');
+ await page.getByRole('button',{name:'儲存事件',exact:true}).click();
+ await expect(page.locator('.ledger')).toContainText('月收入 $10,000');
+ const downloaded=page.waitForEvent('download');await page.getByRole('button',{name:'匯出',exact:true}).click();
+ const stream=await (await downloaded).createReadStream();if(!stream)throw new Error('備份下載失敗');
+ const chunks:Buffer[]=[];for await(const chunk of stream)chunks.push(Buffer.from(chunk));
+ const project=JSON.parse(Buffer.concat(chunks).toString());
+ expect(project.scenarios[0].revision).toBe(3);
+ expect(project.scenarios[0].events[0].duration).toBe(3);
+ expect(project.scenarios[0].history[1].events[0].duration).toBe(2);
+});

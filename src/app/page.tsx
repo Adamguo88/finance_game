@@ -8,7 +8,7 @@ import { saveProject, loadProject, exportProject, importProject } from '@/storag
 import { mapSnapshot } from '@/scene/mapper';
 type Mode='編輯'|'體驗'|'平行人生';
 const usePlayback=create<{month:number;playing:boolean;speed:number;setMonth:(m:number)=>void;setPlaying:(p:boolean)=>void;setSpeed:(s:number)=>void}>((set)=>({month:0,playing:false,speed:1,setMonth:month=>set({month}),setPlaying:playing=>set({playing}),setSpeed:speed=>set({speed})}));
-const currency=(n:number)=>new Intl.NumberFormat('zh-TW',{style:'currency',currency:'TWD',maximumFractionDigits:0}).format(n/100);
+const currency=(n:number)=>new Intl.NumberFormat('zh-TW',{style:'currency',currency:'TWD',maximumFractionDigits:2}).format(n/100);
 const emptyHouse:LifeEvent={id:'',version:1,type:'buyHouse',month:1,price:1000000000,downPayment:200000000,annualRate:.025,termMonths:360};
 function Scene({snapshot}:{snapshot:Snapshot}){
  const s=mapSnapshot(snapshot);
@@ -22,7 +22,7 @@ function Scene({snapshot}:{snapshot:Snapshot}){
  {s.warning&&<g><rect x="200" y="20" width="185" height="34" rx="17" fill="#a65342"/><text x="292" y="42" textAnchor="middle" fontSize="14" fill="white">現金不足 · 請檢視選擇</text></g>}
  </svg>;
 }
-function Metrics({s}:{s:Snapshot}){return <div className="metrics">{[['可動用現金',s.cash],['淨資產',s.netWorth],['總負債',s.debt],['本月現金變化',s.cashFlow]].map(([label,value])=><div key={String(label)}><small>{label}</small><strong className={Number(value)<0?'negative':''}>{currency(Number(value))}</strong></div>)}</div>;}
+function Metrics({s}:{s:Snapshot}){return <div className="metrics">{[['可動用現金',s.cash],['其他／房屋資產',s.assets],['淨資產',s.netWorth],['總負債',s.debt],['本月現金變化',s.cashFlow]].map(([label,value])=><div key={String(label)}><small>{label}</small><strong className={Number(value)<0?'negative':''}>{currency(Number(value))}</strong></div>)}</div>;}
 export default function Studio(){
  const editorRef=useRef<HTMLElement>(null);
  const [hydrated,setHydrated]=useState(false);

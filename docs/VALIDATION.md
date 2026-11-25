@@ -1,3 +1,29 @@
+# 規格逐項開發續作（2026-11-25，Asia/Taipei）
+
+延續本地提交 5cf56a2，依 v0.1 的 S3 → S4 → S5 補完顯示與驗證缺口。沒有新增 v0.2 事件或變更財務公式、engineVersion。
+
+## 實作
+- 所有財務金額最多顯示兩位小數，保留分的精度；整數金額維持簡潔。零利率購屋算例畫面現在顯示付款 22,222.22 元、現金 977,777.78 元、房貸 7,977,777.78 元。
+- 單人生與比較卡新增「其他／房屋資產」，直接消費 Snapshot.assets，與可動用現金分列。
+
+## 新增行為驗證
+- 透過表單設定 PRD 零利率購屋算例，核對現金、資產、房貸、淨資產與本息；刪除事件後回復基準與租屋場景。
+- 畸形 JSON、循環分支、重複方案 ID、超過 2 MB 的檔案匯入失敗後，原月份、財務數字與先前 IndexedDB 存檔維持不變。
+- 以瀏覽器測試注入 QuotaExceededError，確認錯誤訊息、保留工作、解除 busy 狀態；直接寫入損壞的 IndexedDB 資料，載入拒絕且不取代現況。
+- 失業第 2–3 月收入 1 萬、第 4 月回復 5 萬；回溯與重播場景一致。修改期間後立刻重算；下載 JSON 確認 revision 與修改前/後的完整事件參數。
+
+## 本次實際命令
+- `npm ci --cache /tmp/life-studio-npm-cache`：成功，67 packages。
+- `npm test`：19/19 通過。
+- `npm run typecheck`、`npm run build`：通過，純靜態輸出。
+- 靜態 out/ 由既有獨立 HTTP server（3100）提供。`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`：9/9 通過（15.6 秒）。
+- `git diff --check`：通過。
+
+## 仍待審查
+完整人工 PRD 逐步操作、Safari/Firefox、讀屏審查未執行。GitHub 403 的既有交付阻礙仍未解除，本輪未再次嘗試推送、未建立 PR、未關閉 issues；本地成果不等同發布完成。
+
+---
+
 # 本次 issues #1–#6 驗收（2026-11-25，Asia/Taipei）
 
 在本次 Codex 工作區 `/workspace/finance_game` 執行 docs/CODEX_TASK.md，基準 aae8d73；未啟動另一個背景 Cloud/CLI 任務。以下是本次重跑結果；後方保留的「初始交付紀錄」不代表本次執行。
