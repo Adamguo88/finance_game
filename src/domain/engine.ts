@@ -22,6 +22,9 @@ export function validateScenario(input:unknown):Scenario {
    jobWindows.push([e.month,end]);
   }
  }
+ for(const entry of s.history){
+  validateScenario({...s,profile:entry.profile,events:entry.events,history:[]});
+ }
  if((s.parentId===null)!==(s.forkMonth===null)) throw new Error('分支資訊不完整');
  return s;
 }

@@ -28,3 +28,20 @@ describe('版本與邊界',()=>{
  it('18 歲可安排至第 864 月',()=>{const p=base();p.profile.age=18;p.events=[{id:'last',version:1,type:'unemployment',month:864,duration:1,replacementIncome:0}];expect(simulate(p)[864].employed).toBe(false);});
  it('非法分支、重複 ID 與缺失父方案拒絕',()=>{const p=base();expect(()=>parseProject({...initialProject,scenarios:[p,p]})).toThrow();const b=forkScenario(p,'b','B',0);expect(()=>parseProject({...initialProject,scenarios:[b]})).toThrow();expect(()=>forkScenario(p,'x','X',768)).toThrow();});
 });
+
+describe('存檔歷史驗證',()=>{
+ it('拒絕歷史中的無效購屋與重複事件參數',()=>{
+  const s=changeEvents(base(),[house]);
+  s.history[0].events=[{...house,downPayment:house.price+1}];
+  expect(()=>parseProject({...initialProject,scenarios:[s]})).toThrow('自備款');
+  s.history[0].events=[house,house];
+  expect(()=>parseProject({...initialProject,scenarios:[s]})).toThrow('ID 重複');
+ });
+ it('極小利率與一分貸款仍清償且不產生負本金',()=>{
+  expect(payment(800000000,1e-15,360)).toBe(2222222);
+  const s=base();s.events=[{...house,price:1,downPayment:0,termMonths:480}];
+  const rows=simulate(s,481);
+  expect(rows[1].debt).toBe(0);expect(rows[481].payment).toBe(0);
+  expect(rows.every(row=>row.debt>=0)).toBe(true);
+ });
+});

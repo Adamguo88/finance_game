@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { create } from 'zustand';
 import { initialProject, type Project, type Scenario, type LifeEvent, type Snapshot } from '@/domain/model';
 import { simulate } from '@/domain/engine';
@@ -8,7 +8,7 @@ import { saveProject, loadProject, exportProject, importProject } from '@/storag
 import { mapSnapshot } from '@/scene/mapper';
 type Mode='編輯'|'體驗'|'平行人生';
 const usePlayback=create<{month:number;playing:boolean;speed:number;setMonth:(m:number)=>void;setPlaying:(p:boolean)=>void;setSpeed:(s:number)=>void}>((set)=>({month:0,playing:false,speed:1,setMonth:month=>set({month}),setPlaying:playing=>set({playing}),setSpeed:speed=>set({speed})}));
-const currency=(n:number)=>new Intl.NumberFormat('zh-TW',{style:'currency',currency:'TWD',maximumFractionDigits:0}).format(n/100);
+const currency=(n:number)=>new Intl.NumberFormat('zh-TW',{style:'currency',currency:'TWD',maximumFractionDigits:2}).format(n/100);
 const emptyHouse:LifeEvent={id:'',version:1,type:'buyHouse',month:1,price:1000000000,downPayment:200000000,annualRate:.025,termMonths:360};
 function Scene({snapshot}:{snapshot:Snapshot}){
  const s=mapSnapshot(snapshot);
@@ -22,8 +22,9 @@ function Scene({snapshot}:{snapshot:Snapshot}){
  {s.warning&&<g><rect x="200" y="20" width="185" height="34" rx="17" fill="#a65342"/><text x="292" y="42" textAnchor="middle" fontSize="14" fill="white">現金不足 · 請檢視選擇</text></g>}
  </svg>;
 }
-function Metrics({s}:{s:Snapshot}){return <div className="metrics">{[['可動用現金',s.cash],['淨資產',s.netWorth],['總負債',s.debt],['本月現金變化',s.cashFlow]].map(([label,value])=><div key={String(label)}><small>{label}</small><strong className={Number(value)<0?'negative':''}>{currency(Number(value))}</strong></div>)}</div>;}
+function Metrics({s}:{s:Snapshot}){return <div className="metrics">{[['可動用現金',s.cash],['其他／房屋資產',s.assets],['淨資產',s.netWorth],['總負債',s.debt],['本月現金變化',s.cashFlow]].map(([label,value])=><div key={String(label)}><small>{label}</small><strong className={Number(value)<0?'negative':''}>{currency(Number(value))}</strong></div>)}</div>;}
 export default function Studio(){
+ const editorRef=useRef<HTMLElement>(null);
  const [hydrated,setHydrated]=useState(false);
  useEffect(()=>setHydrated(true),[]);
  const [project,setProject]=useState<Project>(()=>structuredClone(initialProject));
@@ -33,9 +34,26 @@ export default function Studio(){
  const scenario=project.scenarios.find(s=>s.id===active)??project.scenarios[0];
  const horizon=(90-scenario.profile.age)*12;
  const selected=project.scenarios.filter(s=>compare.includes(s.id));
- const minHorizon=Math.min(horizon,...selected.map(s=>(90-s.profile.age)*12));
+ const minHorizon=selected.length?Math.min(...selected.map(s=>(90-s.profile.age)*12)):horizon;
  const playbackHorizon=mode==='平行人生'?minHorizon:horizon;
- const rows=useMemo(()=>simulate(scenario),[scenario]);const safeMonth=Math.min(month,horizon);const snapshot=rows[safeMonth];
+ useEffect(()=>{
+  if(!editing)return;
+  const previous=document.activeElement as HTMLElement|null;
+  const editor=editorRef.current;
+  const controls=()=>Array.from(editor?.querySelectorAll<HTMLElement>('input, button, select')??[]).filter(el=>!el.hasAttribute('disabled'));
+  controls()[0]?.focus();
+  function keyboard(event:KeyboardEvent){
+   if(event.key==='Escape'){event.preventDefault();setEditing(null);}
+   if(event.key==='Tab'){
+    const items=controls(),first=items[0],last=items.at(-1);
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
+   }
+  }
+  editor?.addEventListener('keydown',keyboard);
+  return()=>{editor?.removeEventListener('keydown',keyboard);previous?.focus();};
+ },[editing]);
+ const rows=useMemo(()=>simulate(scenario),[scenario]);const safeMonth=Math.min(month,playbackHorizon);const snapshot=rows[Math.min(month,horizon)];
  useEffect(()=>{if(!playing)return;const timer=setInterval(()=>{const m=usePlayback.getState().month;if(m>=playbackHorizon){setPlaying(false);return;}setMonth(m+1);},1000/speed);return()=>clearInterval(timer);},[playing,speed,playbackHorizon,setMonth,setPlaying]);
  function act(work:()=>void){try{work();}catch(e){setPlaying(false);setMessage(e instanceof Error?e.message:'操作失敗');}}
  function update(s:Scenario){setProject(replaceScenario(project,s));}
@@ -58,7 +76,7 @@ export default function Studio(){
  <div className="timeline"><div><h3>人生時間軸</h3><span>{playing?'正在體驗':'時間已暫停'}</span></div><input aria-label="人生時間軸" type="range" min="0" max={mode==='平行人生'?minHorizon:horizon} value={Math.min(safeMonth,mode==='平行人生'?minHorizon:horizon)} onChange={e=>{setPlaying(false);setMonth(Number(e.target.value));}}/><div className="transport"><button onClick={()=>{setPlaying(false);setMonth(Math.max(0,safeMonth-1));}}>上一月</button><button className="primary" onClick={()=>{const limit=mode==='平行人生'?minHorizon:horizon;if(safeMonth>=limit)setMonth(0);setPlaying(!playing);}}>{playing?'暫停':'播放'}</button><button onClick={()=>{setPlaying(false);setMonth(Math.min(mode==='平行人生'?minHorizon:horizon,safeMonth+1));}}>下一月</button><label>速度<select aria-label="播放速度" value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value={1}>1×</option><option value={4}>4×</option><option value={12}>12×</option></select></label></div></div>
  <h3>已安排的人生事件</h3><div className="eventList">{[...scenario.events].sort((a,b)=>a.month-b.month).map(e=><article key={e.id}><div><small>第 {e.month} 月 · {scenario.profile.age+Math.floor(e.month/12)} 歲</small><strong>{e.type==='buyHouse'?'建立自己的家':'職涯暫停 '+e.duration+' 個月'}</strong></div>{mode==='編輯'&&<div><button disabled={e.month<=(scenario.forkMonth??-1)} onClick={()=>{setPlaying(false);setEditing(e);}}>編輯事件</button><button disabled={e.month<=(scenario.forkMonth??-1)} onClick={()=>act(()=>update(changeEvents(scenario,scenario.events.filter(item=>item.id!==e.id))))}>移除</button></div>}</article>)}{scenario.events.length===0&&<p className="muted">未來還是一張空白畫布。加入一個你想探索的選擇。</p>}</div>
  </section></div>
- {editing&&<section className="editor" role="dialog" aria-modal="true" aria-label="事件設定"><form key={editing.id+editing.type} onSubmit={saveEvent}><h2>{editing.type==='buyHouse'?'建立自己的家':'職涯暫停'}</h2><label>發生月份<input name="month" type="number" required min={(scenario.forkMonth??0)+1} max={horizon} defaultValue={editing.month}/></label>{editing.type==='buyHouse'?<>{([['price','房屋總價（元）',editing.price/100],['downPayment','自備款（元）',editing.downPayment/100],['annualRate','年利率（%）',editing.annualRate*100],['termMonths','房貸期數（月）',editing.termMonths]] as const).map(([key,label,value])=><label key={key}>{label}<input name={key} type="number" required step={key==='termMonths'?1:.01} min={key==='termMonths'?1:0} max={key==='annualRate'?30:key==='termMonths'?480:10000000000} defaultValue={value}/></label>)}</>:<><label>失業月數<input name="duration" required type="number" min="1" max="120" defaultValue={editing.duration}/></label><label>期間每月替代收入（元）<input name="replacementIncome" required type="number" min="0" step=".01" max="10000000000" defaultValue={editing.replacementIncome/100}/></label></>}<div className="actions"><button type="button" onClick={()=>setEditing(null)}>取消</button><button type="submit" className="primary">儲存事件</button></div></form></section>}
+ {editing&&<section ref={editorRef} className="editor" role="dialog" aria-modal="true" aria-label="事件設定"><form key={editing.id+editing.type} onSubmit={saveEvent}><h2>{editing.type==='buyHouse'?'建立自己的家':'職涯暫停'}</h2><label>發生月份<input name="month" type="number" required min={(scenario.forkMonth??0)+1} max={horizon} defaultValue={editing.month}/></label>{editing.type==='buyHouse'?<>{([['price','房屋總價（元）',editing.price/100],['downPayment','自備款（元）',editing.downPayment/100],['annualRate','年利率（%）',editing.annualRate*100],['termMonths','房貸期數（月）',editing.termMonths]] as const).map(([key,label,value])=><label key={key}>{label}<input name={key} type="number" required step={key==='termMonths'?1:.01} min={key==='termMonths'?1:0} max={key==='annualRate'?30:key==='termMonths'?480:10000000000} defaultValue={value}/></label>)}</>:<><label>失業月數<input name="duration" required type="number" min="1" max="120" defaultValue={editing.duration}/></label><label>期間每月替代收入（元）<input name="replacementIncome" required type="number" min="0" step=".01" max="10000000000" defaultValue={editing.replacementIncome/100}/></label></>}<div className="actions"><button type="button" onClick={()=>setEditing(null)}>取消</button><button type="submit" className="primary">儲存事件</button></div></form></section>}
  <footer><p role="status">{message}</p><small>v0.1 · 金額以新臺幣呈現。固定薪資、固定房價與固定利率；未計稅費、通膨與投資報酬。既有負債暫不自動攤還；月支出在買房後維持原值。</small></footer>
  </main>;
 }

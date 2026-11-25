@@ -1,3 +1,90 @@
+# PR #8 合併前審查（2026-11-25，Asia/Taipei）
+
+審查基準：d294e776f3af6899d7e9de05254375ba4fd8b519。GitHub PR #8 為 open/mergeable，無 review submissions，沒有冒稱取得獨立審核者核准。GitHub Actions [run 45540307064](https://github.com/Adamguo88/finance_game/actions/runs/45540307064) completed/success。
+
+## 本輪代理實際 UI 操作（共享 Chrome、靜態 out/）
+- 第 12 月：現金 1,040,000 元、淨資產 1,240,000 元。
+- 更新現金 300 萬、收入支出零；第 1 月零利率購屋：現金 977,777.78 元、資產 10,200,000 元、負債 7,977,777.78 元、淨資產 3,200,000 元、付款 22,222.22 元。
+- 改為 2.5%：首期 31,609.67 元、利息 16,666.67 元。第 360 月負債零、末期付款 31,610.66 元；第 361 月付款與利息皆零，切換體驗模式仍為第 361 月。末期按剩餘本息調整，符合 ARCHITECTURE.md。
+- 失業第 2、3 月替代收入 1 萬，第 4 月恢復 5 萬；工作場景同步。
+- 第 6 月建立分支：初始資料與已發生事件的編輯/刪除控制 disabled；加入第 13 月失業，兩方案第 6 月數字一致，第 13 月才分歧。12× 播放時兩方案月份一致，負現金顯示缺口。
+- 儲存成功 → 重新整理 → 讀取成功，恢復兩方案、購屋與失業事件。實際下載 JSON，再由檔案選擇器匯入成功；還原後第 13 月分歧仍正確。
+- 已檢視比較畫面、鍵盤焦點與場景。手機 390px、錯誤匯入、容量失敗、最短終點停止依本 PR 既有 E2E 與成功 CI 證據；本輪沒有冒稱再次手動執行這些項目。
+- 共享瀏覽器工具有 Statsig 網路錯誤，瀏覽器 extension metadata console 錯誤來源為 chrome-extension://；與應用程式錯誤分開。應用無 console/pageerror 的證據以隔離 E2E 成功結果為準。
+
+## 逐項處置
+#1–#5 的規格、數值與使用者行為驗收已有測試、CI 及上述代理 UI 證據，PR 合併後可逐項記錄結案。#6 的「人工完成 PRD 驗收」仍保留給真人使用者：代理操作不替代真人驗收，因此 #6 保持開啟，v0.1 尚未宣告發布完成。Safari/Firefox、讀屏及正式使用者可用性評估仍未執行。#7 依賴 v0.1 驗收，不在本輪實作。
+
+# GitHub 交付更新（2026-11-25，Asia/Taipei）
+
+使用者更新 GitHub App 倉庫授權後，已確認 Adamguo88/finance_game 列入授權清單且 push=true。`git push -u origin codex/acceptance-issues-1-6` 成功，包含 5cf56a2 與 3bef203 的開發與驗收成果。下方各輪 403 記錄為當時的歷史狀態，已解除；遠端 CI 與人工發布審查仍須分別確認。未自動合併或關閉 issues。
+
+---
+
+# 規格逐項開發續作（2026-11-25，Asia/Taipei）
+
+延續本地提交 5cf56a2，依 v0.1 的 S3 → S4 → S5 補完顯示與驗證缺口。沒有新增 v0.2 事件或變更財務公式、engineVersion。
+
+## 實作
+- 所有財務金額最多顯示兩位小數，保留分的精度；整數金額維持簡潔。零利率購屋算例畫面現在顯示付款 22,222.22 元、現金 977,777.78 元、房貸 7,977,777.78 元。
+- 單人生與比較卡新增「其他／房屋資產」，直接消費 Snapshot.assets，與可動用現金分列。
+
+## 新增行為驗證
+- 透過表單設定 PRD 零利率購屋算例，核對現金、資產、房貸、淨資產與本息；刪除事件後回復基準與租屋場景。
+- 畸形 JSON、循環分支、重複方案 ID、超過 2 MB 的檔案匯入失敗後，原月份、財務數字與先前 IndexedDB 存檔維持不變。
+- 以瀏覽器測試注入 QuotaExceededError，確認錯誤訊息、保留工作、解除 busy 狀態；直接寫入損壞的 IndexedDB 資料，載入拒絕且不取代現況。
+- 失業第 2–3 月收入 1 萬、第 4 月回復 5 萬；回溯與重播場景一致。修改期間後立刻重算；下載 JSON 確認 revision 與修改前/後的完整事件參數。
+
+## 本次實際命令
+- `npm ci --cache /tmp/life-studio-npm-cache`：成功，67 packages。
+- `npm test`：19/19 通過。
+- `npm run typecheck`、`npm run build`：通過，純靜態輸出。
+- 靜態 out/ 由既有獨立 HTTP server（3100）提供。`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`：9/9 通過（15.6 秒）。
+- `git diff --check`：通過。
+
+## 仍待審查
+完整人工 PRD 逐步操作、Safari/Firefox、讀屏審查未執行。GitHub 403 的既有交付阻礙仍未解除，本輪未再次嘗試推送、未建立 PR、未關閉 issues；本地成果不等同發布完成。
+
+---
+
+# 本次 issues #1–#6 驗收（2026-11-25，Asia/Taipei）
+
+在本次 Codex 工作區 `/workspace/finance_game` 執行 docs/CODEX_TASK.md，基準 aae8d73；未啟動另一個背景 Cloud/CLI 任務。以下是本次重跑結果；後方保留的「初始交付紀錄」不代表本次執行。
+
+| Issue | 本次證據 | 審查狀態 |
+|---|---|---|
+| #1 / S0 | npm ci、TypeScript、Next.js 靜態輸出成功；規格文件齊全 | 技術檢查通過，待 PR 審查 |
+| #2 / S1 | 基準現金流、購屋淨資產、零/2.5% 利率首末期、失業起訖、缺口、決定性與極小利率/一分本金測試 | 單元測試通過，財務公式未變 |
+| #3 / S2 | 分支深拷貝、歷史鎖定、跨月失業、父子隔離、版本參數與 JSON round trip | 單元測試通過；補驗歷史內事件語意 |
+| #4 / S3 | 買房/失業新增、未來事件修改、SVG 狀態、播放/暫停、模式時間保留、鍵盤視窗循環與 Escape | 自動流程通過；完整人工 PRD 情境仍待審查 |
+| #5 / S4 | 同月比較、最短終點停止、存檔/reload/load、JSON 備份與未知版本拒絕後仍保留方案 | 自動流程通過；修正未勾選短方案限制比較月份 |
+| #6 / S5 | Chromium 5/5 E2E、390px 無溢出、完整流程 console error/pageerror 為零；桌面與手機完整截圖已檢視，中文字正常 | 未完成發布審查：PR 受 GitHub 403 阻擋；未宣告 issues 完成 |
+
+## 本次命令與結果
+- `npm ci` 首次失敗：預設 `/home/agent/.npm` 快取無法建立；`npm ci --cache /tmp/life-studio-npm-cache` 成功，安裝 67 packages。
+- Node `v24.22.3`；`npm test`：19/19 通過。
+- `npm run typecheck`：通過；`npm run build`：通過，輸出 `out/`（主頁、404 與靜態 icon.svg）。
+- `npx playwright install --with-deps chromium`：失敗，系統依賴安裝需要 root，su 驗證失敗。
+- 一般瀏覽器安裝先遇到快取目錄錯誤；改 `PLAYWRIGHT_BROWSERS_PATH=/tmp/life-studio-browsers npx playwright install chromium` 後 CDN 回覆 403 Domain forbidden。
+- 未安裝 Playwright 專用瀏覽器的 E2E 啟動失敗；改用 `/usr/bin/chromium`（156.0.8078.79）。曾因兩次測試伺服器生命週期重疊導致 connection refused，之後改用獨立靜態伺服器。
+- `python -m http.server 3100 --directory out --bind 0.0.0.0` 後執行 `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`：最終 5/5 通過（11.8 秒）。第一次靜態測試發現 favicon 404，補入 icon.svg 後 console 檢查通過。
+- `git diff --check`：通過。
+
+## 修復與規格假設
+1. 匯入的 history 也必須符合事件語意（自備款、重複 ID、重疊失業等）；保持 schemaVersion/engineVersion，因為財務公式未變。
+2. 比較共同終點僅由勾選方案決定；未勾選的目前人生不限制比較。比較月索引與單一人生快照取值分開，避免短方案截斷畫面。
+3. 事件視窗自動取得焦點、Tab/Shift+Tab 留在視窗、Escape 關閉並返回觸發按鈕。
+4. E2E 可選擇系統 Chromium 路徑；未設定時維持 Playwright 預設瀏覽器。
+
+## 尚待完成與交付阻礙
+- `git push --dry-run`：403 permission denied；GitHub 整合 `create_branch`：403 Resource not accessible by integration。因此無遠端分支、PR URL 或遠端 CI 執行結果。本地分支 `codex/acceptance-issues-1-6` 保存變更；沒有自動合併或關閉 issues，#7 未實作。
+- PRD 的完整人工逐步驗收、Safari/Firefox、讀屏與完整無障礙審查仍未執行；本次截圖只檢視初始桌面/手機版。
+- IndexedDB quota/寫入失敗及所有畸形匯入的瀏覽器互動尚未逐一模擬；目前涵蓋未知版本保留工作、正常存讀檔與 domain 歷史語意拒絕。
+
+---
+
+# 初始交付紀錄（以下為既有歷史，非本次重跑）
+
 # 實際驗證與整合狀態
 日期：2026-11-25（Asia/Taipei）。
 
