@@ -20,7 +20,7 @@ async function exportJson(page:Page){
 
 test('顯式轉換可取消、備份完整且不自動覆蓋 IndexedDB',async({page})=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
- await page.goto('/');await page.getByRole('button',{name:'下一月',exact:true}).click();
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();await page.getByRole('button',{name:'下一月',exact:true}).click();
  await page.getByRole('button',{name:'從第 1 月建立分支'}).click();
  await page.getByRole('button',{name:'儲存',exact:true}).click();await expect(page.getByRole('status')).toContainText('已存入');
  const before=await exportJson(page);
@@ -44,7 +44,7 @@ test('顯式轉換可取消、備份完整且不自動覆蓋 IndexedDB',async({p
 });
 
 test('租金、既有負債與薪資事件接入編輯和月度明細',async({page})=>{
- await page.goto('/');await upgrade(page);
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();await upgrade(page);
  await page.getByRole('spinbutton',{name:'生活費（不含租金）（元）',exact:true}).fill('18000');
  await page.getByRole('spinbutton',{name:'月租金（元）',exact:true}).fill('12000');
  await page.getByRole('spinbutton',{name:'既有負債（元）',exact:true}).fill('120000');
@@ -80,7 +80,7 @@ test('租金、既有負債與薪資事件接入編輯和月度明細',async({pa
 });
 
 test('同月重複事件在視窗內顯示錯誤，不破壞已安排事件',async({page})=>{
- await page.goto('/');await upgrade(page);
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();await upgrade(page);
  for(let i=0;i<2;i++){
   await page.getByRole('button',{name:/^調整月租金/}).click();
   await page.getByLabel('發生月份').fill('2');await page.getByLabel('新的月租金（元）').fill('10000');
@@ -92,7 +92,7 @@ test('同月重複事件在視窗內顯示錯誤，不破壞已安排事件',asy
 });
 
 test('手機 V2 購屋停止租金、備份還原與過額排程保護',async({page},testInfo)=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/');await upgrade(page);
+ await page.setViewportSize({width:390,height:844});await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();await upgrade(page);
  await page.getByLabel('現金（元）',{exact:true}).fill('3000000');
  await page.getByLabel('月收入（元）',{exact:true}).fill('0');
  await page.getByLabel('生活費（不含租金）（元）',{exact:true}).fill('18000');
@@ -125,7 +125,7 @@ test('混合版本比較顯示各自引擎，短方案取消勾選後共用月�
  const old=structuredClone(initialProject.scenarios[0]);old.profile.age=89;
  const newer=migrateProject(initialProject).scenarios[0];newer.id='v2';newer.name='新版人生';newer.profile.age=88;
  const project={schemaVersion:2,scenarios:[old,newer],migration:null};
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByLabel('匯入人生存檔').setInputFiles({name:'mixed.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});
  await page.getByRole('button',{name:'平行人生',exact:true}).click();
  await expect(page.locator('.comparisons article').nth(0)).toContainText('引擎 1.0.0');
@@ -140,7 +140,7 @@ test('混合版本比較顯示各自引擎，短方案取消勾選後共用月�
 });
 
 test('損壞的 V2 參數與歷史匯入不取代工作',async({page})=>{
- await page.goto('/');await upgrade(page);
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();await upgrade(page);
  await page.getByRole('button',{name:'下一月',exact:true}).click();
  const before=await exportJson(page);
  const badProfile=structuredClone(before);badProfile.scenarios[0].profile.debtSchedules=[{id:'bad',openingBalance:1,annualRate:0,firstPaymentMonth:1,termMonths:1}];
@@ -155,7 +155,7 @@ test('損壞的 V2 參數與歷史匯入不取代工作',async({page})=>{
 });
 
 test('升級與 V2 事件視窗 Escape 後恢復觸發按鈕焦點',async({page})=>{
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  const trigger=page.getByRole('button',{name:'升級財務模型',exact:true});
  await trigger.click();
  await expect(page.getByRole('button',{name:'下載原始 V1 備份'})).toBeFocused();
@@ -170,7 +170,7 @@ test('升級與 V2 事件視窗 Escape 後恢復觸發按鈕焦點',async({page}
 });
 
 test('存檔等待期間阻止編輯，解除阻塞後恢復互動',async({page})=>{
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.evaluate(async()=>{
   await new Promise<void>((resolve,reject)=>{
    const request=indexedDB.open('life-studio',1);
@@ -190,7 +190,7 @@ test('存檔等待期間阻止編輯，解除阻塞後恢復互動',async({page}
 });
 
 test('尚未更新的基礎表單先提示保存，升級不丟失輸入',async({page})=>{
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByLabel('現金（元）',{exact:true}).fill('123456');
  await page.getByRole('button',{name:'升級財務模型',exact:true}).click();
  await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -205,7 +205,7 @@ test('尚未更新的基礎表單先提示保存，升級不丟失輸入',async(
 });
 
 test('基礎草稿未套用時保留模式與方案，明確還原後可繼續',async({page})=>{
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  const original=await exportJson(page);
  await page.getByLabel('現金（元）',{exact:true}).fill('123456');
  await page.getByRole('button',{name:'體驗',exact:true}).click();
@@ -224,7 +224,7 @@ test('基礎草稿未套用時保留模式與方案，明確還原後可繼續',
 });
 
 test('手機的最長方案名稱在單人生與比較頁都不水平溢出',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/');
+ await page.setViewportSize({width:390,height:844});await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByLabel('分支名稱').fill('A'.repeat(80));
  await page.getByRole('button',{name:'從第 0 月建立分支'}).click();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -239,7 +239,7 @@ test('編輯其他欄位不因百分比換算改寫既有利率參數',async({pa
  scenario.profile.debt=12000000;
  scenario.profile.debtSchedules=[{id:'debt',openingBalance:12000000,annualRate:rate,firstPaymentMonth:1,termMonths:12}];
  scenario.events=[{id:'house',type:'buyHouse',version:2,month:3,price:100000000,downPayment:20000000,annualRate:rate,termMonths:360,stopRent:false}];
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByLabel('匯入人生存檔').setInputFiles({name:'precision.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});
  await expect(page.getByRole('status')).toContainText('匯入成功');
  await page.getByLabel('現金（元）',{exact:true}).fill('900000');

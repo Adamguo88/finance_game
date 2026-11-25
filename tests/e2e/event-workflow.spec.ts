@@ -3,7 +3,7 @@ import {initialProject} from '../../src/domain/model';
 import {migrateProject} from '../../src/domain/migration';
 async function exported(page:Page){const waiting=page.waitForEvent('download');await page.getByRole('button',{name:'匯出',exact:true}).click();const stream=await(await waiting).createReadStream();if(!stream)throw Error('download');const chunks:Buffer[]=[];for await(const c of stream)chunks.push(Buffer.from(c));return JSON.parse(Buffer.concat(chunks).toString());}
 async function setup(page:Page,project:unknown=migrateProject(initialProject)){
- await page.setViewportSize({width:1440,height:1000});await page.goto('/');await page.getByLabel('匯入人生存檔').setInputFiles({name:'workflow.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});await expect(page.getByRole('status')).toContainText('匯入成功');
+ await page.setViewportSize({width:1440,height:1000});await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();await page.getByLabel('匯入人生存檔').setInputFiles({name:'workflow.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});await expect(page.getByRole('status')).toContainText('匯入成功');
 }
 test('PC 事件庫可搜尋分類，V1 限制明示，取消與焦點完整返回',async({page},testInfo)=>{
  await setup(page,initialProject);const before=await exported(page),trigger=page.getByRole('button',{name:/^瀏覽事件庫/});await trigger.click();const library=page.getByRole('dialog',{name:'人生事件庫'});
