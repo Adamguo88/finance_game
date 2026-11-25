@@ -1,3 +1,11 @@
+# Issue #15：原討論對齊與 PC 範圍矩陣
+
+已實際讀取原研究討論，將 P01–P10、持續微縮世界、五步初始化、卡牌/三模式、2.5D 視覺與角色差距對應 PC_SCOPE.md。新增 #27–#29 追蹤完整事件庫、造型還原與多筆初始化，回填 #24 前置；#6 真人驗收仍保留。矩陣明列已實作、待開發、待驗收與非目標，並訂 PC 尺寸、瀏覽器及初始資產/效能預算。
+
+此提交為文件盤點，未改引擎/應用/CI，未在本地重跑程式測試；核對文件連結、issue 依賴及 diff check。CI 另行執行，不能把範圍文件結案當 PC 全功能通過。使用者已授權每階段測試成功後自動合併。
+
+---
+
 # 下一階段 issues 與 CI 規格同步（2026-11-25，Asia/Taipei）
 
 基準 main 7c861c4（使用者 PR #14：chore: optimize CI workflow triggers）。已實際比對 .github/workflows/ci.yml：由所有分支 push/pull_request 改為只驗證指向 main 的 PR、push main 及 workflow_dispatch；Node 24 與 npm ci/test/typecheck/build、Playwright 安裝/E2E 未減少。Pages workflow 仍為 main push/手動、獨立 build→deploy，未被本輪修改。
