@@ -7,64 +7,157 @@
       "id": "avatar-standing",
       "name": "角色 · 工作中",
       "file": "avatar-standing.svg",
-      "bytes": 1361,
-      "sha256": "98afe6e638eb2576cb9f966dffab7ecd9d05b21019752331d1aa5dd73f8fce25"
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1386,
+      "sha256": "cda7d352b03a523241854e4f1f6cc37e33121afbaae50f8ac13dd4c9831a247c"
     },
     {
       "id": "avatar-resting",
       "name": "角色 · 職涯暫停",
       "file": "avatar-resting.svg",
-      "bytes": 1682,
-      "sha256": "f9e974d8012e237406a1fc446d059f1b7ef58d9e1b19ef5a8037c323aeacc57e"
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1250,
+      "sha256": "1b0562788694ab201ec4ba542dec5687392199a2a6bce2b9370d35ef85d75950"
     },
     {
       "id": "home-rented",
       "name": "住宅 · 租屋",
       "file": "home-rented.svg",
-      "bytes": 1747,
-      "sha256": "667a56decf9253a667e02603af7e88a67134e74a878025861def5acb0943d179"
+      "viewBox": [
+        -145,
+        -205,
+        290,
+        280
+      ],
+      "bytes": 1772,
+      "sha256": "9e24de4e4751a04af1ea1d93bdcddea97b162e42a3a58f9c5a961a2c56cf822a"
     },
     {
       "id": "home-owned",
       "name": "住宅 · 自有住宅與房貸",
       "file": "home-owned.svg",
-      "bytes": 2099,
-      "sha256": "a3d62c887220aef785e62632d53c4dcdd4a526eed8df047126c1cbe281dd179c"
+      "viewBox": [
+        -145,
+        -205,
+        290,
+        280
+      ],
+      "bytes": 2124,
+      "sha256": "abba2f3fc58f24c8ed2ebf7628155d86dfbd002fef3c9a7688d1408047240228"
+    },
+    {
+      "id": "home-owned-clear",
+      "name": "住宅 · 自有住宅，房貸已結清",
+      "file": "home-owned-clear.svg",
+      "viewBox": [
+        -145,
+        -205,
+        290,
+        280
+      ],
+      "bytes": 1878,
+      "sha256": "120a38bdbd6d32c17d9e29de7a089a8e9010fc00e2cd98d93fd9e7f542d180c9"
     },
     {
       "id": "office-active",
       "name": "職場 · 工作中",
       "file": "office-active.svg",
-      "bytes": 1655,
-      "sha256": "2b2ff06106e53bd6a77603c09ce3d1fdcc5106be9cf8f1720032912f06835520"
+      "viewBox": [
+        -140,
+        -205,
+        280,
+        280
+      ],
+      "bytes": 1680,
+      "sha256": "cda727e8059db251cb84321504ded298ce047effed7d63e63b4844b428ecd101"
     },
     {
       "id": "office-paused",
       "name": "職場 · 暫停",
       "file": "office-paused.svg",
-      "bytes": 1652,
-      "sha256": "1d2797c35189146d13cbb9db449b209da9327cb278ad3fdc5a1d6e8500bc05a8"
+      "viewBox": [
+        -140,
+        -205,
+        280,
+        280
+      ],
+      "bytes": 1677,
+      "sha256": "4399fd191fa1a91db519d2dc481163352822abb38f968bd7374aa5db59929ce5"
     },
     {
       "id": "finance-steady",
       "name": "財務小屋 · 平穩",
       "file": "finance-steady.svg",
-      "bytes": 926,
-      "sha256": "8c87968dbd41dd6ff6947253d680ecdb86917a7185b8dd0754996875ea191b50"
+      "viewBox": [
+        -120,
+        -145,
+        240,
+        210
+      ],
+      "bytes": 951,
+      "sha256": "f824e8597791e83cf83d458cb603aae333dd95b426d6e26baac1765df5f67cf8"
     },
     {
       "id": "finance-attention",
       "name": "財務小屋 · 現金缺口",
       "file": "finance-attention.svg",
-      "bytes": 997,
-      "sha256": "8102b79a70a16c18fc3c9e8fd58b04e4d95892a83174b1ab9d8f620932162f02"
+      "viewBox": [
+        -120,
+        -145,
+        240,
+        210
+      ],
+      "bytes": 1022,
+      "sha256": "6ad93d3d17d20b455233f500cfd69d1a604deb99298101f90fc755cca443d478"
+    },
+    {
+      "id": "tree",
+      "name": "樹木",
+      "file": "tree.svg",
+      "viewBox": [
+        -40,
+        -115,
+        80,
+        130
+      ],
+      "bytes": 543,
+      "sha256": "576054a6e338ab681aa2f8fe06e9933c6375a0e562689b8dc240938013e60079"
+    },
+    {
+      "id": "bench",
+      "name": "長椅",
+      "file": "bench.svg",
+      "viewBox": [
+        -60,
+        -55,
+        120,
+        100
+      ],
+      "bytes": 514,
+      "sha256": "f2122fc4bf0c1c6adb440cca0882190bdbd0ef3747325ea313b3f3969f0e1f33"
     },
     {
       "id": "park",
       "name": "公園 · 休憩",
       "file": "park.svg",
-      "bytes": 954,
-      "sha256": "4a9198e44733776cf57fb5f2898a8ed83ec1aebf22e404dfce230da0596f5e61"
+      "viewBox": [
+        -120,
+        -145,
+        240,
+        210
+      ],
+      "bytes": 986,
+      "sha256": "d43f8269ef364d6d545d24e9f12f68fd4480f30a152711fb08466178145a82d1"
     }
   ]
 }

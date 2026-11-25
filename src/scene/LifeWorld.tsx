@@ -1,5 +1,6 @@
 'use client';
 import {useId} from 'react';
+import {useWorldRenderer} from './use-world-renderer';
 import type {SnapshotV2} from '@/domain/model';
 import {mapSnapshot} from './mapper';
 import {AvatarModel,BenchModel,FinanceModel,HomeModel,OfficeModel,TreeModel,worldPalette as c} from './models';
@@ -7,7 +8,10 @@ export type WorldArea='home'|'work'|'finance'|'park';
 const areas=[{id:'home',label:'住宅區',x:70,y:66},{id:'work',label:'工作區',x:35,y:40},{id:'finance',label:'財務小屋',x:25,y:75},{id:'park',label:'休憩公園',x:58,y:87}] as const;
 export function LifeWorld({snapshot,onInspect}:{snapshot:SnapshotV2;onInspect?:(area:WorldArea)=>void}){
  const s=mapSnapshot(snapshot),uid=useId(),sky=uid+'-sky';
- return <div className="lifeWorld" data-home={snapshot.ownsHome?'owned':'rented'} data-work={snapshot.employed?'active':'resting'}>
+ const rendering=useWorldRenderer({owned:snapshot.ownsHome,employed:snapshot.employed,mortgage:s.hasMortgage,gap:s.warning});
+ return <div className="lifeWorld" data-renderer={rendering.state} data-home={snapshot.ownsHome?'owned':'rented'} data-work={snapshot.employed?'active':'resting'}>
+ {rendering.state==='loading'&&<span className="worldLoading">場景載入中 · 可先使用靜態世界</span>}
+ <div ref={rendering.host} className="worldCanvas" aria-hidden="true"/>
  <svg viewBox="0 0 1000 500" role="img" aria-label={`${s.home}，${s.work}${s.hasMortgage?'，房貸還款中':''}${s.warning?'，現金不足':''}`}>
  <defs><radialGradient id={sky}><stop stopColor="#e2ead5"/><stop offset="1" stopColor="#f4f3e8" stopOpacity="0"/></radialGradient></defs>
  <ellipse cx="505" cy="284" rx="475" ry="246" fill={`url(#${sky})`}/><ellipse cx="502" cy="433" rx="350" ry="45" fill="#4c674b15"/>
@@ -25,6 +29,7 @@ export function LifeWorld({snapshot,onInspect}:{snapshot:SnapshotV2;onInspect?:(
  </g>
  {!onInspect&&<g className="worldStaticLabels" fontSize="13" fill="#42604e" textAnchor="middle"><text x="365" y="301">{s.work}</text><text x="688" y="394">{s.home}</text></g>}
  </svg>
+ {!onInspect&&<div className="worldLegend">{s.work} · {s.home}</div>}
  {onInspect&&areas.map(area=><button key={area.id} className={'worldHotspot '+(area.id==='finance'&&s.warning?'attention':'')} style={{left:area.x+'%',top:area.y+'%'}} onClick={()=>onInspect(area.id)} aria-label={area.label+'：'+(area.id==='home'?s.home:area.id==='work'?s.work:area.id==='finance'?(s.warning?'現金缺口':'資產與負債'):'休憩與選擇')}><span aria-hidden="true">{area.id==='home'?'⌂':area.id==='work'?'▥':area.id==='finance'?'◈':'♧'}</span>{area.label}</button>)}
  </div>;
 }
