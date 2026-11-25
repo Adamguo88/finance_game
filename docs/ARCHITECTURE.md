@@ -62,3 +62,7 @@ Project schemaVersion=1、engineVersion=1.0.0；事件參數 version=1。匯入�
 
 ## 擴充
 後續新增事件採 discriminated union + domain handler + fixture 數值例；渲染層可換 PixiJS，無須改變財務公式。完整重算約 864 月 x 100 事件 x 20 方案，在 v0.1 先保持簡單；測量後才加快取或 Web Worker。
+
+## 呈現動畫/音效
+
+#19 的 `src/presentation` 只讀取月度播放與使用者事件，提供共用有限 cue、可取消 RAF、獨立 localStorage 偏好與使用者啟用的 Web Audio。財務 domain 與版本化 Project 不包含這些設定，細節見 [PRESENTATION.md](PRESENTATION.md)。

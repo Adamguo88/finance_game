@@ -1,14 +1,15 @@
 'use client';
 import {useId} from 'react';
 import {useWorldRenderer} from './use-world-renderer';
+import type {MotionCue} from '../presentation/motion';
 import type {SnapshotV2} from '@/domain/model';
 import {mapSnapshot} from './mapper';
 import {AvatarModel,BenchModel,FinanceModel,HomeModel,OfficeModel,TreeModel,worldPalette as c} from './models';
 export type WorldArea='home'|'work'|'finance'|'park';
 const areas=[{id:'home',label:'住宅區',x:70,y:66},{id:'work',label:'工作區',x:35,y:40},{id:'finance',label:'財務小屋',x:25,y:75},{id:'park',label:'休憩公園',x:58,y:87}] as const;
-export function LifeWorld({snapshot,onInspect}:{snapshot:SnapshotV2;onInspect?:(area:WorldArea)=>void}){
+export function LifeWorld({snapshot,onInspect,cue}:{snapshot:SnapshotV2;cue?:MotionCue;onInspect?:(area:WorldArea)=>void}){
  const s=mapSnapshot(snapshot),uid=useId(),sky=uid+'-sky';
- const rendering=useWorldRenderer({owned:snapshot.ownsHome,employed:snapshot.employed,mortgage:s.hasMortgage,gap:s.warning});
+ const rendering=useWorldRenderer({owned:snapshot.ownsHome,employed:snapshot.employed,mortgage:s.hasMortgage,gap:s.warning},cue);
  return <div className="lifeWorld" data-renderer={rendering.state} data-home={snapshot.ownsHome?'owned':'rented'} data-work={snapshot.employed?'active':'resting'}>
  {rendering.state==='loading'&&<span className="worldLoading">場景載入中 · 可先使用靜態世界</span>}
  <div ref={rendering.host} className="worldCanvas" aria-hidden="true"/>

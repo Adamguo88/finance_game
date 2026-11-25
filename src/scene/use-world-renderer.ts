@@ -1,11 +1,12 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {takeRendererSlot} from './renderer-slots';
+import type {MotionCue} from '../presentation/motion';
 import type {WorldRenderer,WorldView} from './pixi-world';
 let supported:boolean|undefined;
 function supportsWebGL(){if(supported!==undefined)return supported;try{const canvas=document.createElement('canvas'),gl=canvas.getContext('webgl2')??canvas.getContext('webgl');supported=!!gl;gl?.getExtension('WEBGL_lose_context')?.loseContext();}catch{supported=false;}return supported;}
-export function useWorldRenderer(view:WorldView){
- const host=useRef<HTMLDivElement>(null),controller=useRef<WorldRenderer|null>(null),latest=useRef(view);latest.current=view;
+export function useWorldRenderer(view:WorldView,cue?:MotionCue){
+ const host=useRef<HTMLDivElement>(null),controller=useRef<WorldRenderer|null>(null),latest=useRef({view,cue});latest.current={view,cue};
  const [state,setState]=useState<'svg'|'loading'|'pixi'>('svg');
  useEffect(()=>{
   // StrictMode can restart an effect while preserving its previous loading state.
@@ -24,7 +25,7 @@ export function useWorldRenderer(view:WorldView){
    initializing=true;
    owned=await createWorldRenderer(target,abort.signal,lost);
    if(abort.signal.aborted){destroyOwned();release();return;}
-   controller.current=owned;owned.update(latest.current);setState('pixi');
+   controller.current=owned;owned.update(latest.current.view,latest.current.cue);setState('pixi');
   }).catch(()=>{destroyOwned();release();if(!disposed)setState('svg');});
   return()=>{
    disposed=true;abort.abort();
@@ -33,6 +34,6 @@ export function useWorldRenderer(view:WorldView){
    else if(!initializing)release();
   };
  },[]);
- useEffect(()=>{controller.current?.update(view);},[view.owned,view.employed,view.mortgage,view.gap]);
+ useEffect(()=>{controller.current?.update(view,cue);},[view.owned,view.employed,view.mortgage,view.gap,cue]);
  return {host,state};
 }
