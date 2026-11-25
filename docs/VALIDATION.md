@@ -1,3 +1,46 @@
+# PC 事件庫與影響預覽（2026-11-25，Asia/Taipei）
+
+依 PC 優先指示，延續 codex/multitrack-timeline / PR #12 的桌面編輯流程。新增現有四類事件的搜尋、住宅/職涯分類、參數與效果說明、版本/購屋/數量限制；快速新增入口共用草稿工廠。事件編輯採輸入與財務預覽並列，顯示事件當月及 90 歲終點的現金/負債/淨資產與差額。預覽 150ms 更新，無效參數立即隱藏舊結果，修正輸入清除舊錯誤。預覽及取消不更新 project/history/revision/IndexedDB；儲存沿用原流程。契約見 EVENT_WORKFLOW.md。
+
+## 本輪實際驗證
+- npm test：67/67；新增 7 項預覽數值、原資料/歷史不變、ID 替換與碰撞、版本/分支/重疊、終點去重及模板上限測試。
+- npm run typecheck、npm run build：通過，純靜態輸出。首次 typecheck 發現測試的聯集 spread 未縮窄，改用明確事件參數後通過。
+- 使用系統 Chromium 對 out/ 靜態網站執行完整 E2E：29/29（56.4 秒）。新增 4 項 1440×1000 PC 操作：搜尋/分類/V1 限制及焦點返回；預覽/取消不寫入、保存後數字一致；編輯只替換一次與無效輸入不留舊結果；衝突、草稿與分支界線保護。
+- 已檢視 PC 預覽截圖，事件設定與比較表並列，10,000 元薪資調整的當月現金與終點差額符合數值例。這是代理截圖驗證，非真人驗收。
+- 既有手機測試只作原套件回歸，未新增 iPad／手機適配工作。未重跑套件安裝（依賴/lockfile 未改，沿用前輪 npm ci 的環境）；遠端 CI 將核對乾淨安裝。
+- git diff --check：通過。
+
+## 交付範圍
+仍在 PR #12 開發分支，不自動合併或發布，不宣稱 PC 全功能、角色/場景建模已完成。財務引擎、schema 與事件版本未改。事件庫僅收錄目前支援四類，退休/保險/投資等新規則仍須另訂數值契約。#6 真人驗收、獨立 review、讀屏與跨瀏覽器驗證仍保留。
+
+---
+
+# PC 優先開發指令更新（2026-11-25，Asia/Taipei）
+
+依使用者明確指示，PRD、ROADMAP、AGENTS、CODEX_TASK 與 README 已同步：先完成 PC 全部規劃功能、UI／UX 與建模並驗收，再處理 iPad／手機。ROADMAP 增列 PC 全功能驗收後的裝置適配階段，S5 與 PRD 的行動端要求改為後續驗收；既有響應式程式、測試與下方歷史紀錄保留。本次只修改文件，未改應用或測試，也不宣稱 PC 全功能已完成。
+
+驗證：實際核對上述文件中的新順序與衝突文字，執行 git diff --check；未重跑程式測試。
+
+---
+
+# 多軌時間軸開發（2026-11-25，Asia/Taipei）
+
+基準為已部署 main 78aa082，在 codex/multitrack-timeline 開發，契約見 TIMELINE_CONTRACT.md。本輪現有事件四軌投影、整月拖曳、左右鍵/Shift 左右鍵、Escape 取消、模式唯讀、分支點鎖定、相鄰卡片分行與區塊內水平捲動。月份變動只走 changeEvents，放開才提交一次，保留 revision/history；不新增財務類別、不改公式/schema/engineVersion，也不改既有負債排程。初始草稿未套用時阻止重排。
+
+## 已實際執行
+- npm ci --cache /tmp/life-studio-npm-cache：通過，67 packages。
+- npm test：60/60，含 55 項原測試及 5 項重排因果、原始資料/history、V1 購屋、V2 薪資、父子隔離、邊界、重疊與鎖定測試。
+- npm run typecheck、npm run build：通過，純靜態輸出。
+- 第一輪 E2E：24 通過/1 失敗，新增時間軸卡片與原租金新增卡的 accessible name 前綴相同，讓原測試無法唯一選取。已將時間軸卡片明標「時間軸：…」，保留原操作測試；修正後完整 25/25 通過（43.8 秒），對 out/ 靜態網站使用系統 Chromium 測試。
+- 新增四個 E2E 已實際通過：鍵盤重排與財務/存檔還原；滑鼠拖曳只提交一次及 Escape 取消；同月衝突/鎖定拒絕；未套用草稿、體驗唯讀與 390px 區塊內捲動。
+- git diff --check：通過。實作提交 8d40faf 的遠端 [CI run 45554003702](https://github.com/Adamguo88/finance_game/actions/runs/45554003702) completed/success，npm ci、60 單元測試、typecheck、build、Playwright 安裝與 25 E2E 均成功。
+- 已檢視手機全頁截圖：四軌、目前月紅線、薪資卡及定位按鈕可見，整頁無水平溢出。這是代理截圖驗證，非真人驗收。
+
+## 範圍與交付
+本輪交付 [draft PR #12](https://github.com/Adamguo88/finance_game/pull/12)，未自動合併/發布，#6 真人驗收仍開啟。長跨度需水平捲動，手機可沿空白軌道捲動；遠距調月亦可在原事件視窗輸入。既有負債排程只在初始表單設定；未做新事件庫、縮放、區段長度拖曳、跨軌改類型、多人同步或 PixiJS。Safari/Firefox、原生觸控裝置及讀屏尚未測試。
+
+---
+
 # GitHub Pages 部署設定（2026-11-25，Asia/Taipei）
 
 依使用者明確要求部署，從已合併 PR #10 的 main 建立部署分支。新增 main push / workflow_dispatch 的官方 Actions 靜態部署，部署工作只取得 pages:write / id-token:write，建置工作只讀取程式。Next.js 依 NEXT_PUBLIC_BASE_PATH 在部署建置使用 /finance_game，保留本地根路徑，啟用 trailingSlash。沒有改動財務引擎與資料格式。

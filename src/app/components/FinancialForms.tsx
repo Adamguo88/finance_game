@@ -1,4 +1,5 @@
 'use client';
+import { EventImpactPreview } from './EventImpactPreview';
 import { useEffect, useRef, useState } from 'react';
 import type { DebtSchedule, LifeEvent, Profile, Scenario } from '@/domain/model';
 
@@ -73,20 +74,21 @@ export function useModalFocus(open:boolean,onClose:()=>void,returnFocus:HTMLElem
  return ref;
 }
 
-export function EventEditor({editing,error,scenario,onSave,onClose,returnFocus}:{editing:LifeEvent;error:string;returnFocus:HTMLElement|null;scenario:Scenario;onSave:(event:LifeEvent)=>void;onClose:()=>void}){
+export function EventEditor({editing,error,scenario,onSave,onClose,returnFocus,onDraftChange}:{onDraftChange:()=>void;editing:LifeEvent;error:string;returnFocus:HTMLElement|null;scenario:Scenario;onSave:(event:LifeEvent)=>void;onClose:()=>void}){
  const ref=useModalFocus(true,onClose,returnFocus);
- function submit(event:React.FormEvent<HTMLFormElement>){
-  event.preventDefault();const data=new FormData(event.currentTarget);
-  const base={id:editing.id||crypto.randomUUID(),month:numeric(data,'month')};
+ const [draft,setDraft]=useState<LifeEvent|null>(editing);
+ function readEvent(data:FormData):LifeEvent{
+  const base={id:editing.id,month:numeric(data,'month')};
   let next:LifeEvent;
   if(editing.type==='buyHouse'){
    const parameters={...base,type:'buyHouse' as const,price:amount(data,'price'),downPayment:amount(data,'downPayment'),annualRate:annualRate(data,'annualRate',editing.annualRate),termMonths:numeric(data,'termMonths')};
    next=scenario.engineVersion==='2.0.0'?{...parameters,version:2,stopRent:data.get('stopRent')==='on'}:{...parameters,version:1};
   }else if(editing.type==='unemployment')next={...base,version:1,type:'unemployment',duration:numeric(data,'duration'),replacementIncome:amount(data,'replacementIncome')};
   else next={...base,version:1,type:editing.type,amount:amount(data,'amount')};
-  onSave(next);
+  return next;
  }
- return <section ref={ref} className="editor" role="dialog" aria-modal="true" aria-label="事件設定"><form onSubmit={submit}>
+ function submit(event:React.FormEvent<HTMLFormElement>){event.preventDefault();const next=readEvent(new FormData(event.currentTarget));onSave({...next,id:next.id||crypto.randomUUID()});}
+ return <section ref={ref} className="editor" role="dialog" aria-modal="true" aria-label="事件設定"><div className="eventWorkspace"><form onSubmit={submit} onChange={event=>{onDraftChange();setDraft(event.currentTarget.checkValidity()?readEvent(new FormData(event.currentTarget)):null);}}>
   <h2>{eventTitle(editing)}</h2>
   <label>發生月份<input name="month" type="number" required min={(scenario.forkMonth??0)+1} max={(90-scenario.profile.age)*12} defaultValue={editing.month}/></label>
   {editing.type==='buyHouse'?<>
@@ -98,5 +100,5 @@ export function EventEditor({editing,error,scenario,onSave,onClose,returnFocus}:
   </>:<><label>{editing.type==='rentChange'?'新的月租金（元）':'新的正常月薪（元）'}<input name="amount" required type="number" min="0" max="10000000000" step=".01" defaultValue={editing.amount/100}/></label><p className="muted">從指定月份生效，直到下一次同類事件。{editing.type==='incomeChange'?'失業期間仍使用替代收入，結束後恢復當時正常月薪。':'設定新金額，不是額外加收。'}</p></>}
   {error&&<p role="alert" className="warning">{error}</p>}
   <div className="actions"><button type="button" onClick={onClose}>取消</button><button type="submit" className="primary">儲存事件</button></div>
- </form></section>;
+ </form><EventImpactPreview scenario={scenario} event={draft}/></div></section>;
 }
