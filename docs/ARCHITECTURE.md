@@ -1,3 +1,17 @@
+# 版本路由與 v0.2 實作
+
+V1 契約保留於下方；V2 詳見 [V02_FINANCIAL_CONTRACT.md](V02_FINANCIAL_CONTRACT.md)。schema=1 與 engine=1.0.0 不自動改版。schema=2 移除全域 engineVersion，各 Scenario 依 1.0.0 / 2.0.0 分派計算；同一分支樹不得混用版本。
+
+- `model-v1.ts` / `engine-v1.ts` 保留舊模型與計算，`engine.ts` 提供版本分派與只供畫面使用的統一快照轉接。
+- `model.ts` 定義 V2 strict schemas 與版本聯集，`engine-v2.ts` 實作租金、基礎薪資與既有負債排程，貸款月付公式沿用 V1 payment。
+- `migration.ts` 顯式轉換 schema=1 全專案，含 current/history，並核對各方案所有月份通用快照相同；結果超限或不一致一律拒絕。
+- IndexedDB 的 stores 結構未改（DB version=1）；儲存資料是經 parseProject 驗證的版本聯集。轉換本身不寫 DB，仍須按儲存。JSON 字節上限與匯出格式保持一致。
+- 畫面從 simulateForDisplay 消費財務明細；Scene Mapper 以 mortgageBalance 判斷房貸，避免把固定舊債當作未清房貸。
+
+以下是 engine=1.0.0 的既有規格，V2 不覆寫它的計算語意。
+
+---
+
 # 架構與財務契約
 ## 資料流
 表單/卡牌 → Scenario Manager → versioned Scenario → Finance Engine → 月度 Snapshot → Scene Mapper → React/SVG。

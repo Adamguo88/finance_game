@@ -1,63 +1,57 @@
 # Life Studio
-人生，沒有唯一的劇本。透過自行安排事件、播放人生與同步比較分支，理解財務選擇如何影響未來。
 
-## 啟動
-使用 Node.js 24 LTS（.nvmrc）。安裝與執行：
+人生，沒有唯一的劇本。自行安排事件、播放人生與同步比較分支，理解財務選擇如何影響未來。純前端 Next.js + TypeScript，資料保存在此瀏覽器的 IndexedDB，支援 JSON 備份。
+
+## 啟動與檢查
+
+使用 Node.js 24（`.nvmrc`），不需要環境變數或後端服務。
+
 ```sh
 npm ci
-npm test
-npm run dev
-```
-開啟 http://localhost:3000 。`npm run build` 產生純靜態 `out/`，沒有應用程式後端。
-
-## v0.1 操作
-1. 在「編輯」輸入初始年齡、現金、其他資產、既有負債、月收入與支出。
-2. 加入「建立自己的家」與「職涯暫停」，編輯發生月份與完整參數。
-3. 在「體驗」播放、暫停、逐月前後移動；同一時間位置跨模式保留。
-4. 從目前月份建立分支，修改分支點之後的事件。
-5. 「平行人生」勾選方案，讓多個場景與金額同步前進。
-6. 儲存到此瀏覽器的 IndexedDB；匯出 JSON 備份、匯入還原。重新整理後須按「讀取」。
-
-## 邊界
-單一房屋、固定利率本息攤還、失業結束回復初始薪資。既有負債只有餘額，不自動攤還。生活支出固定，購屋不自動扣除租金。無稅費、通膨、報酬率或房價成長。負現金標示缺口，不自動借款。
-
-## 規格與交接
-- [產品與驗收](docs/PRD.md)
-- [架構與公式](docs/ARCHITECTURE.md)
-- [優先順序與分階段工作](docs/ROADMAP.md)
-- [實測結果](docs/VALIDATION.md)
-- [Codex 任務指令](docs/CODEX_TASK.md)
-- [已建立的 GitHub issues](https://github.com/Adamguo88/finance_game/issues)
-- [issue 規劃原稿](docs/ISSUES.json)
-- [開發規範](AGENTS.md)
-
-## 檢查
-```sh
 npm test
 npm run typecheck
 npm run build
-npx playwright install chromium
+npx playwright install --with-deps chromium
 npm run test:e2e
-```
-
-## GitHub 與 Codex 狀態
-Repository：[Adamguo88/finance_game](https://github.com/Adamguo88/finance_game)。使用者已同意公開，產品名稱仍為 Life Studio。
-
-完整 v0.1 程式、規格與 CI 已上傳 main；[7 個分階段 issues](https://github.com/Adamguo88/finance_game/issues) 已建立，供後續逐項審核與開發，並非全數已完成。
-GitHub 連接器本身的寫入回傳 403，本次透過本機既有 Git 授權成功推送，並用相同授權建立 issues；沒有在專案保存憑證。
-
-首次 [GitHub Actions 檢查](https://github.com/Adamguo88/finance_game/actions/runs/45536245532) 已執行 npm ci、核心測試、TypeScript、build 與 Playwright。最終狀態請看 Actions 與 docs/VALIDATION.md。
-
-Codex Cloud 任務尚未由本對話啟動。請在綁定 finance_game 的 Cloud 環境提交 [docs/CODEX_TASK.md](docs/CODEX_TASK.md) 的任務；先驗收 P0 issues #1–#6，v0.2 的 #7 暫不實作。
-
-## 重新取得專案
-```sh
-git clone https://github.com/Adamguo88/finance_game.git
-cd finance_game
-npm ci
 npm run dev
 ```
 
-scripts/create-issues.mjs 是已登入 GitHub CLI 的補建工具，只對 Adamguo88/finance_game 操作，遇同標題會跳過；目前 7 個 issues 已建立，無須再執行。不要強制推送或覆蓋他人的後續修改。
+開啟 http://localhost:3000 。`npm run build` 產生純靜態 `out/`。若使用系統 Chromium，可設定 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`；對靜態伺服器測試時設定 `PLAYWRIGHT_BASE_URL`。
 
-套件精確版本以 package-lock.json 為準；此專案不需要環境變數。
+## 基本操作
+
+1. 在「編輯」填入年齡、現金、其他資產、既有負債、收入與支出；加入購屋與失業事件。
+2. 使用「體驗」播放、暫停、調速與逐月回溯，三種模式共用月份。
+3. 從目前月建立分支；分支點以前的事件及初始資料鎖定，只能修改未來事件。
+4. 在「平行人生」勾選方案，同月比較場景與財務結果，採最短期間作播放終點。
+5. 按「儲存」保存；重新整理後按「讀取」。匯出 JSON 可備份或跨瀏覽器匯入。
+
+## v0.2 財務模型（開發分支，待審查）
+
+初始範例及舊存檔仍使用 V1 引擎，結果不會默默改算。按「升級財務模型」先看轉換預覽、下載原始 V1 備份，再確認轉換整個專案。取消或失敗不改工作；確認後仍須另外按「儲存」，不會自動覆寫 IndexedDB。
+
+V2 可設定：
+
+- **生活費與租金分列**：升級時原有支出不變、租金為 0；請自行拆分，不猜測舊支出中的租金。
+- **購屋停止租金**：預設不停止，需勾選；購屋當月起生效。同月另有租金事件時，以該事件的新租金為準。
+- **調整月租金／正常月薪**：指定月份起換成新金額，直到下一事件。失業期間用替代收入，結束後恢復當時正常月薪。
+- **既有負債排程**：將既有負債的一部分分配到最多 20 筆還款排程，沒有新增借款。各筆獨立算息與取整、末期清償。第一付款月之前不累息；未分配部分維持固定。生活費勿再包含這些還款，避免重複扣款。
+
+舊備份以 schema=1 / engine=1.0.0 計算；新格式 schema=2 可容納 engine=1.0.0 與 2.0.0 的不同根方案。同一分支樹須使用相同引擎。目前升級按鈕只轉換 schema=1 整個專案；不對 schema=2 的混合專案進行第二次轉換，也不支援降版。需回復時匯入原始備份。
+
+## 財務邊界
+
+金額為新臺幣分的整數，畫面保留到分。單一房屋、固定房價與利率；無稅費、通膨、投資報酬、出售房屋或提前還款。負現金顯示缺口，不自動借款或模擬違約。
+
+V1 的既有負債不攤還、生活費固定、購屋不自動取消租金；這些舊語意完整保留。V2 不猜測任何缺少的財務條件，結果僅反映使用者設定。
+
+## 規格與專案狀態
+
+- [產品與 V1 驗收](docs/PRD.md)、[架構與公式](docs/ARCHITECTURE.md)
+- [V2 財務契約](docs/V02_FINANCIAL_CONTRACT.md)、[開發路徑](docs/ROADMAP.md)
+- [實際驗證結果](docs/VALIDATION.md)、[開發規範](AGENTS.md)
+- [GitHub repository](https://github.com/Adamguo88/finance_game)、[issues](https://github.com/Adamguo88/finance_game/issues)
+
+產品名稱為 Life Studio，repository 名稱為 finance_game，已授權公開。PR #8 已合併，issues #1–#5 已按證據結案；#6 仍待真人驗收。V2 的設計與實作在 PR 審查中，不代表正式發布。
+
+程式與測試在本對話的 Codex 工作區執行，未另外啟動背景 Codex CLI 任務。GitHub 寫入授權已恢復，早期 403 紀錄保留於 VALIDATION 作歷史參考。

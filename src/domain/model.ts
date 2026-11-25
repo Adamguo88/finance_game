@@ -1,33 +1,46 @@
 import { z } from 'zod';
-export const ENGINE_VERSION = '1.0.0' as const;
-const money = z.number().int().min(0).max(1_000_000_000_000);
-const month = z.number().int().min(1).max(864);
-export const ProfileSchema = z.object({
- id:z.string().min(1), version:z.number().int().positive(), age:z.number().int().min(18).max(89),
- cash:money, assets:money, debt:money, income:money, expenses:money
+import {
+ ENGINE_VERSION, ProfileSchema, EventSchema, ScenarioSchema as ScenarioV1Schema,
+ ProjectSchema as ProjectV1Schema, initialProject,
+ type Profile as ProfileV1, type LifeEvent as LifeEventV1,
+ type Scenario as ScenarioV1, type Project as ProjectV1, type Snapshot as SnapshotV1
+} from './model-v1';
+export { ENGINE_VERSION, ProfileSchema, EventSchema, ScenarioV1Schema, ProjectV1Schema, initialProject };
+export type { ProfileV1, LifeEventV1, ScenarioV1, ProjectV1, SnapshotV1 };
+export const V2_ENGINE_VERSION='2.0.0' as const;
+const money=z.number().int().min(0).max(1_000_000_000_000);
+const month=z.number().int().min(1).max(864);
+export const DebtScheduleSchema=z.object({
+ id:z.string().min(1),openingBalance:money.positive(),annualRate:z.number().min(0).max(.3),
+ firstPaymentMonth:month,termMonths:z.number().int().min(1).max(480)
 }).strict();
-const base = {id:z.string().min(1),version:z.literal(1),month};
-export const EventSchema = z.discriminatedUnion('type',[
- z.object({...base,type:z.literal('buyHouse'),price:money.positive(),downPayment:money,annualRate:z.number().min(0).max(0.3),termMonths:z.number().int().min(1).max(480)})
- .strict(),
- z.object({...base,type:z.literal('unemployment'),duration:z.number().int().min(1).max(120),replacementIncome:money}).strict()
+export const ProfileV2Schema=ProfileSchema.extend({rent:money,debtSchedules:z.array(DebtScheduleSchema).max(20)}).strict();
+const base={id:z.string().min(1),version:z.literal(1),month};
+export const EventV2Schema=z.discriminatedUnion('type',[
+ z.object({...base,version:z.literal(2),type:z.literal('buyHouse'),price:money.positive(),downPayment:money,annualRate:z.number().min(0).max(.3),termMonths:z.number().int().min(1).max(480),stopRent:z.boolean()}).strict(),
+ z.object({...base,type:z.literal('unemployment'),duration:z.number().int().min(1).max(120),replacementIncome:money}).strict(),
+ z.object({...base,type:z.literal('rentChange'),amount:money}).strict(),
+ z.object({...base,type:z.literal('incomeChange'),amount:money}).strict()
 ]);
-export const ScenarioSchema = z.object({
- id:z.string().min(1),name:z.string().min(1).max(80),parentId:z.string().nullable(),forkMonth:z.number().int().min(0).max(863).nullable(),
- profile:ProfileSchema,engineVersion:z.literal(ENGINE_VERSION),revision:z.number().int().positive(),
- events:z.array(EventSchema).max(100),
- history:z.array(z.object({revision:z.number().int().positive(),profile:ProfileSchema,events:z.array(EventSchema).max(100)}).strict()).max(1000).default([])
+export const ScenarioV2Schema=ScenarioV1Schema.extend({
+ engineVersion:z.literal(V2_ENGINE_VERSION),profile:ProfileV2Schema,events:z.array(EventV2Schema).max(100),
+ history:z.array(z.object({revision:z.number().int().positive(),profile:ProfileV2Schema,events:z.array(EventV2Schema).max(100)}).strict()).max(1000).default([])
 }).strict();
-export const ProjectSchema = z.object({
- schemaVersion:z.literal(1),engineVersion:z.literal(ENGINE_VERSION),
- scenarios:z.array(ScenarioSchema).min(1).max(20)
-}).strict();
-export type Profile = z.infer<typeof ProfileSchema>;
-export type LifeEvent = z.infer<typeof EventSchema>;
-export type Scenario = z.infer<typeof ScenarioSchema>;
-export type Project = z.infer<typeof ProjectSchema>;
-export interface Snapshot {month:number;cash:number;assets:number;debt:number;netWorth:number;income:number;expenses:number;payment:number;interest:number;cashFlow:number;employed:boolean;ownsHome:boolean;gap:boolean}
-export const initialProject: Project = {schemaVersion:1,engineVersion:ENGINE_VERSION,scenarios:[{
- id:'original',name:'我的人生',parentId:null,forkMonth:null,engineVersion:ENGINE_VERSION,revision:1,
- profile:{id:'profile-1',version:1,age:26,cash:80000000,assets:20000000,debt:0,income:5000000,expenses:3000000},events:[],history:[]
-}]};
+export const ScenarioSchema=z.discriminatedUnion('engineVersion',[ScenarioV1Schema,ScenarioV2Schema]);
+export const MigrationRecordSchema=z.object({fromSchema:z.literal(1),fromEngine:z.literal(ENGINE_VERSION),sourceScenarioIds:z.array(z.string().min(1)).min(1).max(20)}).strict();
+export const ProjectV2Schema=z.object({schemaVersion:z.literal(2),scenarios:z.array(ScenarioSchema).min(1).max(20),migration:MigrationRecordSchema.nullable()}).strict();
+export const ProjectSchema=z.discriminatedUnion('schemaVersion',[ProjectV1Schema,ProjectV2Schema]);
+export type DebtSchedule=z.infer<typeof DebtScheduleSchema>;
+export type ProfileV2=z.infer<typeof ProfileV2Schema>;
+export type LifeEventV2=z.infer<typeof EventV2Schema>;
+export type ScenarioV2=z.infer<typeof ScenarioV2Schema>;
+export type ProjectV2=z.infer<typeof ProjectV2Schema>;
+export type Profile=ProfileV1|ProfileV2;
+export type LifeEvent=LifeEventV1|LifeEventV2;
+export type Scenario=ScenarioV1|ScenarioV2;
+export type Project=ProjectV1|ProjectV2;
+export type Snapshot=SnapshotV1;
+export interface SnapshotV2 extends SnapshotV1 {
+ baseIncome:number;livingExpenses:number;rent:number;mortgagePayment:number;mortgageInterest:number;
+ scheduledDebtPayment:number;scheduledDebtInterest:number;scheduledDebtBalance:number;unallocatedDebt:number;mortgageBalance:number;
+}

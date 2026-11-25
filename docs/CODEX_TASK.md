@@ -1,3 +1,5 @@
+> 歷史交接提醒（2026-11-25）：下列是 v0.1 初始驗收任務。PR #8 已合併、#1–#5 已結案，#6 真人驗收仍開啟；使用者已另行授權 v0.2 分支開發。接續工作先讀 README、VALIDATION 與 V02_FINANCIAL_CONTRACT，勿將此舊任務當成目前進度。
+
 # 可直接提交 Codex 的任務
 ## 執行前提
 實際 repository：https://github.com/Adamguo88/finance_game ，產品名稱 Life Studio，已依使用者同意公開。
