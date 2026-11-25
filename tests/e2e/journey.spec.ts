@@ -12,7 +12,7 @@ test('首頁讀取失敗可恢復，取消建立保留目前人生與草稿保�
 });
 test('PC 主要尺寸保留 HUD、世界與鍵盤流程，體驗時收起編輯表單',async({page},testInfo)=>{
  for(const size of [{width:1280,height:800},{width:1440,height:900}]){
-  await page.setViewportSize(size);await page.goto('/');
+  await page.setViewportSize(size);await page.goto('/');await page.locator('main.welcomePage, main.studio').waitFor();
   if(await page.getByRole('button',{name:'探索範例人生',exact:true}).count())await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
   await page.getByRole('slider').focus();await page.keyboard.press('Home');await expect(page.locator('.worldStage')).toBeVisible();const hud=await page.locator('.center>.metrics').boundingBox(),world=await page.locator('.worldStage').boundingBox();expect(hud&&world&&hud.y<world.y).toBeTruthy();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.getByRole('button',{name:'體驗',exact:true}).click();await expect(page.getByLabel('現金（元）',{exact:true})).toHaveCount(0);await page.getByRole('button',{name:'下一月',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('slider')).toHaveValue('1');await page.getByRole('button',{name:'編輯',exact:true}).click();await expect(page.getByRole('slider')).toHaveValue('1');await page.screenshot({path:testInfo.outputPath(`pc-${size.width}.png`)});
