@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "source": "src/scene/models.tsx",
+  "provenance": "Original project vector artwork; no third-party images or 3D models.",
+  "assets": [
+    {
+      "id": "avatar-standing",
+      "name": "角色 · 工作中",
+      "file": "avatar-standing.svg",
+      "bytes": 1361,
+      "sha256": "98afe6e638eb2576cb9f966dffab7ecd9d05b21019752331d1aa5dd73f8fce25"
+    },
+    {
+      "id": "avatar-resting",
+      "name": "角色 · 職涯暫停",
+      "file": "avatar-resting.svg",
+      "bytes": 1682,
+      "sha256": "f9e974d8012e237406a1fc446d059f1b7ef58d9e1b19ef5a8037c323aeacc57e"
+    },
+    {
+      "id": "home-rented",
+      "name": "住宅 · 租屋",
+      "file": "home-rented.svg",
+      "bytes": 1747,
+      "sha256": "667a56decf9253a667e02603af7e88a67134e74a878025861def5acb0943d179"
+    },
+    {
+      "id": "home-owned",
+      "name": "住宅 · 自有住宅與房貸",
+      "file": "home-owned.svg",
+      "bytes": 2099,
+      "sha256": "a3d62c887220aef785e62632d53c4dcdd4a526eed8df047126c1cbe281dd179c"
+    },
+    {
+      "id": "office-active",
+      "name": "職場 · 工作中",
+      "file": "office-active.svg",
+      "bytes": 1655,
+      "sha256": "2b2ff06106e53bd6a77603c09ce3d1fdcc5106be9cf8f1720032912f06835520"
+    },
+    {
+      "id": "office-paused",
+      "name": "職場 · 暫停",
+      "file": "office-paused.svg",
+      "bytes": 1652,
+      "sha256": "1d2797c35189146d13cbb9db449b209da9327cb278ad3fdc5a1d6e8500bc05a8"
+    },
+    {
+      "id": "finance-steady",
+      "name": "財務小屋 · 平穩",
+      "file": "finance-steady.svg",
+      "bytes": 926,
+      "sha256": "8c87968dbd41dd6ff6947253d680ecdb86917a7185b8dd0754996875ea191b50"
+    },
+    {
+      "id": "finance-attention",
+      "name": "財務小屋 · 現金缺口",
+      "file": "finance-attention.svg",
+      "bytes": 997,
+      "sha256": "8102b79a70a16c18fc3c9e8fd58b04e4d95892a83174b1ab9d8f620932162f02"
+    },
+    {
+      "id": "park",
+      "name": "公園 · 休憩",
+      "file": "park.svg",
+      "bytes": 954,
+      "sha256": "4a9198e44733776cf57fb5f2898a8ed83ec1aebf22e404dfce230da0596f5e61"
+    }
+  ]
+}
