@@ -1,3 +1,21 @@
+# 多軌時間軸開發（2026-11-25，Asia/Taipei）
+
+基準為已部署 main 78aa082，在 codex/multitrack-timeline 開發，契約見 TIMELINE_CONTRACT.md。本輪現有事件四軌投影、整月拖曳、左右鍵/Shift 左右鍵、Escape 取消、模式唯讀、分支點鎖定、相鄰卡片分行與區塊內水平捲動。月份變動只走 changeEvents，放開才提交一次，保留 revision/history；不新增財務類別、不改公式/schema/engineVersion，也不改既有負債排程。初始草稿未套用時阻止重排。
+
+## 已實際執行
+- npm ci --cache /tmp/life-studio-npm-cache：通過，67 packages。
+- npm test：60/60，含 55 項原測試及 5 項重排因果、原始資料/history、V1 購屋、V2 薪資、父子隔離、邊界、重疊與鎖定測試。
+- npm run typecheck、npm run build：通過，純靜態輸出。
+- 第一輪 E2E：24 通過/1 失敗，新增時間軸卡片與原租金新增卡的 accessible name 前綴相同，讓原測試無法唯一選取。已將時間軸卡片明標「時間軸：…」，保留原操作測試；修正後完整 25/25 通過（43.8 秒），對 out/ 靜態網站使用系統 Chromium 測試。
+- 新增四個 E2E 已實際通過：鍵盤重排與財務/存檔還原；滑鼠拖曳只提交一次及 Escape 取消；同月衝突/鎖定拒絕；未套用草稿、體驗唯讀與 390px 區塊內捲動。
+- git diff --check：通過。遠端 CI 另核對，不以本地結果替代。
+- 已檢視手機全頁截圖：四軌、目前月紅線、薪資卡及定位按鈕可見，整頁無水平溢出。這是代理截圖驗證，非真人驗收。
+
+## 範圍與交付
+本輪在獨立 PR 審查，未自動合併/發布，#6 真人驗收仍開啟。長跨度需水平捲動，手機可沿空白軌道捲動；遠距調月亦可在原事件視窗輸入。既有負債排程只在初始表單設定；未做新事件庫、縮放、區段長度拖曳、跨軌改類型、多人同步或 PixiJS。Safari/Firefox、原生觸控裝置及讀屏尚未測試。
+
+---
+
 # GitHub Pages 部署設定（2026-11-25，Asia/Taipei）
 
 依使用者明確要求部署，從已合併 PR #10 的 main 建立部署分支。新增 main push / workflow_dispatch 的官方 Actions 靜態部署，部署工作只取得 pages:write / id-token:write，建置工作只讀取程式。Next.js 依 NEXT_PUBLIC_BASE_PATH 在部署建置使用 /finance_game，保留本地根路徑，啟用 trailingSlash。沒有改動財務引擎與資料格式。
