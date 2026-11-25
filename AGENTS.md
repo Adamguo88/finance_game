@@ -1,0 +1,12 @@
+# Life Studio 開發規範
+- 先讀 docs/PRD.md、ARCHITECTURE.md、ROADMAP.md 與 VALIDATION.md。
+- 純前端 Next.js TypeScript，靜態輸出；不得新增 API routes、後端、登入、隨機事件、AI 或外部財務服務。
+- domain 不得 import React、Next.js、Zustand、Dexie、DOM 或視覺模組。畫面僅消費 Snapshot；SVG 經 scene mapper 取得狀態。
+- 金額是新臺幣分的整數。不可無聲變更計算順序、四捨五入、期間邊界或公式。變更公式必須提升 engineVersion、更新文件與測試；不支援版本明確拒絕，不偷偷重算。
+- 原始輸入與事件參數是主要資料，快照是衍生結果。修改保留 history、revision、profile.version、event.version。
+- 分支深拷貝初始資料與全部排程，保存 parentId/forkMonth；鎖定 <= forkMonth 的事件。父方案後續修改不向子方案傳播。
+- 新增事件必須先寫數值例與邊界測試。先核心與分支不變性，再介面與美術。
+- npm ci；npm test；npm run typecheck；npm run build；npm run test:e2e。新增測試要驗證使用者行為或財務不變量。
+- 不提交 node_modules、.next、真實個資、token。避免覆蓋既有 repository 或強制 push。
+- 報告只列實際執行的檢查；區分本地/遠端 shell、Codex CLI、Codex Cloud，未登入不表示已啟動任務。
+- 任務完成須提供變更、驗證命令與結果、剩餘風險；不要自行宣告所有 issues 完成。
