@@ -1,11 +1,11 @@
 # 可直接提交 Codex 的任務
 ## 執行前提
-實際 repository：https://github.com/Adamguo88/finance_game 。產品名為 Life Studio，使用者已同意使用公開倉庫。
-目前本對話的 GitHub 整合寫入被 403 拒絕，尚未成功上傳程式碼或建立 issues；請先上傳完整專案，或將交付壓縮檔提供給 Codex。
-本對話尚未啟動 Codex Cloud。請在已連接 finance_game 的 Cloud 環境提交以下任務。
+實際 repository：https://github.com/Adamguo88/finance_game ，產品名稱 Life Studio，已依使用者同意公開。
+main 已有完整 v0.1 初始實作與測試；分階段 issues #1–#7 已建立。
+本對話沒有啟動 Codex Cloud 任務；請在已連接此倉庫的 Cloud 環境提交下列內容。
 
 ## 貼入任務指令
-在目前選取的 Adamguo88/finance_game repository（產品名 Life Studio） 中，讀取 AGENTS.md、docs/PRD.md、ARCHITECTURE.md、ROADMAP.md 與 VALIDATION.md。先檢查現有 v0.1 實作與測試，不重建專案，不假設 issue 已建立。
+在目前選取的 Adamguo88/finance_game repository（產品名 Life Studio） 中，讀取 AGENTS.md、docs/PRD.md、ARCHITECTURE.md、ROADMAP.md 與 VALIDATION.md。先檢查現有 v0.1 實作與測試，不重建專案。讀取 GitHub issues #1–#6，依賴順序檢查現有成果與未通過驗收的部分；#7 為 v0.2 暫不實作。
 
 目標：驗收並補完 Life Studio v0.1 垂直切片。支援初始財務輸入、買房、失業、逐月快照、事件增刪改、時間控制、SVG 場景、不可變分支、同步比較、IndexedDB 及 JSON 備份。遵守純前端 Next.js TypeScript 架構，不增加 AI、隨機事件、後端、登入或 3D。
 

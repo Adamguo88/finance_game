@@ -27,7 +27,8 @@ npm run dev
 - [優先順序與分階段工作](docs/ROADMAP.md)
 - [實測結果](docs/VALIDATION.md)
 - [Codex 任務指令](docs/CODEX_TASK.md)
-- [GitHub issue 待建立清單](docs/ISSUES.json)
+- [已建立的 GitHub issues](https://github.com/Adamguo88/finance_game/issues)
+- [issue 規劃原稿](docs/ISSUES.json)
 - [開發規範](AGENTS.md)
 
 ## 檢查
@@ -42,19 +43,21 @@ npm run test:e2e
 ## GitHub 與 Codex 狀態
 Repository：[Adamguo88/finance_game](https://github.com/Adamguo88/finance_game)。使用者已同意公開，產品名稱仍為 Life Studio。
 
-目前 GitHub 整合可讀取倉庫，實際上傳檔案與建立 issue 均回傳 403 Resource not accessible by integration。尚未成功上傳本專案或建立 issues。Codex Cloud 是否能讀取此 repo，由使用者的 Cloud 設定決定；本對話沒有可直接提交 Cloud 任務的整合。
+完整 v0.1 程式、規格與 CI 已上傳 main；[7 個分階段 issues](https://github.com/Adamguo88/finance_game/issues) 已建立，供後續逐項審核與開發，並非全數已完成。
+GitHub 連接器本身的寫入回傳 403，本次透過本機既有 Git 授權成功推送，並用相同授權建立 issues；沒有在專案保存憑證。
 
-在已登入且有寫入權限的電腦，於完整專案資料夾執行：
+首次 [GitHub Actions 檢查](https://github.com/Adamguo88/finance_game/actions/runs/45536245532) 已執行 npm ci、核心測試、TypeScript、build 與 Playwright。最終狀態請看 Actions 與 docs/VALIDATION.md。
+
+Codex Cloud 任務尚未由本對話啟動。請在綁定 finance_game 的 Cloud 環境提交 [docs/CODEX_TASK.md](docs/CODEX_TASK.md) 的任務；先驗收 P0 issues #1–#6，v0.2 的 #7 暫不實作。
+
+## 重新取得專案
 ```sh
-git init -b main
-git remote add origin https://github.com/Adamguo88/finance_game.git
-git add .
-git commit -m "Initialize Life Studio v0.1"
-git push -u origin main
-node scripts/create-issues.mjs
+git clone https://github.com/Adamguo88/finance_game.git
+cd finance_game
+npm ci
+npm run dev
 ```
-建立 issues 需要 GitHub CLI（gh）已登入。此腳本只對 Adamguo88/finance_game 建立，並跳過同標題項目。若遠端已出現其他內容，先整合其變更，不強制推送。
 
-可直接將 [docs/CODEX_TASK.md](docs/CODEX_TASK.md) 的指令貼入綁定本倉庫的 Codex Cloud 任務。只有任務實際啟動後才能標記為已執行。
+scripts/create-issues.mjs 是已登入 GitHub CLI 的補建工具，只對 Adamguo88/finance_game 操作，遇同標題會跳過；目前 7 個 issues 已建立，無須再執行。不要強制推送或覆蓋他人的後續修改。
 
 套件精確版本以 package-lock.json 為準；此專案不需要環境變數。

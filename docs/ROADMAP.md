@@ -1,5 +1,5 @@
 # 開發路徑與優先順序
-依依賴關係交付，不依頁面數量計進度。以下每階段對應 docs/ISSUES.json；實際執行紀錄以 VALIDATION.md 為準，未建立 GitHub issue 不標示為已開立。
+依依賴關係交付，不依頁面數量計進度。以下階段已建立為 GitHub issues #1–#7：https://github.com/Adamguo88/finance_game/issues 。詳細 title/body 原稿見 docs/ISSUES.json；實際驗證以 VALIDATION.md 為準，issue 保持開啟供後續逐項驗收。
 
 | 階段 | 優先 | 依賴 | 交付 | 驗收閘門 |
 |---|---|---|---|---|
