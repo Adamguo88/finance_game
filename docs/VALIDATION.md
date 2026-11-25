@@ -1,3 +1,9 @@
+# GitHub 交付更新（2026-11-25，Asia/Taipei）
+
+使用者更新 GitHub App 倉庫授權後，已確認 Adamguo88/finance_game 列入授權清單且 push=true。`git push -u origin codex/acceptance-issues-1-6` 成功，包含 5cf56a2 與 3bef203 的開發與驗收成果。下方各輪 403 記錄為當時的歷史狀態，已解除；遠端 CI 與人工發布審查仍須分別確認。未自動合併或關閉 issues。
+
+---
+
 # 規格逐項開發續作（2026-11-25，Asia/Taipei）
 
 延續本地提交 5cf56a2，依 v0.1 的 S3 → S4 → S5 補完顯示與驗證缺口。沒有新增 v0.2 事件或變更財務公式、engineVersion。
