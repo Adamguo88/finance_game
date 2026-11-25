@@ -18,6 +18,12 @@ npm run dev
 
 開啟 http://localhost:3000 。`npm run build` 產生純靜態 `out/`。若使用系統 Chromium，可設定 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`；對靜態伺服器測試時設定 `PLAYWRIGHT_BASE_URL`。
 
+## GitHub Pages
+
+`.github/workflows/pages.yml` 在 main 更新時建置並部署 `out/`，使用 Node.js 24 與官方 Pages artifact/deploy actions。部署建置設定 `NEXT_PUBLIC_BASE_PATH=/finance_game`；本機不設定此變數時仍從根路徑啟動。Pages 的 Source 使用 GitHub Actions，第一次啟用如受權限限制，需倉庫管理者在 Settings → Pages 設定。部署狀態以 Actions 的 Deploy GitHub Pages 工作流程及 github-pages environment 為準。
+
+本機測試子路徑可執行 `NEXT_PUBLIC_BASE_PATH=/finance_game npm run build`，將 out/ 掛載至靜態伺服器的 `/finance_game/`；不要直接以根路徑載入該建置。網站資料仍保存在各使用者瀏覽器，切換網址前請先匯出 JSON 備份。
+
 ## 基本操作
 
 1. 在「編輯」填入年齡、現金、其他資產、既有負債、收入與支出，按「更新基礎資料」套用；加入購屋與失業事件。未套用的表單會提示先套用或「還原未套用資料」，以免切換操作遺失草稿。
