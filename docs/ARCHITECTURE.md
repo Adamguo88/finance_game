@@ -1,6 +1,6 @@
 > 場景資產：#17 已接入 LifeWorld/models 的原創向量與 HTML 區域入口，仍只消費快照；規格見 WORLD_ASSETS.md。
 
-> 下一階段架構方向：docs/NEXT_PHASE.md 的 #17 規劃 2D 資產、#18 導入 PixiJS；目前仍是既有 SVG/Scene Mapper，不代表 PixiJS 已實作。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
+> 下一階段架構方向：docs/NEXT_PHASE.md 的 #17 規劃 2D 資產、#18 導入 PixiJS；#18 已接入可延遲載入的 PixiJS renderer，保留 SVG 備援；見 PIXI_RENDERER.md。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
 
 # 版本路由與 v0.2 實作
 
@@ -18,7 +18,7 @@ V1 契約保留於下方；V2 詳見 [V02_FINANCIAL_CONTRACT.md](V02_FINANCIAL_C
 
 # 架構與財務契約
 ## 資料流
-表單/卡牌 → Scenario Manager → versioned Scenario → Finance Engine → 月度 Snapshot → Scene Mapper → React/SVG。
+表單/卡牌 → Scenario Manager → versioned Scenario → Finance Engine → 月度 Snapshot → Scene Mapper → React/SVG 與延遲載入的 PixiJS。
 Zustand 只管理共同播放月份、播放/暫停、速度；React 管理專案與畫面。Dexie/IndexedDB 保存 Project，JSON 支援可攜備份。
 
 ## 模組

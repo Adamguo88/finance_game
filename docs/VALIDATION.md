@@ -1,3 +1,14 @@
+# #18 PixiJS 持續世界實測（2026-11-25）
+
+- Node 24.22.3，`npm ci --cache /tmp/life-studio-npm-cache` 乾淨安裝通過；`npm test` 70/70；`npm run typecheck` 通過。
+- `node scripts/export-models.mjs` 可直接重新產生 12 個原生座標 SVG（15,783 bytes）。Next SWC 編譯模型，不依賴瀏覽器。更新後 `git diff --check` 通過。
+- `npm run build` 根路徑靜態輸出通過。Python server 3110 提供 out/，`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3110 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e -- --workers=2`：40/40 通過，2.3 分鐘。
+- 新增 5 項 renderer E2E 強制使用 SwiftShader 真 WebGL：畫布像素切月更新、GPU context loss 退回 SVG、GPU 不可用/素材失敗可操作、20 人生共用月份/不同工作狀態與最多 4 GPU、3 輪模式切換可重新建立；靜止 500ms 期間 RAF 呼叫不超過 2（無持續迴圈）。20 人生測試約 10.8 秒，包含上傳、逐項勾選、逐月與模式切換，不是純 GPU FPS/延遲基準。
+- 已檢視真 Pixi 畫布截圖：微縮島嶼、工作/住宅/財務小屋、長椅與角色，HTML 按鈕保持可用；讀屏文字沿用同月 SVG 描述。
+- 首輪完整 E2E 暴露新增載入 role=status 與既有存檔提示定位衝突、Pixi autoDensity 的 inline 固定尺寸造成溢出；修正為普通載入文字及 100% canvas CSS 尺寸，重跑全數通過。另明確移除 pointer tracking 與 GC scheduler 的 system ticker，idle RAF 測試通過。
+- `NEXT_PUBLIC_BASE_PATH=/finance_game npm run build` 通過；另用 3112 的實際子目錄掛載、headless Chromium 真 WebGL 驗證首頁→範例人生→下一月，12 素材 manifest 正常，pageerror/requestfailed 均 0。此為本地 Pages 同形輸出驗證，遠端正式部署另核對 Actions。
+- 沒有修改財務 domain、公式、版本/遷移、CI 觸發、Pages workflow。硬體 FPS/長時間記憶體、多桌面瀏覽器與真人總驗收仍屬 #24；角色個人化 #28、完整事件 #27、多筆初始化 #29 尚待完成。
+
 # Issue #17：角色/住宅/職場原創向量與微縮世界
 
 以原研究討論的溫暖低多邊形/2.5D 微縮世界為方向，替換原示意 SVG，提供角色工作/休息、租屋/自有住宅、職場正常/暫停、房貸標記、財務平穩/缺口及公園。首頁、五步建立、單人生與比較共用資產。住宅/工作/財務/休憩原生按鈕可先看同月明細，再明確進規劃；焦點、月份、分支鎖定及財務結果維持。另提供 9 狀態圖鑑、可修改 SVG/manifest 及匯出腳本，詳見 WORLD_ASSETS.md。
