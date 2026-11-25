@@ -1,0 +1,17 @@
+{
+  "status": "proposed-not-implemented",
+  "targetSchemaVersion": 2,
+  "targetEngineVersion": "2.0.0",
+  "moneyUnit": "TWD-cent",
+  "baseProfile": {"age":26,"cash":80000000,"assets":20000000,"debt":0,"income":5000000,"expenses":1800000,"rent":1200000,"debtSchedules":[]},
+  "cases": [
+    {"id":"rent-split","expected":[{"month":12,"cash":104000000,"netWorth":124000000,"expenses":3000000}]},
+    {"id":"buy-stop-rent","profileOverrides":{"cash":300000000},"events":[{"id":"home","type":"buyHouse","version":2,"month":2,"price":1000000000,"downPayment":200000000,"annualRate":0,"termMonths":360,"stopRent":true}],"expected":[{"month":1,"cash":302000000,"rent":1200000},{"month":2,"cash":102977778,"debt":797777778,"rent":0,"expenses":1800000,"payment":2222222,"netWorth":325200000}]},
+    {"id":"rent-change","events":[{"id":"rent","type":"rentChange","version":1,"month":2,"amount":1500000}],"expected":[{"month":1,"cash":82000000,"rent":1200000},{"month":2,"cash":83700000,"rent":1500000,"expenses":3300000}]},
+    {"id":"debt-zero","profileOverrides":{"debt":12000000,"expenses":3000000,"rent":0,"debtSchedules":[{"id":"loan","openingBalance":12000000,"annualRate":0,"firstPaymentMonth":1,"termMonths":12}]},"expected":[{"month":0,"cash":80000000,"debt":12000000,"netWorth":88000000},{"month":1,"cash":81000000,"debt":11000000,"scheduledDebtPayment":1000000,"netWorth":90000000},{"month":12,"cash":92000000,"debt":0,"scheduledDebtPayment":1000000,"netWorth":112000000},{"month":13,"cash":94000000,"scheduledDebtPayment":0}]},
+    {"id":"debt-interest","profileOverrides":{"debt":12000000,"expenses":3000000,"rent":0,"debtSchedules":[{"id":"loan","openingBalance":12000000,"annualRate":0.12,"firstPaymentMonth":1,"termMonths":12}]},"expected":[{"month":1,"scheduledDebtPayment":1066185,"scheduledDebtInterest":120000,"scheduledDebtBalance":11053815,"cash":80933815,"netWorth":89880000},{"month":12,"scheduledDebtPayment":1066191,"scheduledDebtInterest":10556,"scheduledDebtBalance":0},{"month":13,"scheduledDebtPayment":0,"scheduledDebtInterest":0}]},
+    {"id":"debt-delayed","profileOverrides":{"debt":12000000,"debtSchedules":[{"id":"loan","openingBalance":12000000,"annualRate":0.12,"firstPaymentMonth":3,"termMonths":12}]},"expected":[{"month":2,"scheduledDebtBalance":12000000,"scheduledDebtPayment":0,"scheduledDebtInterest":0},{"month":3,"scheduledDebtPayment":1066185,"scheduledDebtInterest":120000,"scheduledDebtBalance":11053815}]},
+    {"id":"salary-unemployment","events":[{"id":"break","type":"unemployment","version":1,"month":2,"duration":2,"replacementIncome":1000000},{"id":"raise","type":"incomeChange","version":1,"month":3,"amount":6000000}],"expected":[{"month":1,"income":5000000},{"month":2,"income":1000000},{"month":3,"income":1000000,"baseIncome":6000000},{"month":4,"income":6000000}]},
+    {"id":"debt-residual","profileOverrides":{"debt":18000000,"debtSchedules":[{"id":"loan","openingBalance":12000000,"annualRate":0,"firstPaymentMonth":1,"termMonths":12}]},"expected":[{"month":0,"debt":18000000,"unallocatedDebt":6000000},{"month":1,"debt":17000000,"cash":81000000,"unallocatedDebt":6000000},{"month":12,"debt":6000000,"unallocatedDebt":6000000}]}
+  ]
+}

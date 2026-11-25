@@ -1,3 +1,25 @@
+# Issue #7：v0.2 設計提案（2026-11-25，Asia/Taipei）
+
+基準 main 2acea22。依使用者「繼續」指示先準備設計，不將 #6 真人驗收視為完成，也不在本輪啟用 v0.2 財務功能。
+
+## 本輪變更
+- 新增 docs/V02_FINANCIAL_CONTRACT.md：生活費/租金拆分、購屋停止租金 opt-in、既有負債分配與排程、rentChange/incomeChange、月度順序、快照語意、分支歷史、schema=2 / engine=2.0.0 目標與顯式遷移。
+- 新增 docs/fixtures/v02-financial-contract.json：8 組設計預期值，金額單位為分，明標 proposed-not-implemented。
+- 更新 ROADMAP 的設計進度。生產程式、現用 schemaVersion=1 / engineVersion=1.0.0 未改。
+
+## 實際執行
+- Python 標準庫 json 解析 fixtures，Decimal + ROUND_HALF_UP 獨立參考計算：8 組、78 個預期欄位全相符。例：12 萬本金/12%/12 期，月付 10,661.85 元、首期利息 1,200 元、末期 10,661.91 元。此檢查只核對提案數值，**不是 V2 引擎測試**。
+- `npm ci --cache /tmp/life-studio-npm-cache`：通過，67 packages。
+- `npm test`：19/19 通過（現有 V1 引擎）。
+- `npm run typecheck`、`npm run build`：通過，靜態輸出。
+- `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`：9/9 通過（14.5 秒），既有靜態 HTTP server 提供本輪 out/。
+- `git diff --check`：通過。
+
+## 待完成
+設計待審；V2 strict schema、版本路由、遷移、引擎與 UI/E2E 實作尚未進行。#6 真人操作清單仍開啟，#7 不結案；本設計分支開 draft PR 供審查，不自動合併。轉換前備份、延後付款不累息、同月租金事件優先等產品語意已寫明供審查，不能宣稱已上線。
+
+---
+
 # PR #8 合併前審查（2026-11-25，Asia/Taipei）
 
 審查基準：d294e776f3af6899d7e9de05254375ba4fd8b519。GitHub PR #8 為 open/mergeable，無 review submissions，沒有冒稱取得獨立審核者核准。GitHub Actions [run 45540307064](https://github.com/Adamguo88/finance_game/actions/runs/45540307064) completed/success。

@@ -20,3 +20,7 @@
 
 ## Codex 執行節奏
 每次一個階段／issue，先驗收條件再修改。先讀 AGENTS.md，完成後提供 diff 摘要、實測結果、限制。雲端網路只在 npm ci/安裝瀏覽器時使用；應用執行無後端依賴。建置不得依賴線上字型。
+
+## v0.2 設計進度（2026-11-25）
+
+PR #8 已合併，issues #1–#5 已依證據結案；#6 真人驗收仍開啟。使用者指示繼續後，先平行準備 #7 的設計提案：[V02_FINANCIAL_CONTRACT.md](V02_FINANCIAL_CONTRACT.md)，附 [數值 fixtures](fixtures/v02-financial-contract.json)。此為設計審查，尚未改變 v0.1 功能、未宣告 #7 完成；正式實作/發布仍依 v0.1 驗收閘門。
