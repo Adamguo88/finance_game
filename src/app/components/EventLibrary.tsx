@@ -3,8 +3,8 @@ import {useState} from 'react';
 import type {Scenario} from '@/domain/model';
 import {eventCatalog,unavailableReason,type EventType} from '../events/catalog';
 import {useModalFocus} from './FinancialForms';
-export function EventLibrary({scenario,onChoose,onClose,returnFocus}:{scenario:Scenario;onChoose:(type:EventType)=>void;onClose:()=>void;returnFocus:HTMLElement|null}){
- const ref=useModalFocus(true,onClose,returnFocus),[query,setQuery]=useState(''),[category,setCategory]=useState('全部');
+export function EventLibrary({scenario,onChoose,onClose,returnFocus,initialCategory='全部'}:{initialCategory?:string;scenario:Scenario;onChoose:(type:EventType)=>void;onClose:()=>void;returnFocus:HTMLElement|null}){
+ const ref=useModalFocus(true,onClose,returnFocus),[query,setQuery]=useState(''),[category,setCategory]=useState(initialCategory);
  const term=query.trim().toLocaleLowerCase('zh-TW');
  const items=eventCatalog.filter(item=>(category==='全部'||item.category===category)&&[item.name,item.description,item.parameters,item.keywords].join(' ').toLocaleLowerCase('zh-TW').includes(term));
  return <section ref={ref} className="editor" role="dialog" aria-modal="true" aria-label="人生事件庫"><div className="libraryPanel">

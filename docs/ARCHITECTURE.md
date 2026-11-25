@@ -1,3 +1,5 @@
+> 場景資產：#17 已接入 LifeWorld/models 的原創向量與 HTML 區域入口，仍只消費快照；規格見 WORLD_ASSETS.md。
+
 > 下一階段架構方向：docs/NEXT_PHASE.md 的 #17 規劃 2D 資產、#18 導入 PixiJS；目前仍是既有 SVG/Scene Mapper，不代表 PixiJS 已實作。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
 
 # 版本路由與 v0.2 實作
