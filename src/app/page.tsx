@@ -5,6 +5,8 @@ import { initialProject, type Project, type Scenario, type LifeEvent, type Profi
 import { simulateForDisplay as simulate } from '@/domain/engine';
 import { migrateProject, type MigratedProject } from '@/domain/migration';
 import { ProfileForm, EventEditor, eventTitle } from './components/FinancialForms';
+import { EventLibrary } from './components/EventLibrary';
+import { createEventDraft, type EventType } from './events/catalog';
 import { EventTimeline } from './components/EventTimeline';
 import { rescheduleEvent } from '@/domain/timeline';
 import { MigrationPreview } from './components/MigrationPreview';
@@ -15,7 +17,6 @@ import { mapSnapshot } from '@/scene/mapper';
 type Mode='編輯'|'體驗'|'平行人生';
 const usePlayback=create<{month:number;playing:boolean;speed:number;setMonth:(m:number)=>void;setPlaying:(p:boolean)=>void;setSpeed:(s:number)=>void}>((set)=>({month:0,playing:false,speed:1,setMonth:month=>set({month}),setPlaying:playing=>set({playing}),setSpeed:speed=>set({speed})}));
 const currency=(n:number)=>new Intl.NumberFormat('zh-TW',{style:'currency',currency:'TWD',maximumFractionDigits:2}).format(n/100);
-const emptyHouse={id:'',version:1,type:'buyHouse',month:1,price:1000000000,downPayment:200000000,annualRate:.025,termMonths:360} as const;
 function Scene({snapshot}:{snapshot:SnapshotV2}){
  const s=mapSnapshot(snapshot);
  return <svg viewBox="0 0 600 260" role="img" aria-label={s.home+'，'+s.work+(s.warning?'，現金不足':'')}>
@@ -31,6 +32,7 @@ function Scene({snapshot}:{snapshot:SnapshotV2}){
 function Metrics({s}:{s:Snapshot}){return <div className="metrics">{[['可動用現金',s.cash],['其他／房屋資產',s.assets],['淨資產',s.netWorth],['總負債',s.debt],['本月現金變化',s.cashFlow]].map(([label,value])=><div key={String(label)}><small>{label}</small><strong className={Number(value)<0?'negative':''}>{currency(Number(value))}</strong></div>)}</div>;}
 function Ledger({snapshot:s,isV2}:{snapshot:SnapshotV2;isV2:boolean}){return <div className="ledger"><span>月收入 {currency(s.income)}</span><span>{isV2?'生活費（不含租金）':'生活支出'} {currency(isV2?s.livingExpenses:s.expenses)}</span>{isV2&&<span>月租金 {currency(s.rent)}</span>}<span>房貸本息 {currency(s.payment)}</span><span>其中利息 {currency(s.interest)}</span>{isV2&&<><span>其他負債本息 {currency(s.scheduledDebtPayment)}</span><span>其他負債利息 {currency(s.scheduledDebtInterest)}</span><span>未排程負債 {currency(s.unallocatedDebt)}</span></>}</div>;}
 export default function Studio(){
+ const [library,setLibrary]=useState(false);
  const [modalOpener,setModalOpener]=useState<HTMLElement|null>(null);
  const [migration,setMigration]=useState<{source:ProjectV1;target:MigratedProject}|null>(null);
  const storageOpener=useRef<HTMLElement|null>(null);
@@ -66,18 +68,20 @@ export default function Studio(){
  function previewMigration(){setModalOpener(document.activeElement instanceof HTMLElement?document.activeElement:null);act(()=>{if(project.schemaVersion!==1)throw new Error('專案已使用新版格式');if(profileDirty)throw new Error('請先按「更新基礎資料」保存表單內容，再升級模型。');setPlaying(false);setEditing(null);setMigration({source:structuredClone(project),target:migrateProject(project)});});}
  function confirmMigration(){act(()=>{if(!migration)return;setProject(parseProject(migration.target));setProfileDirty(false);setWorkspaceRevision(v=>v+1);setMigration(null);setMessage('已轉換新版模型，尚未儲存；原始備份可還原舊格式。');});}
  function openEditor(event:LifeEvent){if(!checkDraft())return;setModalOpener(document.activeElement instanceof HTMLElement?document.activeElement:null);setEditorError('');setPlaying(false);setEditing(event);}
- function newHouse(){setPlaying(false);const month=Math.min(horizon,Math.max(safeMonth+1,(scenario.forkMonth??0)+1));openEditor(scenario.engineVersion==='2.0.0'?{...emptyHouse,version:2,stopRent:false,month}:{...emptyHouse,month});}
+ function beginEvent(type:EventType){act(()=>{if(!checkDraft())return;openEditor(createEventDraft(type,scenario,safeMonth));});}
+ function openLibrary(){if(!checkDraft())return;setModalOpener(document.activeElement instanceof HTMLElement?document.activeElement:null);setPlaying(false);setLibrary(true);}
+ function chooseTemplate(type:EventType){act(()=>{const event=createEventDraft(type,scenario,safeMonth);setEditorError('');setLibrary(false);setEditing(event);});}
  useEffect(()=>{setEditorError('');},[editing]);
  useEffect(()=>{if(month>playbackHorizon){setMonth(playbackHorizon);setPlaying(false);}},[month,playbackHorizon,setMonth,setPlaying]);
  if(!hydrated)return <main><p role="status">正在準備你的人生工作室…</p></main>;
  return <main>
- <div inert={!!editing||!!migration||busy} aria-busy={busy}>
+ <div inert={!!editing||!!migration||library||busy} aria-busy={busy}>
  <header><div className="brand">LIFE STUDIO<span>人生，沒有唯一的劇本。</span></div><div className="actions"><button disabled={busy} onClick={()=>persist()}>儲存</button><button disabled={busy} onClick={()=>persist(true)}>讀取</button>{project.schemaVersion===1&&<button disabled={busy} onClick={previewMigration}>升級財務模型</button>}<button onClick={()=>act(()=>{const url=URL.createObjectURL(new Blob([exportProject(project)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='life-studio.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);setMessage(profileDirty?'已匯出已套用的人生參數；表單草稿尚未套用。':'已匯出完整人生參數。');})}>匯出</button><label className="fileButton">匯入<input aria-label="匯入人生存檔" type="file" accept=".json,application/json" onChange={async e=>{const file=e.target.files?.[0];e.target.value='';if(!file||!checkDraft())return;startStorage();try{if(file.size>2000000)throw new Error('存檔不可超過 2 MB');const p=importProject(await file.text());setProject(p);setProfileDirty(false);setWorkspaceRevision(v=>v+1);setActive(p.scenarios[0].id);setCompare(p.scenarios.slice(0,2).map(s=>s.id));setMonth(0);setEditing(null);setMigration(null);setMessage('匯入成功；可儲存到此瀏覽器。');}catch(error){setMessage('匯入失敗：'+userMessage(error));}finally{setBusy(false);}}}/></label></div></header>
  <div className="intro"><div><small>YOUR LIFE, YOUR CHOICES</small><h1>先體驗，再選擇。</h1><p>用一段平行人生，看見每個決定的影響。</p></div><div className="age">{mode==='平行人生'?<><strong>{safeMonth}</strong> 個月 <small>共同時間位置</small></>:<><strong>{scenario.profile.age+Math.floor(Math.min(month,horizon)/12)}</strong> 歲 <small>第 {Math.min(month,horizon)%12} 個月</small></>}</div></div>
  <p className="engineVersion">財務引擎 {scenario.engineVersion} · {scenario.engineVersion==='2.0.0'?'生活費與租金分列；負債排程不重複計債':project.schemaVersion===1?'原有支出與固定既有負債，升級後可設定還款':'此方案沿用 V1，混合版本專案不提供再次轉換'}</p>
  <nav aria-label="人生模式">{(['編輯','體驗','平行人生'] as Mode[]).map(m=><button key={m} aria-pressed={mode===m} className={mode===m?'selected':''} onClick={()=>{if(!checkDraft())return;setMode(m);setProfileDirty(false);setEditing(null);setPlaying(false);}}>{m}</button>)}</nav>
  <div className="workspace"><aside><label>目前人生<select aria-label="目前人生" value={active} onChange={e=>{if(!checkDraft())return;setActive(e.target.value);setProfileDirty(false);setEditing(null);setPlaying(false);}}>{project.scenarios.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label><p className="muted">{scenario.parentId?'分支點：第 '+scenario.forkMonth+' 月；此前事件已鎖定。':'原始人生 · 每次修改均保留資料版本'}</p>
- {mode==='編輯'&&<><details open><summary>基礎財務資料</summary><ProfileForm key={workspaceRevision+scenario.id+JSON.stringify(scenario.profile)} scenario={scenario} onSave={saveProfile} onDirty={()=>{setProfileDirty(true);setPlaying(false);}}/>{profileDirty&&<div><p className="muted">表單尚未套用，請按「更新基礎資料」。</p><button type="button" onClick={()=>{setWorkspaceRevision(v=>v+1);setProfileDirty(false);setMessage('已還原未套用的基礎資料，方案與歷史未變更。');}}>還原未套用資料</button></div>}</details><h3>人生事件卡</h3><button className="eventCard" onClick={newHouse}>⌂ 建立自己的家<span>房價、自備款與貸款</span></button><button className="eventCard" onClick={()=>{setPlaying(false);openEditor({id:'',version:1,type:'unemployment',month:Math.min(horizon,Math.max(safeMonth+1,(scenario.forkMonth??0)+1)),duration:6,replacementIncome:0});}}>◷ 職涯暫停<span>自行安排收入中斷</span></button>{scenario.engineVersion==='2.0.0'&&<><button className="eventCard" onClick={()=>{setPlaying(false);openEditor({id:'',version:1,type:'rentChange',month:Math.min(horizon,Math.max(safeMonth+1,(scenario.forkMonth??0)+1)),amount:scenario.profile.rent});}}>調整月租金<span>指定月份起設定新租金</span></button><button className="eventCard" onClick={()=>{setPlaying(false);openEditor({id:'',version:1,type:'incomeChange',month:Math.min(horizon,Math.max(safeMonth+1,(scenario.forkMonth??0)+1)),amount:scenario.profile.income});}}>調整正常月薪<span>加薪、轉職或調整薪資</span></button></>}</>}
+ {mode==='編輯'&&<><details open><summary>基礎財務資料</summary><ProfileForm key={workspaceRevision+scenario.id+JSON.stringify(scenario.profile)} scenario={scenario} onSave={saveProfile} onDirty={()=>{setProfileDirty(true);setPlaying(false);}}/>{profileDirty&&<div><p className="muted">表單尚未套用，請按「更新基礎資料」。</p><button type="button" onClick={()=>{setWorkspaceRevision(v=>v+1);setProfileDirty(false);setMessage('已還原未套用的基礎資料，方案與歷史未變更。');}}>還原未套用資料</button></div>}</details><h3>人生事件卡</h3><button className="libraryTrigger" onClick={openLibrary}>瀏覽事件庫<span>搜尋類別、了解效果並預覽</span></button><button className="eventCard" onClick={()=>beginEvent('buyHouse')}>⌂ 建立自己的家<span>房價、自備款與貸款</span></button><button className="eventCard" onClick={()=>beginEvent('unemployment')}>◷ 職涯暫停<span>自行安排收入中斷</span></button>{scenario.engineVersion==='2.0.0'&&<><button className="eventCard" onClick={()=>beginEvent('rentChange')}>調整月租金<span>指定月份起設定新租金</span></button><button className="eventCard" onClick={()=>beginEvent('incomeChange')}>調整正常月薪<span>加薪、轉職或調整薪資</span></button></>}</>}
  {mode==='體驗'&&<p>播放人生，觀察工作、住宅與現金變化。需要調整決策時，可暫停並建立另一種可能。</p>}
  <h3>另一種可能</h3><label>分支名稱<input aria-label="分支名稱" maxLength={80} value={branchName} onChange={e=>setBranchName(e.target.value)}/></label><button disabled={safeMonth>=horizon} onClick={fork}>從第 {safeMonth} 月建立分支</button>
  </aside><section className="center">
@@ -87,8 +91,9 @@ export default function Studio(){
  <h3>已安排的人生事件</h3><div className="eventList">{[...scenario.events].sort((a,b)=>a.month-b.month).map(e=><article key={e.id}><div><small>第 {e.month} 月 · {scenario.profile.age+Math.floor(e.month/12)} 歲</small><strong>{eventTitle(e)}</strong></div>{mode==='編輯'&&<div><button disabled={e.month<=(scenario.forkMonth??-1)} onClick={()=>{setPlaying(false);openEditor(e);}}>編輯事件</button><button disabled={e.month<=(scenario.forkMonth??-1)} onClick={()=>act(()=>update(changeEvents(scenario,scenario.events.filter(item=>item.id!==e.id))))}>移除</button></div>}</article>)}{scenario.events.length===0&&<p className="muted">未來還是一張空白畫布。加入一個你想探索的選擇。</p>}</div>
  </section></div>
  </div>
- <footer aria-hidden={!!editing||!!migration}><p role="status">{busy?'正在處理存檔，請稍候…':message}</p><small>v0.2 · 金額以新臺幣呈現。固定房價與利率；未計稅費、通膨與投資報酬。V1 維持原計算；V2 依使用者設定租金、薪資與既有負債還款。現金不足不會自動新增借款。</small></footer>
- {editing&&<EventEditor key={editing.id+editing.type} editing={editing} returnFocus={modalOpener} error={editorError} scenario={scenario} onSave={saveEvent} onClose={()=>setEditing(null)}/>}
+ <footer aria-hidden={!!editing||!!migration||library}><p role="status">{busy?'正在處理存檔，請稍候…':message}</p><small>v0.2 · 金額以新臺幣呈現。固定房價與利率；未計稅費、通膨與投資報酬。V1 維持原計算；V2 依使用者設定租金、薪資與既有負債還款。現金不足不會自動新增借款。</small></footer>
+ {library&&<EventLibrary scenario={scenario} onChoose={chooseTemplate} onClose={()=>setLibrary(false)} returnFocus={modalOpener}/>}
+ {editing&&<EventEditor key={editing.id+editing.type} editing={editing} onDraftChange={()=>setEditorError('')} returnFocus={modalOpener} error={editorError} scenario={scenario} onSave={saveEvent} onClose={()=>setEditing(null)}/>}
  {migration&&<MigrationPreview source={migration.source} returnFocus={modalOpener} target={migration.target} month={safeMonth} onConfirm={confirmMigration} onClose={()=>setMigration(null)}/>}
  </main>;
 }
