@@ -1,5 +1,5 @@
 # 開發路徑與優先順序
-依依賴關係交付，不依頁面數量計進度。以下階段已建立為 GitHub issues #1–#7：https://github.com/Adamguo88/finance_game/issues 。詳細 title/body 原稿見 docs/ISSUES.json；實際驗證以 VALIDATION.md 與各 issue 的最新驗收紀錄為準。
+依依賴關係交付，不依頁面數量計進度。初始階段對應 GitHub issues #1–#7：https://github.com/Adamguo88/finance_game/issues 。詳細 title/body 原稿見 docs/ISSUES.json；實際驗證以 VALIDATION.md 與各 issue 的最新驗收紀錄為準。
 
 ## 開發優先順序：PC 優先（2026-11-25 使用者指示）
 
@@ -24,6 +24,12 @@
 | S9 v0.5 | P2 | S8 | 報表輸出 | 與月度快照一致 |
 | S10 iPad／手機適配 | 後續 | PC 全部規劃功能、UI／UX 與建模完成並驗收 | 平板／手機版面、觸控互動、裝置效能與相容性 | 裝置與觸控專項驗收 |
 | 未定 | P3 | 另行決策 | 3D、AI | 不納入目前專案 |
+
+## 下一階段排程（目前生效）
+
+完整索引、順序及依賴見 [NEXT_PHASE.md](NEXT_PHASE.md)，建立紀錄見 NEXT_ISSUES.json。先 #15 PC 範圍矩陣，再 #16 UI／UX 與 #17 2D 建模，接續 #18 PixiJS、#19 動畫/音效與 #20 時間軸強化；#21–#23 是後續 PC 決策/回憶錄/報表。#24 是全部前置完成後的 PC 總驗收閘門，#25 行動端必須延後。PR #10/#11/#12 已合併與部署，下方各輪進度保留為歷史，不將舊「未合併」敘述當成現況。
+
+CI 已依使用者的 PR #14 更新觸發：指向 main 的 PR、push main、workflow_dispatch；功能分支 push 不再單獨執行驗證。檢查命令未減少，Pages 為獨立 workflow，詳見 [CI.md](CI.md)。
 
 ## v0.1 發布標準
 所有 P0 計算與分支測試通過；三模式完整走通；本地存檔與備份可還原；無未處理 console/page error；支援版本寫明。GitHub repository（finance_game，已授權公開）、issues 與 Codex Cloud 是交付整合項目，若權限不足需明確列出，不能以程式測試通過代替。
