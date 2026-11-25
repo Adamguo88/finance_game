@@ -42,12 +42,12 @@ export function ProfileForm({scenario,onSave}:{scenario:Scenario;onSave:(profile
 }
 
 /** Shared keyboard handling also used by the conversion preview. */
-export function useModalFocus(open:boolean,onClose:()=>void){
+export function useModalFocus(open:boolean,onClose:()=>void,returnFocus:HTMLElement|null){
  const ref=useRef<HTMLElement>(null),closeRef=useRef(onClose);
  closeRef.current=onClose;
  useEffect(()=>{
   if(!open)return;
-  const previous=document.activeElement as HTMLElement|null,element=ref.current;
+  const previous=returnFocus,element=ref.current;
   const controls=()=>Array.from(element?.querySelectorAll<HTMLElement>('input,button,select,[tabindex="0"]')??[]).filter(control=>!control.hasAttribute('disabled'));
   controls()[0]?.focus();
   function keyboard(event:KeyboardEvent){
@@ -59,13 +59,20 @@ export function useModalFocus(open:boolean,onClose:()=>void){
    }
   }
   element?.addEventListener('keydown',keyboard);
-  return()=>{element?.removeEventListener('keydown',keyboard);previous?.focus();};
- },[open]);
+  return()=>{
+   element?.removeEventListener('keydown',keyboard);
+   // Chrome may clear activeElement as soon as the opener becomes inert. Restore only after
+   // React removes inert, and never steal focus from a newer modal.
+   requestAnimationFrame(()=>{
+    if(previous?.isConnected&&!previous.closest('[inert]')&&!document.querySelector('[aria-modal="true"]'))previous.focus();
+   });
+  };
+ },[open,returnFocus]);
  return ref;
 }
 
-export function EventEditor({editing,error,scenario,onSave,onClose}:{editing:LifeEvent;error:string;scenario:Scenario;onSave:(event:LifeEvent)=>void;onClose:()=>void}){
- const ref=useModalFocus(true,onClose);
+export function EventEditor({editing,error,scenario,onSave,onClose,returnFocus}:{editing:LifeEvent;error:string;returnFocus:HTMLElement|null;scenario:Scenario;onSave:(event:LifeEvent)=>void;onClose:()=>void}){
+ const ref=useModalFocus(true,onClose,returnFocus);
  function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();const data=new FormData(event.currentTarget);
   const base={id:editing.id||crypto.randomUUID(),month:numeric(data,'month')};

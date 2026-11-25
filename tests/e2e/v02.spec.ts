@@ -152,3 +152,37 @@ test('損壞的 V2 參數與歷史匯入不取代工作',async({page})=>{
   expect(await exportJson(page)).toEqual(before);
  }
 });
+
+test('升級與 V2 事件視窗 Escape 後恢復觸發按鈕焦點',async({page})=>{
+ await page.goto('/');
+ const trigger=page.getByRole('button',{name:'升級財務模型',exact:true});
+ await trigger.click();
+ await expect(page.getByRole('button',{name:'下載原始 V1 備份'})).toBeFocused();
+ await page.keyboard.press('Shift+Tab');
+ await expect(page.getByRole('button',{name:'取消轉換',exact:true})).toBeFocused();
+ await page.keyboard.press('Escape');
+ await expect(trigger).toBeFocused();
+ await upgrade(page);
+ const rent=page.getByRole('button',{name:/^調整月租金/});await rent.click();
+ await expect(page.getByLabel('發生月份')).toBeFocused();await page.keyboard.press('Escape');
+ await expect(rent).toBeFocused();
+});
+
+test('存檔等待期間阻止編輯，解除阻塞後恢復互動',async({page})=>{
+ await page.goto('/');
+ await page.evaluate(async()=>{
+  await new Promise<void>((resolve,reject)=>{
+   const request=indexedDB.open('life-studio',1);
+   request.onerror=()=>reject(request.error);
+   request.onsuccess=()=>{(window as unknown as {blockedDb:IDBDatabase}).blockedDb=request.result;resolve();};
+  });
+ });
+ await page.getByRole('button',{name:'儲存',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('正在處理存檔');
+ await expect(page.getByRole('button',{name:'下一月',exact:true}).click({timeout:300})).rejects.toThrow();
+ await page.evaluate(()=>(window as unknown as {blockedDb:IDBDatabase}).blockedDb.close());
+ await expect(page.getByRole('status')).toContainText('已存入');
+ await expect(page.getByRole('slider')).toHaveValue('0');
+ await page.getByRole('button',{name:'下一月',exact:true}).click();
+ await expect(page.getByRole('slider')).toHaveValue('1');
+});
