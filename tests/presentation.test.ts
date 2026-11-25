@@ -10,6 +10,7 @@ it('僅連續同方案同速度往前一月可轉場，回溯跳月切模式及�
 it('有限動畫使用共享時間，完成或取消不殘留 RAF；過期轉場直接落定',()=>{
  const callbacks=new Map<number,FrameRequestCallback>();let id=0;
  vi.stubGlobal('requestAnimationFrame',(cb:FrameRequestCallback)=>{callbacks.set(++id,cb);return id;});vi.stubGlobal('cancelAnimationFrame',(n:number)=>callbacks.delete(n));
+ vi.stubGlobal('performance',{now:()=>1000});
  const draw=vi.fn(),settle=vi.fn(),start=performance.now(),cancel=transition({token:1,start,duration:200,animate:true,kind:'home'},draw,settle);
  const first=id,cb=callbacks.get(first)!;callbacks.delete(first);cb(start+100);expect(draw).toHaveBeenLastCalledWith(.5);cancel();cancel();expect(settle).toHaveBeenCalledTimes(1);expect(callbacks.size).toBe(0);
  const late=vi.fn();transition({token:2,start:0,duration:1,animate:true,kind:'month'},draw,late);expect(late).toHaveBeenCalledTimes(1);
