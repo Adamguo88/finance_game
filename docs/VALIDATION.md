@@ -1,3 +1,71 @@
+# v0.2 財務切片實作（2026-11-25，Asia/Taipei）
+
+依使用者核准的計畫在 `codex/v02-financial-slice` 開發，基準為 main 2acea22 與設計提交 99eb0c9。目標截止為台北時間 13:00。這是未合併的開發成果，不代表 #6 真人驗收或正式發布已完成。
+
+## 實際變更
+- V1 model/engine 複製為獨立模組；已以逐字比較確認 V1 引擎除 import 路徑外相同。公開路由依 engineVersion 分派，schema=2 可保存不同版本的根方案，跨版本父子關係拒絕。
+- V2 生活費/租金分列、購屋 opt-in 停租、租金與薪資事件、最多 20 筆既有負債排程；未分配負債固定，第一付款月前不累息，本金不重複扣入生活費。快照拆開房貸與其他負債明細。
+- 顯式轉換 schema=1 全專案與 history，保留 IDs、revision/profile.version 與分支關係；對所有方案的全部月份逐分核對通用輸出。不一致或轉換超過 2 MB 拒絕。預覽需先下載原始備份，再確認；轉換不寫 IndexedDB。
+- 介面新增排程、事件與比較明細、原始備份/取消/確認轉換。匯入或載入成功後重設表單草稿，失敗保留工作。事件驗證錯誤顯示於視窗內，視窗外內容 inert。
+- 修正比較頁的年齡表意：頂部顯示共同經過月份，各卡顯示自己的年齡與引擎，避免未勾選的短方案顯示超過 90 歲。
+- JSON 以緊湊格式輸出，UTF-8 字節限制與匯入一致，接近 2 MB 的有效存檔仍能 round trip。錯誤訊息不暴露 Zod schema 內部 JSON。
+
+## 實際執行結果（截至本次提交）
+- `npm ci --cache /tmp/life-studio-npm-cache`：通過，67 packages。
+- `npm test`：55/55 通過，包含 19 項既有測試、8 組 V2 fixtures、貸款利率/期數邊界、取整、缺口、遷移所有月份一致、history、分支隔離、超限拒絕、UTF-8 與備份 round trip。
+- `npm run typecheck`、`npm run build`：通過，輸出仍為純靜態網站。
+- `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`：21/21 通過，對本輪 out/ 靜態網站驗證。
+- `git diff --check`：通過。
+
+## CI 暴露與修正
+初次 PR CI run 45546884837 的 npm ci、55 項單元測試、typecheck、build、Chromium 安裝均成功，但 E2E 14 通過/1 失敗：Chrome 159 中 Escape 關閉事件視窗後焦點未回觸發按鈕。本地系統 Chromium 156 原先未暴露此差異。
+
+已改為開窗前記住觸發控制，關窗後待 inert 移除再恢復焦點，避免抓到已被 inert 清除的 activeElement；加入 V2 升級/事件視窗的鍵盤回歸。並在 save/load/import 期間暫停操作，避免非同步載入與編輯相互覆蓋；以 IndexedDB 阻塞情境確認等待時不能前進月份、完成後互動恢復。焦點修正提交 b883fbd 的遠端 CI run 45547402707 已 completed/success；後續表單與精度修正提交 dc3c883 的 [CI run 45548770421](https://github.com/Adamguo88/finance_game/actions/runs/45548770421) 亦 completed/success，npm ci、55 單元測試、typecheck、build、Playwright Chromium 安裝與 21 E2E 均成功。最新本地靜態 E2E 21/21 通過。
+
+## 後續邊界修正
+- 基礎資料表單未套用時，切模式、換方案、建分支、開事件、儲存/讀取/匯入與模型升級均保留草稿並提示先套用或還原。匯出明示只包含已套用資料。取消草稿不增加歷史。
+- 儲存等待期間內容 inert，結束後回復原控制焦點；IndexedDB 被版本連線阻塞的 E2E 已核對此行為。
+- 編輯其他欄位時保留原始利率浮點參數，避免百分比往返造成 0.000011 → 0.000011000000000000001 的漂移；購屋與負債排程均有回歸。
+- 80 字元無空白方案名稱曾在 390px 手機比較頁溢出，已加入斷行並驗證單方案/比較模式。精度與溢出測試均先重現失敗後通過。
+
+## 代理實際 UI 檢視
+共享 Chrome 已操作取消升級、下載原始備份、確認轉換、生活費/租金/負債表單與有息排程。12 萬、年利率 12%、12 期的首期明細為付款 10,661.85 元、利息 1,200 元、餘額 110,538.15 元、現金 809,338.15 元。第 6 月建立分支，兩方案數字一致；子方案第 13 月改薪資 7 萬，只該方案現金增加 2 萬，兩方案貸款都已清償。已保存此合成測試資料，並保留比較頁供檢視。
+
+已檢視 390px E2E 全頁截圖：購屋停租顯示月租金 0、現金 959,777.78 元、房貸付款 22,222.22 元；中文、明細、表單與事件卡沒有水平溢出。這是代理視覺驗證，未冒稱真人測試。共享瀏覽器的 Statsig/extension 錯誤不當作應用錯誤；應用無 pageerror/console error 的證據以隔離 E2E 流程為準。
+
+## PR 交付
+實作已推送 [draft PR #10](https://github.com/Adamguo88/finance_game/pull/10)，包含 PR #9 設計。V1 model 與 main 逐字相同、V1 engine 除 model import 路徑外逐字相同，已再次實際比對。工作成果未合併或部署。審查先核對本契約與利息取整/停租順序，再用原始備份操作取消、確認、保存與還原，最後進行真人驗收；#6 與 #7 保持開啟。
+
+## 限制與後續
+- #6 真人驗收仍開啟，本輪不自動合併、不關閉 #7。獨立 Code review、Safari/Firefox、讀屏與正式使用者測試尚未執行。
+- 升級只接受 schema=1 全專案；schema=2 混合專案可讀寫/比較，不支援再次升級或降版；回復靠原始 V1 備份。初始範例仍沿用 V1，需明確升級後使用新功能。
+- 第一付款月前不累息是明示簡化；沒有新借款、提前還款、違約、稅費、通膨、投資、保險或房產出售。
+- 事件庫擴張、多軌拖曳與 PixiJS/動畫未納入本輪，沿用原討論後續順序。
+
+---
+
+# Issue #7：v0.2 設計提案（2026-11-25，Asia/Taipei）
+
+基準 main 2acea22。依使用者「繼續」指示先準備設計，不將 #6 真人驗收視為完成，也不在本輪啟用 v0.2 財務功能。
+
+## 本輪變更
+- 新增 docs/V02_FINANCIAL_CONTRACT.md：生活費/租金拆分、購屋停止租金 opt-in、既有負債分配與排程、rentChange/incomeChange、月度順序、快照語意、分支歷史、schema=2 / engine=2.0.0 目標與顯式遷移。
+- 新增 docs/fixtures/v02-financial-contract.json：8 組設計預期值，金額單位為分，明標 proposed-not-implemented。
+- 更新 ROADMAP 的設計進度。生產程式、現用 schemaVersion=1 / engineVersion=1.0.0 未改。
+
+## 實際執行
+- Python 標準庫 json 解析 fixtures，Decimal + ROUND_HALF_UP 獨立參考計算：8 組、78 個預期欄位全相符。例：12 萬本金/12%/12 期，月付 10,661.85 元、首期利息 1,200 元、末期 10,661.91 元。此檢查只核對提案數值，**不是 V2 引擎測試**。
+- `npm ci --cache /tmp/life-studio-npm-cache`：通過，67 packages。
+- `npm test`：19/19 通過（現有 V1 引擎）。
+- `npm run typecheck`、`npm run build`：通過，靜態輸出。
+- `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`：9/9 通過（14.5 秒），既有靜態 HTTP server 提供本輪 out/。
+- `git diff --check`：通過。
+
+## 待完成
+設計待審；V2 strict schema、版本路由、遷移、引擎與 UI/E2E 實作尚未進行。#6 真人操作清單仍開啟，#7 不結案；本設計分支開 draft PR 供審查，不自動合併。轉換前備份、延後付款不累息、同月租金事件優先等產品語意已寫明供審查，不能宣稱已上線。
+
+---
+
 # PR #8 合併前審查（2026-11-25，Asia/Taipei）
 
 審查基準：d294e776f3af6899d7e9de05254375ba4fd8b519。GitHub PR #8 為 open/mergeable，無 review submissions，沒有冒稱取得獨立審核者核准。GitHub Actions [run 45540307064](https://github.com/Adamguo88/finance_game/actions/runs/45540307064) completed/success。

@@ -1,5 +1,5 @@
 # 開發路徑與優先順序
-依依賴關係交付，不依頁面數量計進度。以下階段已建立為 GitHub issues #1–#7：https://github.com/Adamguo88/finance_game/issues 。詳細 title/body 原稿見 docs/ISSUES.json；實際驗證以 VALIDATION.md 為準，issue 保持開啟供後續逐項驗收。
+依依賴關係交付，不依頁面數量計進度。以下階段已建立為 GitHub issues #1–#7：https://github.com/Adamguo88/finance_game/issues 。詳細 title/body 原稿見 docs/ISSUES.json；實際驗證以 VALIDATION.md 與各 issue 的最新驗收紀錄為準。
 
 | 階段 | 優先 | 依賴 | 交付 | 驗收閘門 |
 |---|---|---|---|---|
@@ -20,3 +20,11 @@
 
 ## Codex 執行節奏
 每次一個階段／issue，先驗收條件再修改。先讀 AGENTS.md，完成後提供 diff 摘要、實測結果、限制。雲端網路只在 npm ci/安裝瀏覽器時使用；應用執行無後端依賴。建置不得依賴線上字型。
+
+## v0.2 設計進度（2026-11-25）
+
+PR #8 已合併，issues #1–#5 已依證據結案；#6 真人驗收仍開啟。使用者指示繼續後，先平行準備 #7 的設計提案：[V02_FINANCIAL_CONTRACT.md](V02_FINANCIAL_CONTRACT.md)，附 [數值 fixtures](fixtures/v02-financial-contract.json)。此為設計審查，尚未改變 v0.1 功能、未宣告 #7 完成；正式實作/發布仍依 v0.1 驗收閘門。
+
+## v0.2 財務切片實作進度（2026-11-25）
+
+使用者核准開發計畫後，在 `codex/v02-financial-slice` 分支實作版本路由/顯式轉換、既有負債排程、租金與薪資事件、表單、比較明細及存檔相容性；實測數據見 VALIDATION。#6 真人驗收仍開啟，本輪不合併或宣告發布。下一步為 PR 審查與真人流程驗收，再擴充事件庫及多軌時間軸；PixiJS、動畫、音效仍屬 v0.3。
