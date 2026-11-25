@@ -14,13 +14,19 @@
 - `npm ci --cache /tmp/life-studio-npm-cache`：通過，67 packages。
 - `npm test`：55/55 通過，包含 19 項既有測試、8 組 V2 fixtures、貸款利率/期數邊界、取整、缺口、遷移所有月份一致、history、分支隔離、超限拒絕、UTF-8 與備份 round trip。
 - `npm run typecheck`、`npm run build`：通過，輸出仍為純靜態網站。
-- `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`：17/17 通過（31.0 秒），對本輪 out/ 靜態網站驗證。
+- `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`：21/21 通過，對本輪 out/ 靜態網站驗證。
 - `git diff --check`：通過。
 
 ## CI 暴露與修正
 初次 PR CI run 45546884837 的 npm ci、55 項單元測試、typecheck、build、Chromium 安裝均成功，但 E2E 14 通過/1 失敗：Chrome 159 中 Escape 關閉事件視窗後焦點未回觸發按鈕。本地系統 Chromium 156 原先未暴露此差異。
 
-已改為開窗前記住觸發控制，關窗後待 inert 移除再恢復焦點，避免抓到已被 inert 清除的 activeElement；加入 V2 升級/事件視窗的鍵盤回歸。並在 save/load/import 期間暫停操作，避免非同步載入與編輯相互覆蓋；以 IndexedDB 阻塞情境確認等待時不能前進月份、完成後互動恢復。最新本地靜態 E2E 17/17 通過；新的遠端 CI 結果尚待核對。
+已改為開窗前記住觸發控制，關窗後待 inert 移除再恢復焦點，避免抓到已被 inert 清除的 activeElement；加入 V2 升級/事件視窗的鍵盤回歸。並在 save/load/import 期間暫停操作，避免非同步載入與編輯相互覆蓋；以 IndexedDB 阻塞情境確認等待時不能前進月份、完成後互動恢復。焦點修正提交 b883fbd 的遠端 CI run 45547402707 已 completed/success；後續表單與精度修正的最新提交仍須另核對 CI。最新本地靜態 E2E 21/21 通過。
+
+## 後續邊界修正
+- 基礎資料表單未套用時，切模式、換方案、建分支、開事件、儲存/讀取/匯入與模型升級均保留草稿並提示先套用或還原。匯出明示只包含已套用資料。取消草稿不增加歷史。
+- 儲存等待期間內容 inert，結束後回復原控制焦點；IndexedDB 被版本連線阻塞的 E2E 已核對此行為。
+- 編輯其他欄位時保留原始利率浮點參數，避免百分比往返造成 0.000011 → 0.000011000000000000001 的漂移；購屋與負債排程均有回歸。
+- 80 字元無空白方案名稱曾在 390px 手機比較頁溢出，已加入斷行並驗證單方案/比較模式。精度與溢出測試均先重現失敗後通過。
 
 ## 代理實際 UI 檢視
 共享 Chrome 已操作取消升級、下載原始備份、確認轉換、生活費/租金/負債表單與有息排程。12 萬、年利率 12%、12 期的首期明細為付款 10,661.85 元、利息 1,200 元、餘額 110,538.15 元、現金 809,338.15 元。第 6 月建立分支，兩方案數字一致；子方案第 13 月改薪資 7 萬，只該方案現金增加 2 萬，兩方案貸款都已清償。已保存此合成測試資料，並保留比較頁供檢視。

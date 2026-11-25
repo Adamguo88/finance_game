@@ -4,6 +4,8 @@ import type { DebtSchedule, LifeEvent, Profile, Scenario } from '@/domain/model'
 
 const amount=(data:FormData,key:string)=>Math.round(Number(data.get(key))*100);
 const numeric=(data:FormData,key:string)=>Number(data.get(key));
+// Preserve the stored floating-point parameter when its displayed percentage was not changed.
+const annualRate=(data:FormData,key:string,original:number)=>numeric(data,key)===original*100?original:numeric(data,key)/100;
 export function eventTitle(event:LifeEvent):string {
  switch(event.type){
   case 'buyHouse':return '建立自己的家';
@@ -13,16 +15,16 @@ export function eventTitle(event:LifeEvent):string {
  }
 }
 
-export function ProfileForm({scenario,onSave}:{scenario:Scenario;onSave:(profile:Profile)=>void}){
+export function ProfileForm({scenario,onSave,onDirty}:{scenario:Scenario;onSave:(profile:Profile)=>void;onDirty:()=>void}){
  const isV2=scenario.engineVersion==='2.0.0';
  const [schedules,setSchedules]=useState<DebtSchedule[]>(()=>isV2?structuredClone(scenario.profile.debtSchedules):[]);
  function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();const data=new FormData(event.currentTarget);
   const base={...scenario.profile,age:numeric(data,'age'),cash:amount(data,'cash'),assets:amount(data,'assets'),debt:amount(data,'debt'),income:amount(data,'income'),expenses:amount(data,'expenses')};
-  if(isV2)onSave({...base,rent:amount(data,'rent'),debtSchedules:schedules.map((row,i)=>({id:row.id,openingBalance:amount(data,`loan-${i}-balance`),annualRate:numeric(data,`loan-${i}-rate`)/100,firstPaymentMonth:numeric(data,`loan-${i}-start`),termMonths:numeric(data,`loan-${i}-term`)}))});
+  if(isV2)onSave({...base,rent:amount(data,'rent'),debtSchedules:schedules.map((row,i)=>({id:row.id,openingBalance:amount(data,`loan-${i}-balance`),annualRate:annualRate(data,`loan-${i}-rate`,row.annualRate),firstPaymentMonth:numeric(data,`loan-${i}-start`),termMonths:numeric(data,`loan-${i}-term`)}))});
   else onSave(base);
  }
- return <form onSubmit={submit}><fieldset disabled={scenario.parentId!==null}>
+ return <form onSubmit={submit} onChange={onDirty}><fieldset disabled={scenario.parentId!==null}>
   <label>初始年齡<input required name="age" type="number" min="18" max="89" defaultValue={scenario.profile.age}/></label>
   {([['cash','現金'],['assets','其他資產'],['debt','既有負債'],['income','月收入'],['expenses',isV2?'生活費（不含租金）':'月支出']] as const).map(([key,label])=><label key={key}>{label}（元）<input required type="number" step=".01" min="0" max="10000000000" name={key} defaultValue={scenario.profile[key]/100}/></label>)}
   {isV2&&<><label>月租金（元）<input required name="rent" type="number" min="0" max="10000000000" step=".01" defaultValue={scenario.profile.rent/100}/></label>
@@ -33,9 +35,9 @@ export function ProfileForm({scenario,onSave}:{scenario:Scenario;onSave:(profile
     <label>排程 {i+1} 年利率（%）<input name={`loan-${i}-rate`} type="number" min="0" max="30" step="any" required defaultValue={row.annualRate*100}/></label>
     <label>排程 {i+1} 第一付款月<input name={`loan-${i}-start`} type="number" min="1" max={(90-scenario.profile.age)*12} required defaultValue={row.firstPaymentMonth}/></label>
     <label>排程 {i+1} 付款期數<input name={`loan-${i}-term`} type="number" min="1" max="480" required defaultValue={row.termMonths}/></label>
-    <button type="button" onClick={()=>setSchedules(schedules.filter(item=>item.id!==row.id))}>移除排程 {i+1}</button>
+    <button type="button" onClick={()=>{setSchedules(schedules.filter(item=>item.id!==row.id));onDirty();}}>移除排程 {i+1}</button>
    </div>)}
-   <button type="button" disabled={schedules.length>=20} onClick={()=>setSchedules([...schedules,{id:crypto.randomUUID(),openingBalance:0,annualRate:0,firstPaymentMonth:1,termMonths:12}])}>新增負債排程</button>
+   <button type="button" disabled={schedules.length>=20} onClick={()=>{setSchedules([...schedules,{id:crypto.randomUUID(),openingBalance:0,annualRate:0,firstPaymentMonth:1,termMonths:12}]);onDirty();}}>新增負債排程</button>
   </>}
   <button className="primary" type="submit">更新基礎資料</button>
  </fieldset></form>;
@@ -78,7 +80,7 @@ export function EventEditor({editing,error,scenario,onSave,onClose,returnFocus}:
   const base={id:editing.id||crypto.randomUUID(),month:numeric(data,'month')};
   let next:LifeEvent;
   if(editing.type==='buyHouse'){
-   const parameters={...base,type:'buyHouse' as const,price:amount(data,'price'),downPayment:amount(data,'downPayment'),annualRate:numeric(data,'annualRate')/100,termMonths:numeric(data,'termMonths')};
+   const parameters={...base,type:'buyHouse' as const,price:amount(data,'price'),downPayment:amount(data,'downPayment'),annualRate:annualRate(data,'annualRate',editing.annualRate),termMonths:numeric(data,'termMonths')};
    next=scenario.engineVersion==='2.0.0'?{...parameters,version:2,stopRent:data.get('stopRent')==='on'}:{...parameters,version:1};
   }else if(editing.type==='unemployment')next={...base,version:1,type:'unemployment',duration:numeric(data,'duration'),replacementIncome:amount(data,'replacementIncome')};
   else next={...base,version:1,type:editing.type,amount:amount(data,'amount')};

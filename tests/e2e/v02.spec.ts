@@ -112,6 +112,7 @@ test('手機 V2 購屋停止租金、備份還原與過額排程保護',async({p
  await page.getByRole('button',{name:'更新基礎資料',exact:true}).click();
  await expect(page.getByRole('status')).toContainText('不可超過既有負債');
  expect(await exportJson(page)).toEqual(before);
+ await page.getByRole('button',{name:'還原未套用資料',exact:true}).click();
  await page.getByLabel('匯入人生存檔').setInputFiles({name:'v2.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(before))});
  await expect(page.getByRole('status')).toContainText('匯入成功');
  await expect(page.getByRole('button',{name:'移除排程 1',exact:true})).toHaveCount(0);
@@ -182,7 +183,69 @@ test('存檔等待期間阻止編輯，解除阻塞後恢復互動',async({page}
  await expect(page.getByRole('button',{name:'下一月',exact:true}).click({timeout:300})).rejects.toThrow();
  await page.evaluate(()=>(window as unknown as {blockedDb:IDBDatabase}).blockedDb.close());
  await expect(page.getByRole('status')).toContainText('已存入');
+ await expect(page.getByRole('button',{name:'儲存',exact:true})).toBeFocused();
  await expect(page.getByRole('slider')).toHaveValue('0');
  await page.getByRole('button',{name:'下一月',exact:true}).click();
  await expect(page.getByRole('slider')).toHaveValue('1');
+});
+
+test('尚未更新的基礎表單先提示保存，升級不丟失輸入',async({page})=>{
+ await page.goto('/');
+ await page.getByLabel('現金（元）',{exact:true}).fill('123456');
+ await page.getByRole('button',{name:'升級財務模型',exact:true}).click();
+ await expect(page.getByRole('dialog')).toHaveCount(0);
+ await expect(page.getByRole('status')).toContainText('更新基礎資料');
+ await expect(page.getByLabel('現金（元）',{exact:true})).toHaveValue('123456');
+ await page.getByRole('button',{name:'更新基礎資料',exact:true}).click();
+ await upgrade(page);
+ await expect(page.getByLabel('現金（元）',{exact:true})).toHaveValue('123456');
+ const project=await exportJson(page);
+ expect(project.scenarios[0].profile.cash).toBe(12345600);
+ expect(project.scenarios[0].history[0].profile.cash).toBe(80000000);
+});
+
+test('基礎草稿未套用時保留模式與方案，明確還原後可繼續',async({page})=>{
+ await page.goto('/');
+ const original=await exportJson(page);
+ await page.getByLabel('現金（元）',{exact:true}).fill('123456');
+ await page.getByRole('button',{name:'體驗',exact:true}).click();
+ await expect(page.getByRole('button',{name:'編輯',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByLabel('現金（元）',{exact:true})).toHaveValue('123456');
+ await page.getByRole('button',{name:'從第 0 月建立分支'}).click();
+ await expect(page.getByLabel('目前人生').locator('option')).toHaveCount(1);
+ await page.getByRole('button',{name:'儲存',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('更新基礎資料');
+ expect(await exportJson(page)).toEqual(original);
+ await page.getByRole('button',{name:'還原未套用資料',exact:true}).click();
+ await expect(page.getByLabel('現金（元）',{exact:true})).toHaveValue('800000');
+ expect(await exportJson(page)).toEqual(original);
+ await page.getByRole('button',{name:'體驗',exact:true}).click();
+ await expect(page.getByRole('button',{name:'體驗',exact:true})).toHaveAttribute('aria-pressed','true');
+});
+
+test('手機的最長方案名稱在單人生與比較頁都不水平溢出',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/');
+ await page.getByLabel('分支名稱').fill('A'.repeat(80));
+ await page.getByRole('button',{name:'從第 0 月建立分支'}).click();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.getByRole('button',{name:'平行人生',exact:true}).click();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('編輯其他欄位不因百分比換算改寫既有利率參數',async({page})=>{
+ const {initialProject}=await import('../../src/domain/model');
+ const {migrateProject}=await import('../../src/domain/migration');
+ const project=migrateProject(initialProject),scenario=project.scenarios[0],rate=.000011;
+ scenario.profile.debt=12000000;
+ scenario.profile.debtSchedules=[{id:'debt',openingBalance:12000000,annualRate:rate,firstPaymentMonth:1,termMonths:12}];
+ scenario.events=[{id:'house',type:'buyHouse',version:2,month:3,price:100000000,downPayment:20000000,annualRate:rate,termMonths:360,stopRent:false}];
+ await page.goto('/');
+ await page.getByLabel('匯入人生存檔').setInputFiles({name:'precision.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});
+ await expect(page.getByRole('status')).toContainText('匯入成功');
+ await page.getByLabel('現金（元）',{exact:true}).fill('900000');
+ await page.getByRole('button',{name:'更新基礎資料',exact:true}).click();
+ expect((await exportJson(page)).scenarios[0].profile.debtSchedules[0].annualRate).toBe(rate);
+ await page.getByRole('button',{name:'編輯事件',exact:true}).click();
+ await page.getByLabel('發生月份').fill('4');await page.getByRole('button',{name:'儲存事件',exact:true}).click();
+ expect((await exportJson(page)).scenarios[0].events[0].annualRate).toBe(rate);
 });

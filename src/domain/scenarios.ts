@@ -1,18 +1,18 @@
-import { ProjectSchema, type Project, type Scenario, type LifeEvent, type Profile } from './model';
+import { ProjectSchema, type Project, type Scenario, type LifeEvent } from './model';
 import { validateScenario, simulate } from './engine';
 export function forkScenario<S extends Scenario>(parent:S,id:string,name:string,month:number):S {
  validateScenario(parent);
  if(!id||id===parent.id||!Number.isInteger(month)||month<0||month>=(90-parent.profile.age)*12)throw new Error('無效分支點');
  return validateScenario({...structuredClone(parent),id,name,parentId:parent.id,forkMonth:month,revision:1,history:[]}) as S;
 }
-export function changeEvents<S extends Scenario>(s:S,events:LifeEvent[]):S {
+export function changeEvents<S extends Scenario>(s:S,events:Array<S['events'][number]>):S {
  if(s.forkMonth!==null){
   const historical=(xs:LifeEvent[])=>JSON.stringify(xs.filter(e=>e.month<=s.forkMonth!).sort((a,b)=>a.id.localeCompare(b.id,'en')));
   if(historical(s.events)!==historical(events))throw new Error('分支點之前的事件不可修改，請建立更早的分支');
  }
  return validateScenario({...s,events:structuredClone(events),history:[...s.history,{revision:s.revision,profile:structuredClone(s.profile),events:structuredClone(s.events)}],revision:s.revision+1}) as S;
 }
-export function changeProfile<S extends Scenario>(s:S,profile:Profile):S {
+export function changeProfile<S extends Scenario>(s:S,profile:S['profile']):S {
  if(s.parentId!==null)throw new Error('分支保留初始資料；請另建人生修改基礎條件');
  return validateScenario({...s,profile:{...profile,version:s.profile.version+1},history:[...s.history,{revision:s.revision,profile:structuredClone(s.profile),events:structuredClone(s.events)}],revision:s.revision+1}) as S;
 }
