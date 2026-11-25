@@ -1,5 +1,6 @@
 # Life Studio 開發規範
 - 先讀 docs/PRD.md、ARCHITECTURE.md、ROADMAP.md 與 VALIDATION.md。
+- PC 優先：先完成 PC 全部規劃功能、UI／UX 與建模並驗收，再處理 iPad／手機。當前以滑鼠／鍵盤、桌面版面與 PC 效能為主，不新增行動端專屬適配任務；既有響應式與測試保留。細節以 PRD「開發優先順序：PC 優先」為準。
 - 純前端 Next.js TypeScript，靜態輸出；不得新增 API routes、後端、登入、隨機事件、AI 或外部財務服務。
 - domain 不得 import React、Next.js、Zustand、Dexie、DOM 或視覺模組。畫面僅消費 Snapshot；SVG 經 scene mapper 取得狀態。
 - 金額是新臺幣分的整數。不可無聲變更計算順序、四捨五入、期間邊界或公式。變更公式必須提升 engineVersion、更新文件與測試；不支援版本明確拒絕，不偷偷重算。

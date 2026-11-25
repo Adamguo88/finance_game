@@ -1,3 +1,11 @@
+# PC 優先開發指令更新（2026-11-25，Asia/Taipei）
+
+依使用者明確指示，PRD、ROADMAP、AGENTS、CODEX_TASK 與 README 已同步：先完成 PC 全部規劃功能、UI／UX 與建模並驗收，再處理 iPad／手機。ROADMAP 增列 PC 全功能驗收後的裝置適配階段，S5 與 PRD 的行動端要求改為後續驗收；既有響應式程式、測試與下方歷史紀錄保留。本次只修改文件，未改應用或測試，也不宣稱 PC 全功能已完成。
+
+驗證：實際核對上述文件中的新順序與衝突文字，執行 git diff --check；未重跑程式測試。
+
+---
+
 # 多軌時間軸開發（2026-11-25，Asia/Taipei）
 
 基準為已部署 main 78aa082，在 codex/multitrack-timeline 開發，契約見 TIMELINE_CONTRACT.md。本輪現有事件四軌投影、整月拖曳、左右鍵/Shift 左右鍵、Escape 取消、模式唯讀、分支點鎖定、相鄰卡片分行與區塊內水平捲動。月份變動只走 changeEvents，放開才提交一次，保留 revision/history；不新增財務類別、不改公式/schema/engineVersion，也不改既有負債排程。初始草稿未套用時阻止重排。
