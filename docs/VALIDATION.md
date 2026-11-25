@@ -7,6 +7,8 @@
 - 已檢視真 Pixi 畫布截圖：微縮島嶼、工作/住宅/財務小屋、長椅與角色，HTML 按鈕保持可用；讀屏文字沿用同月 SVG 描述。
 - 首輪完整 E2E 暴露新增載入 role=status 與既有存檔提示定位衝突、Pixi autoDensity 的 inline 固定尺寸造成溢出；修正為普通載入文字及 100% canvas CSS 尺寸，重跑全數通過。另明確移除 pointer tracking 與 GC scheduler 的 system ticker，idle RAF 測試通過。
 - `NEXT_PUBLIC_BASE_PATH=/finance_game npm run build` 通過；另用 3112 的實際子目錄掛載、headless Chromium 真 WebGL 驗證首頁→範例人生→下一月，12 素材 manifest 正常，pageerror/requestfailed 均 0。此為本地 Pages 同形輸出驗證，遠端正式部署另核對 Actions。
+- 首次遠端 CI 45592199935 為 39/40：React dev StrictMode 重啟 effect 時保留 loading、尚未開始 GPU init 的取消 import 仍佔名額，20 方案測試捕捉到 17 個卡住的 loading。修正為每輪重設 SVG、尚無 GPU 時即時釋放 lease，controller 所有權限於本輪 effect；不得以靜態測試成功代替 dev/CI 檢查。
+- StrictMode 生命週期修正後，使用預設 `next dev` 的 5 項真 WebGL renderer E2E 全部通過（51.1 秒），再次 production build 通過。
 - 沒有修改財務 domain、公式、版本/遷移、CI 觸發、Pages workflow。硬體 FPS/長時間記憶體、多桌面瀏覽器與真人總驗收仍屬 #24；角色個人化 #28、完整事件 #27、多筆初始化 #29 尚待完成。
 
 # Issue #17：角色/住宅/職場原創向量與微縮世界

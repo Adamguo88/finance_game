@@ -15,7 +15,7 @@ SSR/靜態輸出先呈現同構 SVG；確認支援 WebGL 後才 dynamic import P
 ## 生命週期與限制
 
 - 每個世界一個 Application，最多同時 4 個（包括初始化中）；其他比較保持 SVG。20 方案不是 20 GPU contexts。
-- effect 取得 idempotent lease；AbortController 處理 dynamic import/init/texture 等待時卸載。未完成 init 的 lease 在異步清理結束後釋放，避免瞬間超出上限。ready renderer 卸載即 destroy；context lost 同樣 destroy/release。
+- effect 取得 idempotent lease；AbortController 處理 dynamic import/init/texture 等待時卸載。尚未開始 GPU init 的 dynamic import 可立刻取消/釋放名額；已開始 init 的 lease 在異步清理結束後釋放，避免瞬間超出上限。每輪 effect 只清理自己擁有的 controller，不能破壞新一輪；StrictMode 重啟先重設 SVG 狀態。ready renderer 卸載即 destroy；context lost 同樣 destroy/release。
 - `autoStart:false`、`sharedTicker:false`。互動全由 HTML 負責，立即使用 Pixi 文件允許的 `events.setTargetElement(null)` 移除其 pointer tracking/system ticker；8.23 的宣告漏掉 nullable，原始實作明確支援。
 - 固定素材由 teardown 回收，不需背景 GC，初始化完成後清理 renderer scheduler（同樣移除其 system ticker listener）；不停止全域 Ticker，以免影響其他世界。
 - 四旗標改變才 `app.render()`，同狀態月份沒有多餘重繪；沒有每世界 RAF 或動畫佇列。renderer destroy 清理 stage/canvas/ticker/GPU context。
@@ -28,4 +28,4 @@ SSR/靜態輸出先呈現同構 SVG；確認支援 WebGL 後才 dynamic import P
 
 ## 本地 production 傳輸估算
 
-同樣以 HTML initial script URLs 去重後逐檔 gzip（mtime=0）計算：#17 為 257,794 bytes；本輪 258,265，增加 471 bytes。全部靜態 JS chunks 為 447,753 gzip bytes（含延遲 renderer 與框架/錯誤頁 chunks，不代表每頁全部下載）。Pixi 不是零成本：GPU 支援時才載入後續 chunks；初始 JS 沒有把完整渲染庫打入首頁。字型/CSS/HTTP Brotli 不含於此估算。
+同樣以 HTML initial script URLs 去重後逐檔 gzip（mtime=0）計算：#17 為 257,794 bytes；本輪 258,303，增加 509 bytes。全部靜態 JS chunks 為 447,791 gzip bytes（含延遲 renderer 與框架/錯誤頁 chunks，不代表每頁全部下載）。Pixi 不是零成本：GPU 支援時才載入後續 chunks；初始 JS 沒有把完整渲染庫打入首頁。字型/CSS/HTTP Brotli 不含於此估算。
