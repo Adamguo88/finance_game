@@ -28,6 +28,12 @@ npm run dev
 
 本機測試子路徑可執行 `NEXT_PUBLIC_BASE_PATH=/finance_game npm run build`，將 out/ 掛載至靜態伺服器的 `/finance_game/`；不要直接以根路徑載入該建置。網站資料仍保存在各使用者瀏覽器，切換網址前請先匯出 JSON 備份。
 
+## CI 與下一階段
+
+CI 只在指向 main 的 PR、push main 或手動 workflow_dispatch 執行；功能分支單純 push 不再重複驗證。Pages 在 main push／手動觸發時獨立部署。詳見 [CI 配置](docs/CI.md)。
+
+下一階段 GitHub issues #15–#25 已建立，先 PC 範圍/驗收矩陣、UI／UX、2D 建模與場景，再推進 PC 後續功能。完整清單與依賴見 [下一階段開發計畫](docs/NEXT_PHASE.md)；iPad／手機須等 PC 全功能總驗收 #24 完成。
+
 ## 基本操作
 
 1. 在「編輯」填入年齡、現金、其他資產、既有負債、收入與支出，按「更新基礎資料」套用；加入購屋與失業事件。未套用的表單會提示先套用或「還原未套用資料」，以免切換操作遺失草稿。
@@ -74,6 +80,6 @@ V1 的既有負債不攤還、生活費固定、購屋不自動取消租金；�
 - [實際驗證結果](docs/VALIDATION.md)、[開發規範](AGENTS.md)
 - [GitHub repository](https://github.com/Adamguo88/finance_game)、[issues](https://github.com/Adamguo88/finance_game/issues)
 
-產品名稱為 Life Studio，repository 名稱為 finance_game，已授權公開。PR #8 已合併，issues #1–#5 已按證據結案；#6 仍待真人驗收。V2 的設計與實作在 PR 審查中，不代表正式發布。
+產品名稱為 Life Studio，repository 名稱為 finance_game，已授權公開。PR #8 已合併，issues #1–#5 已按證據結案；#6 仍待真人驗收。PR #10/#11/#12 已合併並由 GitHub Pages 發布；已發布不代表 PC 全功能、建模或真人驗收完成。
 
 程式與測試在本對話的 Codex 工作區執行，未另外啟動背景 Codex CLI 任務。GitHub 寫入授權已恢復，早期 403 紀錄保留於 VALIDATION 作歷史參考。

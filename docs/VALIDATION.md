@@ -1,3 +1,13 @@
+# 下一階段 issues 與 CI 規格同步（2026-11-25，Asia/Taipei）
+
+基準 main 7c861c4（使用者 PR #14：chore: optimize CI workflow triggers）。已實際比對 .github/workflows/ci.yml：由所有分支 push/pull_request 改為只驗證指向 main 的 PR、push main 及 workflow_dispatch；Node 24 與 npm ci/test/typecheck/build、Playwright 安裝/E2E 未減少。Pages workflow 仍為 main push/手動、獨立 build→deploy，未被本輪修改。
+
+已讀取 repository 全部 issues 去重，建立 #15–#25 共 11 項，含優先順序、依賴與可勾選驗收條件。NEXT_PHASE.md 提供索引與排程，NEXT_ISSUES.json 保存實際 GitHub IDs/URLs/內容。PRD、ROADMAP、AGENTS、CODEX_TASK、README、ARCHITECTURE 同步目前 PC 範圍及 CI 行為；既有 #6 真人驗收與 #7 追蹤保持開啟，行動端改由 #25 等待 PC 總驗收 #24。這是規劃與文件更新，不代表新增功能、建模或驗收已完成。
+
+本輪只做文件/issue 內容與依賴、JSON 解析、連結及 git diff --check 檢查；未重跑程式單元/E2E 或修改應用、依賴與 workflow。PR 的 CI 依目前配置執行，其結果另記於 PR，不能冒稱本地重跑。下方既有輪次保留為歷史紀錄。
+
+---
+
 # PC 事件庫與影響預覽（2026-11-25，Asia/Taipei）
 
 依 PC 優先指示，延續 codex/multitrack-timeline / PR #12 的桌面編輯流程。新增現有四類事件的搜尋、住宅/職涯分類、參數與效果說明、版本/購屋/數量限制；快速新增入口共用草稿工廠。事件編輯採輸入與財務預覽並列，顯示事件當月及 90 歲終點的現金/負債/淨資產與差額。預覽 150ms 更新，無效參數立即隱藏舊結果，修正輸入清除舊錯誤。預覽及取消不更新 project/history/revision/IndexedDB；儲存沿用原流程。契約見 EVENT_WORKFLOW.md。

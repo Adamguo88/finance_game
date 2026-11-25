@@ -1,3 +1,5 @@
+> 下一階段架構方向：docs/NEXT_PHASE.md 的 #17 規劃 2D 資產、#18 導入 PixiJS；目前仍是既有 SVG/Scene Mapper，不代表 PixiJS 已實作。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
+
 # 版本路由與 v0.2 實作
 
 V1 契約保留於下方；V2 詳見 [V02_FINANCIAL_CONTRACT.md](V02_FINANCIAL_CONTRACT.md)。schema=1 與 engine=1.0.0 不自動改版。schema=2 移除全域 engineVersion，各 Scenario 依 1.0.0 / 2.0.0 分派計算；同一分支樹不得混用版本。
