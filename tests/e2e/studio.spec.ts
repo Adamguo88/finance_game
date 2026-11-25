@@ -2,7 +2,7 @@ import { test,expect } from '@playwright/test';
 test('買房、失業、分支比較與存檔',async({page})=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
  page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByRole('button',{name:'⌂ 建立自己的家'}).click();
  await page.getByRole('button',{name:'儲存事件',exact:true}).click();
  await expect(page.getByRole('button',{name:'編輯事件'})).toHaveCount(1);
@@ -44,13 +44,13 @@ test('買房、失業、分支比較與存檔',async({page})=>{
  await expect(page.getByLabel('目前人生').locator('option')).toHaveCount(2);
  expect(errors).toEqual([]);
 });
-test('手機版沒有水平溢出',async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto('/');await expect(page.getByRole('button',{name:'儲存',exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);});
+test('手機版沒有水平溢出',async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();await expect(page.getByRole('button',{name:'儲存',exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);});
 
 test('比較採最短期間並在終點暫停，切換模式保留月份',async({page})=>{
  const {initialProject}=await import('../../src/domain/model');
  const p=structuredClone(initialProject);p.scenarios[0].profile.age=88;
  p.scenarios.push({...structuredClone(p.scenarios[0]),id:'short',name:'短期間',profile:{...p.scenarios[0].profile,age:89}});
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByLabel('匯入人生存檔').setInputFiles({name:'short.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});
  await page.getByRole('button',{name:'平行人生',exact:true}).click();
  const slider=page.getByRole('slider',{name:'人生時間軸'});
@@ -68,7 +68,7 @@ test('比較採最短期間並在終點暫停，切換模式保留月份',async(
 });
 
 test('事件設定支援鍵盤循環與 Escape 返回',async({page})=>{
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  const trigger=page.getByRole('button',{name:'◷ 職涯暫停'});
  await trigger.click();
  const first=page.getByLabel('發生月份');
@@ -84,7 +84,7 @@ test('比較終點只取已勾選方案',async({page})=>{
  const {initialProject}=await import('../../src/domain/model');
  const p=structuredClone(initialProject);p.scenarios[0].profile.age=89;
  p.scenarios.push({...structuredClone(p.scenarios[0]),id:'long',name:'長期間',profile:{...p.scenarios[0].profile,age:88}});
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByLabel('匯入人生存檔').setInputFiles({name:'compare.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});
  await page.getByRole('button',{name:'平行人生',exact:true}).click();
  await page.getByRole('checkbox',{name:'我的人生',exact:true}).uncheck();
@@ -94,7 +94,7 @@ test('比較終點只取已勾選方案',async({page})=>{
 });
 
 test('零利率購屋顯示分與完整資產，刪除後回復基準',async({page})=>{
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByRole('spinbutton',{name:'現金（元）',exact:true}).fill('3000000');
  await page.getByRole('spinbutton',{name:'月收入（元）',exact:true}).fill('0');
  await page.getByRole('spinbutton',{name:'月支出（元）',exact:true}).fill('0');
@@ -116,7 +116,7 @@ test('零利率購屋顯示分與完整資產，刪除後回復基準',async({pa
 
 test('畸形與過大匯入保留月份、參數與瀏覽器存檔',async({page})=>{
  const {initialProject}=await import('../../src/domain/model');
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByRole('button',{name:'下一月',exact:true}).click();
  await page.getByRole('button',{name:'儲存',exact:true}).click();
  await expect(page.getByRole('status')).toContainText('已存入');
@@ -141,7 +141,7 @@ test('儲存容量錯誤與損壞的 IndexedDB 保留目前工作',async({page})
    return originalPut.apply(this,args);
   };
  });
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByRole('button',{name:'儲存',exact:true}).click();
  await expect(page.getByRole('status')).toContainText('已存入');
  await page.evaluate(()=>sessionStorage.setItem('test-quota','yes'));
@@ -170,7 +170,7 @@ test('儲存容量錯誤與損壞的 IndexedDB 保留目前工作',async({page})
 });
 
 test('失業區間、回溯重播與版本參數備份',async({page})=>{
- await page.goto('/');
+ await page.goto('/');await page.getByRole('button',{name:'探索範例人生',exact:true}).click();
  await page.getByRole('button',{name:'◷ 職涯暫停'}).click();
  await page.getByLabel('發生月份').fill('2');await page.getByLabel('失業月數').fill('2');
  await page.getByLabel('期間每月替代收入（元）').fill('10000');
