@@ -1,14 +1,12 @@
-> #43來源映射：`migration-v3-mappings.ts`驗證明細／排程／事件與各revision的明確對應及參數保留，再產生差異比較；schema5容器、套用與使用者確認／另存仍待整合。
-
-> #43遷移比較：`migration-v3-preview.ts`只比較明確候選的current／history全月份與精確利率，不推導映射、不套用或寫DB；完整schema5遷移與入口仍待整合。
-
-> #43實作切片：`model-v3.ts`／`engine-v3.ts`為獨立模型與月度運算，尚未接入production ProjectSchema、版本路由或遷移。V1／V2及現有匯入／匯出仍沿下方原契約。
-
-> 下一版資料與遷移設計見 [ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)（#42）；schema5／engine3尚未註冊或實作，下方仍是生產版本。
-
 > 場景資產：#17 已接入 LifeWorld/models 的原創向量與 HTML 區域入口，仍只消費快照；規格見 WORLD_ASSETS.md。
 
-> 現行渲染：#17 資產與 #18 可延遲載入的 PixiJS renderer 已接入，保留 SVG 備援；見 PIXI_RENDERER.md。#29／#28 已交付明細／視覺資料；後續 #27 → #42–#44 先落定分項財務契約與新引擎／遷移，規劃見 ROADMAP.md／NEXT_PHASE.md。本次規劃不改公開型別、公式或版本。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
+> 現行渲染：#17 資產與 #18 可延遲載入的 PixiJS renderer 已接入，保留 SVG 備援；見 PIXI_RENDERER.md。#29／#28 已交付明細／視覺資料；後續 #27 → #42–#44 先落定分項財務契約與新引擎／遷移，規劃見 ROADMAP.md／NEXT_PHASE.md。已交付的V3獨立切片尚未接入此生產路由。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
+
+# V3分項與遷移切片（#43尚未完成）
+
+依[ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)逐步交付：model-v3／engine-v3提供獨立分項驗證與月度運算；migration-v3-preview比較current／history全月份；migration-v3-mappings驗證明確來源對應；project-v5與migration-v3-session提供獨立容器驗證及記憶體確認協定。
+
+生產ProjectSchema、storage與現有UI仍沿schema1–4／V1–V2，沒有開放新版匯入。schema5來源的舊樹續遷移、產品版本路由、真正備份下載／差異確認／保存入口仍待整合；domain確認回傳候選不代表已改工作或寫DB。獨立codec沿用2 MB合計上限，來源備份與映射一併計算；歷史baseline不得丟失。
 
 # 版本路由與 v0.2 實作
 
