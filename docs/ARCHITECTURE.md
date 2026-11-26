@@ -74,3 +74,7 @@ Project schemaVersion=1、engineVersion=1.0.0；事件參數 version=1。匯入�
 ## 缺口決策
 
 #21 `gap-plan.ts` 僅以既有 engine/fork/parse API 產生可丟棄的分支候選，不自訂融資或修復缺口。CashGapChoices 確認前不更新 Project，確認後透過既有事件預覽/儲存修改分支；比較提示屬 UI 狀態，不存入 JSON。見 [CASH_GAP_CHOICES.md](CASH_GAP_CHOICES.md)。
+
+## 人生回憶錄
+
+#22 `memoir.ts` 只讀取目前版本的 Scenario 與引擎快照，產生確定性、具來源/未來標記的摘要。沒有AI、成功評分或新事件；點選記錄重用共同月份並進入對應單人生體驗，Project/history不改。見 [LIFE_MEMOIR.md](LIFE_MEMOIR.md)。

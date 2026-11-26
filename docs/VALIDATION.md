@@ -1,3 +1,13 @@
+# #22 確定性人生回憶錄（2026-11-26）
+
+- `npm test` 82/82、typecheck、根路徑 build 通過。`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3110 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e -- --workers=1`：56/56 通過，2.9分鐘；保留所有財務/分支/存檔/事件/缺口/時間軸/動畫/renderer/既有手機回歸。
+- 新增4項單元：固定資料決定性/排序/來源不變、無事件/負現金及V1/V2購屋租金語意、分支月結束順序/承接鎖定/父子隔離、未來事件重建不更改history及短人生截止。沒有時鐘、AI、隨機故事、成功評分或新增事件。
+- 新增4項桌面E2E：空排程與未來終點、同方案同月跳轉/焦點、混合V1/V2與鎖定/負現金、回顧跳轉不被舊比較的短期間截斷、未來事件編輯後摘要更新與history保留、20方案各100事件的20筆分頁/Enter跳轉及完整JSON不變。
+- 首輪精確label選單定位超時；補上明確aria-label後4/4通過（13.1秒），未略過測試或放寬timeout。跳轉先切換到對應單人生體驗，再設定共同月份，避免比較期間靜默截短。
+- 已檢視PC回憶錄截圖：明示目前版本/引擎/資料來源、未來模擬排程及同月快照不代表單一事件貢獻。沒有把history參數修訂冒充實際發生的人生。
+- `NEXT_PUBLIC_BASE_PATH=/finance_game npm run build` 通過；3112真子目錄回憶錄篩選→跳至同方案第768月，完整JSON內容不變、pageerror/requestfailed=0。
+- root initial gzip JS 266,530 bytes，全部chunks 456,179（較#21增加2,370）；沒有新增依賴/素材、domain公式/版本/遷移或Project欄位。詳見 [LIFE_MEMOIR.md](LIFE_MEMOIR.md)。真人/多瀏覽器/實機效能及完整PC驗收仍待#24，#27–#29仍未完成。
+
 # #21 使用者主導的現金缺口決策（2026-11-26）
 
 - `npm test` 78/78、typecheck、根路徑 build 通過。完整靜態 E2E：`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3110 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e -- --workers=1` 52/52 通過（2.6 分鐘）。預覽定位/表單呈現微調後，4 項新缺口 E2E 再次全數通過；加入圖層覆蓋斷言後再次4/4通過（13.0秒）。
