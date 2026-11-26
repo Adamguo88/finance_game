@@ -70,3 +70,7 @@ Project schemaVersion=1、engineVersion=1.0.0；事件參數 version=1。匯入�
 ## 長期時間軸導覽
 
 #20 的縮放/刻度/卡片分列由純 `timeline-layout.ts` 處理，僅產生呈現座標。跳月與事件尋找操作共用既有月份；拖曳/鍵盤仍走 `rescheduleEvent`，不另寫 history 或金融規則。見 [TIMELINE_NAVIGATION.md](TIMELINE_NAVIGATION.md)。
+
+## 缺口決策
+
+#21 `gap-plan.ts` 僅以既有 engine/fork/parse API 產生可丟棄的分支候選，不自訂融資或修復缺口。CashGapChoices 確認前不更新 Project，確認後透過既有事件預覽/儲存修改分支；比較提示屬 UI 狀態，不存入 JSON。見 [CASH_GAP_CHOICES.md](CASH_GAP_CHOICES.md)。

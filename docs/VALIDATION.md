@@ -1,3 +1,13 @@
+# #21 使用者主導的現金缺口決策（2026-11-26）
+
+- `npm test` 78/78、typecheck、根路徑 build 通過。完整靜態 E2E：`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3110 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e -- --workers=1` 52/52 通過（2.6 分鐘）。預覽定位/表單呈現微調後，4 項新缺口 E2E 再次全數通過；加入圖層覆蓋斷言後再次4/4通過（13.0秒）。
+- 新增單元驗證候選與來源不變、負現金/零負債保留、全部未來排程深拷貝、V1 不升級、無缺口/空名/非法點/來源鎖定/20方案上限拒絕。所有數值仍由既有引擎/fork/parse 提供，沒有改 domain、公式、版本、遷移或 Project schema。
+- 桌面 E2E 涵蓋快照金額/連續缺口起點、預覽取消/回溯/焦點、確認後才新增分支、事件預覽取消不寫入、事件一次 history、原人生逐項不變、同月比較與 IndexedDB 不自動覆寫、切回父人生只變檢視、V1 支援限制、滿20方案停用 fieldset 的 Tab/Shift+Tab/Escape。
+- 預覽截圖捕捉到 #20 的 sticky 刻度 z-index 穿過 modal；以 trackScroll isolation 建立局部堆疊層級，讓所有事件/缺口視窗遮住背景刻度，並以 elementFromPoint 驗證可見背景刻度由 dialog 覆蓋。
+- 共用 modal focus trap 補上 :disabled，排除 inherited disabled fieldset 的子控制；原事件/轉換/場景 modal 回歸保留。檢視真截圖後讓預覽生成時自動捲動/聚焦結果，並覆寫通用 editor form 的巢狀尺寸，避免結果藏在視窗下方。
+- `NEXT_PUBLIC_BASE_PATH=/finance_game npm run build` 通過；3112 真子目錄掛載，模擬缺口→預覽→預覽區焦點→取消，完整 JSON 內容不變，pageerror/requestfailed=0。已檢視預覽截圖。
+- root initial gzip JS 264,160 bytes，全部 chunks 453,809（#20 initial 261,997，增量 2,163）；未新增依賴、模型、音檔或網路服務。沒有加入保險、投資、出售或新借款規則，後續先由 #27 訂契約。詳見 [CASH_GAP_CHOICES.md](CASH_GAP_CHOICES.md)。真人多瀏覽器/實機效能及 PC 總驗收仍待 #24，#27–#29 尚待完成。
+
 # #20 PC 時間軸縮放與密集事件導覽（2026-11-26）
 
 - Node 24.22.3 / Chromium 156.0.8078.79。`npm test`：74/74，`npm run typecheck`、根路徑 `npm run build` 通過。
