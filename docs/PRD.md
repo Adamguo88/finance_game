@@ -12,7 +12,7 @@
 
 ## 目前開發基準與下一階段
 
-截至 2026-11-26，#1–#5、#7、#15–#22 已交付。本階段補上 #29 多筆財務明細與 #28 角色外觀／生命階段，其後依序 #23 報表、#27 完整事件契約及衍生實作，依 [NEXT_PHASE.md](NEXT_PHASE.md) 執行。#6 真人驗收與 #24 PC 總驗收仍待完成；完成後才啟動 #25 行動端。
+目前main `7a2519c` 已交付核心PC流程、#29初始化明細及#28角色。後續短／中／長期路線見 [ROADMAP.md](ROADMAP.md)：先#27範圍／契約、#42–#44分項財務底座，再#45–#55完整PC功能群，最後#23報表與#6／#24總驗收；#25行動端在PC驗收後。即時佇列見 [NEXT_PHASE.md](NEXT_PHASE.md)。下方v0.1切片與非目標保留歷史計算語意，不用來排除已納入中期的完整PC能力。
 
 CI 以 PR #14 合併後的 main 7c861c4 為基準：只在指向 main 的 PR、push main 或 workflow_dispatch 執行驗證，功能分支單純 push 不觸發；檢查內容仍含 Node 24、乾淨安裝、單元測試、typecheck、build、Playwright 與 E2E。發布是另一個 main push／手動 Pages workflow，詳細觸發表與驗證/發布差異見 [CI.md](CI.md)。
 
