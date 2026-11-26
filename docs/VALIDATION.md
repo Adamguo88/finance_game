@@ -12,7 +12,7 @@
 
 ## 本輪文件與 issues 整理
 
-移除初始任務、一次性建單 JSON 與舊建單腳本；有效財務、建模及呈現契約與 fixtures 保留。現況入口與矩陣同步完成證據，歷史由 Git／PR 及下方實測紀錄追溯。本輪沒有產品程式、公式、存檔版本或 workflow 變更，沒有啟動背景開發；本輪檢查：36 個 Markdown 相對連結全部存在；過時任務／建單檔案的有效入口引用已清除（下方歷史原文保留）；git diff --check 通過；src、tests、依賴與 .github/workflows 均無變更。GitHub 8 項議題已逐項回讀，正文與預期一致，#7 closed，其餘 7 項 open，階段標籤正確。本輪本地未重跑產品測試；完整驗證交由本整理 PR 的既有 CI 執行。GitHub 目前工具不提供建立 milestone，階段以 stage:next 標籤及正文分組，不冒稱已建立原生 milestone。
+移除初始任務、一次性建單 JSON 與舊建單腳本；有效財務、建模及呈現契約與 fixtures 保留。現況入口與矩陣同步完成證據，歷史由 Git／PR 及下方實測紀錄追溯。本輪沒有產品程式、公式、存檔版本或 workflow 變更，沒有啟動背景開發；本輪檢查：37 個 Markdown 相對連結全部存在；過時任務／建單檔案的有效入口引用已清除（下方歷史原文保留）；git diff --check 通過；src、tests、依賴與 .github/workflows 均無變更。GitHub 8 項議題已逐項回讀，正文與預期一致，#7 closed，其餘 7 項 open，階段標籤正確。本輪本地未重跑產品測試；完整驗證交由本整理 PR 的既有 CI 執行。GitHub 目前工具不提供建立 milestone，階段以 stage:next 標籤及正文分組，不冒稱已建立原生 milestone。
 
 ## 歷次實測證據（保留原始紀錄）
 
