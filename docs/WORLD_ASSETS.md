@@ -49,3 +49,7 @@ Issue #17，對齊原討論的療癒、低多邊形、微縮世界方向。用�
 - SVG renderer 沒有持續 RAF/ticker、WebGL 或動畫佇列；#18/#19 才驗證動畫幀率及 renderer memory/lifecycle。PC 合法上限/多瀏覽器壓測仍在 #24，未聲稱完整 FPS/互動延遲達標。
 
 #18 原生座標資產為 12 個、15,783 bytes；PixiJS 的分離載入及資源上限見 [PIXI_RENDERER.md](PIXI_RENDERER.md)。
+
+## #28 角色變體與生命階段
+
+新增2種髮型×3種衣色×3種年齡階段×2種姿勢共36個原創向量變體，模型圖鑑共45格，manifest共48份SVG、67,923 bytes（含原始12份）；仍低於150 KiB預算。來源與匯出共用 models.tsx、model-catalog.ts，Pixi與SVG同一變體；不是由年齡推測健康／家庭／退休。呈現資料與保存規則見 [AVATAR_PRESENTATION.md](AVATAR_PRESENTATION.md)。

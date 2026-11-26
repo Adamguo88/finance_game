@@ -14,5 +14,5 @@ test('PC 明細草稿可還原，套用升級格式、歷史保留、本機及�
 });
 test('五步建立明細新增、移除與摘要同步，取消不改工作',async({page})=>{
  await page.goto('/');await page.getByRole('button',{name:/開始我的人生旅程/}).click();await page.getByRole('button',{name:'下一步',exact:true}).click();await page.getByRole('button',{name:'展開財務明細'}).click();await page.locator('.initialDetails summary').click();await page.getByRole('button',{name:'新增收入明細'}).click();await page.getByLabel('收入 2 金額（元）').fill('10000');await expect(page.getByLabel('正常月收入（元）')).toHaveValue('60000');await page.getByRole('button',{name:'移除收入 1'}).click();await expect(page.getByLabel('正常月收入（元）')).toHaveValue('10000');await page.getByLabel('正常月收入（元）').fill('70000');await expect(page.getByLabel('收入 1 金額（元）')).toHaveValue('70000');
- for(let i=0;i<3;i++)await page.getByRole('button',{name:'下一步',exact:true}).click();await page.getByRole('button',{name:'建立這段人生'}).click();const p=await backup(page);expect(p.schemaVersion).toBe(3);expect(p.scenarios[0].initialDetails.income).toEqual([{id:'income-summary',name:'彙總調整',amount:7000000}]);
+ for(let i=0;i<3;i++)await page.getByRole('button',{name:'下一步',exact:true}).click();await page.getByRole('button',{name:'建立這段人生'}).click();const p=await backup(page);expect(p.schemaVersion).toBe(4);expect(p.scenarios[0].initialDetails.income).toEqual([{id:'income-summary',name:'彙總調整',amount:7000000}]);
 });

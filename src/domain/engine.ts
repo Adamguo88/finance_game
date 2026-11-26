@@ -5,8 +5,8 @@ import { simulate as simulateV1,validateScenario as validateScenarioV1 } from '.
 import { simulateV2,validateScenarioV2 } from './engine-v2';
 export { payment } from './engine-v1';
 export function financialScenario(input:Scenario):Scenario {
- const {initialDetails:_,...base}=input;
- return {...base,history:base.history.map(entry=>{const {initialDetails:__,...financial}=entry;return financial;})} as Scenario;
+ const {initialDetails:_,presentation:_presentation,...base}=input;
+ return {...base,history:base.history.map(entry=>{const {initialDetails:__,presentation:__presentation,...financial}=entry;return financial;})} as Scenario;
 }
 export function validateScenario(input:unknown):Scenario {
  const s=ScenarioSchema.parse(input);
