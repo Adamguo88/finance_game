@@ -9,13 +9,19 @@
 | #29正式發布 | Pages run 45763083300 success | 不表示 PC 全功能完成 |
 | #28子路徑 | schema4明細／造型／history匯出還原、65歲階段正確，pageerror/requestfailed=0 | main 7a2519c：CI 45764983216／Pages 45764983221 success |
 | 真人／多瀏覽器／實機效能 | #6／#24 尚待驗收 | 軟體 GPU 不能證明硬體 60fps；未測不填通過 |
-| 待開發 | #27 → #42–#44短期 → #45–#55中期 → #23報表 | #25行動端等#24完成；本階段後暫停 |
+| 待開發 | #42–#44短期 → #45–#55中期 → #23報表 | #27契約已交付；#25行動端等#24完成 |
 
-## #27 事件範圍與數值契約（開發中）
+## #42 分項契約（候選）
+
+ITEMIZED_FINANCIAL_CONTRACT明訂schema5／engine3、四類實體與排程、ID／期間／sequence、首批四事件payload、現金流與來源，以及current／history／整樹遷移。原始profile／明細／外觀／history保留；多來源事件與無關聯ID的債務必須顯式映射，舊利率不默默取整，轉換全月份差異需預覽確認。尚未改生產parser、公式或UI，#43／#44仍未完成。
+
+本批60個Markdown相對連結有效、git diff --check通過；src／tests／依賴／workflow無變更，本地未重跑產品測試，完整回歸由候選PR最新head CI執行，不把#27的119／61項結果冒稱新引擎驗證。
+
+## #27 事件範圍與數值契約（PR #57已交付）
 
 PC_EVENT_CONTRACT列出原討論來源D1–D5、C01–C21、同月階段、期間、關聯刪除、資金分類與明示假設；PC_SCOPE逐列補上來源。26個整數分參考fixtures以獨立BigInt有理數驗證，包含指定收入、獨立負債、買賣／清償、家庭／退休、保障額度、延後理賠、投資／通膨／利率與取整邊界。
 
-本地npm test：119/119；npm run typecheck通過。新增28項為契約參考與拒絕條件，不是V3生產引擎測試；既有91項回歸保留。src、現有引擎版本／公式、schema1–4與workflow沒有修改。PR最新head完整CI、main CI與Pages尚待本次交付後核對；真人與新事件UI仍未驗收。
+本地npm test：119/119；npm run typecheck通過。新增28項為契約參考與拒絕條件，不是V3生產引擎測試；既有91項回歸保留。src、現有引擎版本／公式、schema1–4與workflow沒有修改。PR #57最新head `7139b83`的完整CI 45772121540 success；合併main `83f5c0e` CI 45772426844、Pages 45772426835均success。完整CI含build與61項E2E；真人與新事件UI仍未驗收。
 
 ## 短／中／長期路線落地（2026-11-26）
 

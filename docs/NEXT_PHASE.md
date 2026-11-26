@@ -1,15 +1,15 @@
 # 當前開發佇列：先補分項財務底座
 
-更新：2026-11-26（Asia/Taipei），基準main `7a2519c`。完整短／中／長期目標以[ROADMAP.md](ROADMAP.md)為準，逐項責任與完成證據見[PC_SCOPE.md](PC_SCOPE.md)；即時狀態須回讀GitHub，不把下表當已完成宣告。
+更新：2026-11-26（Asia/Taipei），基準main `83f5c0e`。完整短／中／長期目標以[ROADMAP.md](ROADMAP.md)為準，逐項責任與完成證據見[PC_SCOPE.md](PC_SCOPE.md)；即時狀態須回讀GitHub，不把下表當已完成宣告。
 
 ## 下一個執行項目
 
-**先#27，取代舊「先#23報表」順序。** #28／#29的角色與初始化明細已交付，分項引擎另由#42–#44擴充；四張現有卡片不能代表完整事件庫。已開始#27契約交付：[完整事件清單及參考算例](PC_EVENT_CONTRACT.md)。新引擎仍待#42／#43。
+**#27已完成，下一項#42；維持先分項底座、後#23報表。** #28／#29的角色與初始化明細已交付，分項引擎另由#42–#44擴充；四張現有卡片不能代表完整事件庫。已合併#27契約交付（PR #57）：[完整事件清單及參考算例](PC_EVENT_CONTRACT.md)。新引擎仍待#42／#43。
 
 | 順序 | Issue | 交付 | 啟動前置 |
 |---|---|---|---|
-| 1／下一項 | [#27](https://github.com/Adamguo88/finance_game/issues/27) | 原始PC需求、事件清單及數值／關聯契約盤點 | #15已完成，回讀main及原討論 |
-| 2／待前置 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 分項實體、穩定ID、生命週期、事件目標與版本契約 | #27完成 |
+| 1／已完成 | [#27](https://github.com/Adamguo88/finance_game/issues/27) | 原始PC需求、事件清單及數值／關聯契約盤點 | #15已完成，回讀main及原討論 |
+| 2／下一項 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 分項實體、穩定ID、生命週期、事件目標與版本契約；[候選契約](ITEMIZED_FINANCIAL_CONTRACT.md) | #27完成 |
 | 3／待前置 | [#43](https://github.com/Adamguo88/finance_game/issues/43) | 新引擎／存檔與顯式遷移 | #42完成且契約可測 |
 | 4／待前置 | [#44](https://github.com/Adamguo88/finance_game/issues/44) | 既有事件可指定財務項目 | #43完成 |
 
@@ -28,4 +28,4 @@
 3. 執行適當回歸與既有CI，記錄未測項；核對PR最新head，不以功能分支push代替檢查。
 4. 依既有授權通過後合併，main CI與Pages另行核對，再更新issue與下一個可執行項目。
 
-已收到後續開發指令，沿本佇列持續執行。#27合併並核對CI後才解除#42前置；不以參考算例代替新引擎驗收。
+已收到後續開發指令，沿本佇列持續執行。PR #57已合併，head CI 45772121540、main CI 45772426844及Pages 45772426835均success，#42前置已解除；不以參考算例代替新引擎驗收。
