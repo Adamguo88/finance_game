@@ -11,11 +11,17 @@
 | 真人／多瀏覽器／實機效能 | #6／#24 尚待驗收 | 軟體 GPU 不能證明硬體 60fps；未測不填通過 |
 | 待開發 | #42–#44短期 → #45–#55中期 → #23報表 | #27契約已交付；#25行動端等#24完成 |
 
-## #42 分項契約（候選）
+## #43 第一切片：V3模型與關聯驗證（候選）
+
+新增獨立model-v3，依#42定義四類實體、排程、四類事件strict payload及current／history驗證；跨類ID、期間、同月sequence、依賴循環／未來依賴、停租衝突與無效目標明確拒絕。沒有向production ProjectSchema註冊schema5，既有存檔入口仍拒絕未完成版本，V1／V2計算與UI不變。
+
+本地npm test 167/167（新增48項）、npm run typecheck通過。涵蓋有效多來源／獨立排程與不變性、40組拒絕條件、未知型別／欄位／版本，以及schema5未開放的匯入邊界。這是模型與關聯驗證，尚無V3月度快照、版本路由、遷移或新UI；#43必須保持open。完整build與E2E交由本切片PR CI，未冒稱本地重跑。
+
+## #42 分項契約（PR #58已交付）
 
 ITEMIZED_FINANCIAL_CONTRACT明訂schema5／engine3、四類實體與排程、ID／期間／sequence、首批四事件payload、現金流與來源，以及current／history／整樹遷移。原始profile／明細／外觀／history保留；多來源事件與無關聯ID的債務必須顯式映射，舊利率不默默取整，轉換全月份差異需預覽確認。尚未改生產parser、公式或UI，#43／#44仍未完成。
 
-本批60個Markdown相對連結有效、git diff --check通過；src／tests／依賴／workflow無變更，本地未重跑產品測試，完整回歸由候選PR最新head CI執行，不把#27的119／61項結果冒稱新引擎驗證。
+PR #58 head CI 45773218715、合併main `7a2a035` CI 45773618970及Pages 45773618935均success。本批60個Markdown相對連結有效、git diff --check通過；src／tests／依賴／workflow無變更，本地未重跑產品測試，完整回歸由候選PR最新head CI執行，不把#27的119／61項結果冒稱新引擎驗證。
 
 ## #27 事件範圍與數值契約（PR #57已交付）
 
