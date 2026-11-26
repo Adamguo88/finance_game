@@ -1,6 +1,6 @@
 # Life Studio 開發規範
 - 先讀 docs/PRD.md、ARCHITECTURE.md、ROADMAP.md 與 VALIDATION.md。
-- 下一階段依 docs/NEXT_PHASE.md 與 GitHub #15–#25 的依賴執行；不要重建已合併事件庫/時間軸或重新批次建立 docs/ISSUES.json 的歷史 issues。
+- 當前排程依 docs/NEXT_PHASE.md：先 #29 多筆財務初始化，再 #28 角色／生命階段；其後 #23 報表、#27 契約及衍生事件實作、#24 PC 總驗收、#25 行動端。#1–#5、#7、#15–#22 已交付，不重建已完成 issues；#6 真人驗收仍未完成。
 - CI 依 docs/CI.md：指向 main 的 PR、push main 或 workflow_dispatch 才執行 Validate；功能分支單純 push 不觸發。核對最新 PR head 的檢查，Pages 發布結果另行確認，不修改使用者已調整的觸發配置。
 - PC 優先：先完成 PC 全部規劃功能、UI／UX 與建模並驗收，再處理 iPad／手機。當前以滑鼠／鍵盤、桌面版面與 PC 效能為主，不新增行動端專屬適配任務；既有響應式與測試保留。細節以 PRD「開發優先順序：PC 優先」為準。
 - 純前端 Next.js TypeScript，靜態輸出；不得新增 API routes、後端、登入、隨機事件、AI 或外部財務服務。

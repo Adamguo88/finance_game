@@ -12,7 +12,7 @@
 
 ## 目前開發基準與下一階段
 
-PR #10/#12 的財務與 PC 事件工作室、PR #11 的 Pages 部署已合併；下一階段任務與依賴見 [NEXT_PHASE.md](NEXT_PHASE.md)（GitHub #15–#25）。先盤點 PC 全功能驗收矩陣，再完善桌面 UI／UX、2D 角色/場景建模、PixiJS、動畫、時間軸導覽與後續 PC 功能。PC 總驗收 #24 完成後才啟動行動端 #25。
+截至 2026-11-26，#1–#5、#7、#15–#22 已交付。下一階段先 #29 多筆財務明細，再 #28 角色外觀／生命階段，其後 #23 報表、#27 完整事件契約及衍生實作，依 [NEXT_PHASE.md](NEXT_PHASE.md) 執行。#6 真人驗收與 #24 PC 總驗收仍待完成；完成後才啟動 #25 行動端。
 
 CI 以 PR #14 合併後的 main 7c861c4 為基準：只在指向 main 的 PR、push main 或 workflow_dispatch 執行驗證，功能分支單純 push 不觸發；檢查內容仍含 Node 24、乾淨安裝、單元測試、typecheck、build、Playwright 與 E2E。發布是另一個 main push／手動 Pages workflow，詳細觸發表與驗證/發布差異見 [CI.md](CI.md)。
 

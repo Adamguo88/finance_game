@@ -1,3 +1,21 @@
+# 驗證現況與證據
+
+更新：2026-11-26（Asia/Taipei）。盤點基準 main `6e2176b`，最新功能 #22／PR #38。以下「既有證據」不是本輪重新測試的結果；歷史紀錄按當次基準閱讀，舊「未合併／待實作」敘述不代表現況。
+
+| 類別 | 最新已確認證據 | 界線 |
+|---|---|---|
+| 財務與應用回歸 | #22：82 單元、56 E2E、typecheck、靜態 build 通過 | 詳見下方原始紀錄 |
+| GitHub CI | PR #38 run 45735732310；main run 45736038102 success | 自動驗證，不是獨立審查／真人簽核 |
+| 正式發布 | main `6e2176b` Pages run 45736038129 success | 不表示 PC 全功能完成 |
+| 真人／多瀏覽器／實機效能 | #6／#24 尚待驗收 | 軟體 GPU 不能證明硬體 60fps；未測不填通過 |
+| 待開發 | #29 → #28 → #23 → #27 契約及衍生實作 | #25 行動端等 #24 完成 |
+
+## 本輪文件與 issues 整理
+
+移除初始任務、一次性建單 JSON 與舊建單腳本；有效財務、建模及呈現契約與 fixtures 保留。現況入口與矩陣同步完成證據，歷史由 Git／PR 及下方實測紀錄追溯。本輪沒有產品程式、公式、存檔版本或 workflow 變更，沒有啟動背景開發；本輪檢查：36 個 Markdown 相對連結全部存在；過時任務／建單檔案的有效入口引用已清除（下方歷史原文保留）；git diff --check 通過；src、tests、依賴與 .github/workflows 均無變更。GitHub 8 項議題已逐項回讀，正文與預期一致，#7 closed，其餘 7 項 open，階段標籤正確。本輪本地未重跑產品測試；完整驗證交由本整理 PR 的既有 CI 執行。GitHub 目前工具不提供建立 milestone，階段以 stage:next 標籤及正文分組，不冒稱已建立原生 milestone。
+
+## 歷次實測證據（保留原始紀錄）
+
 # #22 確定性人生回憶錄（2026-11-26）
 
 - `npm test` 82/82、typecheck、根路徑 build 通過。`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3110 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e -- --workers=1`：56/56 通過，2.9分鐘；保留所有財務/分支/存檔/事件/缺口/時間軸/動畫/renderer/既有手機回歸。
