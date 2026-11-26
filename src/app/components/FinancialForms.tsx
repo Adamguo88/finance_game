@@ -51,7 +51,7 @@ export function useModalFocus(open:boolean,onClose:()=>void,returnFocus:HTMLElem
  useEffect(()=>{
   if(!open)return;
   const previous=returnFocus,element=ref.current;
-  const controls=()=>Array.from(element?.querySelectorAll<HTMLElement>('input,button,select,[tabindex="0"]')??[]).filter(control=>!control.hasAttribute('disabled'));
+  const controls=()=>Array.from(element?.querySelectorAll<HTMLElement>('input,button,select,[tabindex="0"]')??[]).filter(control=>!control.hasAttribute('disabled')&&!control.matches(':disabled'));
   controls()[0]?.focus();
   function keyboard(event:KeyboardEvent){
    if(event.key==='Escape'){event.preventDefault();closeRef.current();}
