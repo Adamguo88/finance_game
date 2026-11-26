@@ -1,6 +1,6 @@
 > 場景資產：#17 已接入 LifeWorld/models 的原創向量與 HTML 區域入口，仍只消費快照；規格見 WORLD_ASSETS.md。
 
-> 現行渲染：#17 資產與 #18 可延遲載入的 PixiJS renderer 已接入，保留 SVG 備援；見 PIXI_RENDERER.md。下一階段 #29／#28 先訂財務明細／視覺資料版本契約，規劃見 NEXT_PHASE.md。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
+> 現行渲染：#17 資產與 #18 可延遲載入的 PixiJS renderer 已接入，保留 SVG 備援；見 PIXI_RENDERER.md。#29／#28 已交付明細／視覺資料；後續 #27 → #42–#44 先落定分項財務契約與新引擎／遷移，規劃見 ROADMAP.md／NEXT_PHASE.md。本次規劃不改公開型別、公式或版本。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
 
 # 版本路由與 v0.2 實作
 
