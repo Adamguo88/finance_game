@@ -11,7 +11,15 @@
 | 真人／多瀏覽器／實機效能 | #6／#24 尚待驗收 | 軟體 GPU 不能證明硬體 60fps；未測不填通過 |
 | 待開發 | #42–#44短期 → #45–#55中期 → #23報表 | #27契約已交付；#25行動端等#24完成 |
 
-## #43 第五切片：schema5獨立封裝與確認（候選）
+## #43 第六切片：schema5混合來源續遷移（候選）
+
+記憶體session可對schema5中尚未升級的完整舊樹建立下一批候選，既有V3人生與itemized紀錄維持原值，不再轉換。新紀錄sourceSchema=5，sourceEnvelope只以itemizedRecordIndexes引用先前完整紀錄前綴，不嵌套複製整份遷移紀錄；選中舊樹的來源參數與history仍完整保留。解析拒絕前向／重複／遺漏索引或移除／重排舊紀錄，合計2 MB上限不變。
+
+續遷移先驗完整schema5，再將全部尚未升級舊樹交給來源映射檢查，因此不能藉由省略子方案繞過完整樹規則。預覽保留完整schema5來源；已升級人生的合法更名等變動也會使既有預覽stale，不覆蓋工作。備份匯出請求、取消、差異確認及另外保存的界線沿用前批。
+
+本地npm test 274/274（新增13項）、typecheck及diff檢查通過；涵蓋二／三次續遷移、原紀錄不變、無重複嵌套、完整子樹、索引損壞、未選人生變動、舊紀錄損壞、空紀錄容器與取消。完整build／E2E交PR CI。生產ProjectSchema／UI／storage仍未開放schema5；#43尚待產品入口與保存整合，不結案。
+
+## #43 第五切片：schema5獨立封裝與確認（PR #63已合併）
 
 新增project-v5獨立strict codec，保存混合版本的獨立根人生、legacy遷移資料、選中來源樹、來源容器與每revision映射。解析時重驗來源、映射與當初的V3 baseline；後續合法編輯從history找回原revision，遺失baseline、循環／跨版本分支、重複遷移或未知資料皆拒絕。來源備份與映射同算2 MB，沒有靠丟history通過上限。
 
@@ -19,7 +27,7 @@ migration-v3-session封裝純記憶體協定：匯出原始JSON請求→預覽�
 
 本地npm test 261/261（新增18項）、typecheck及diff檢查通過；涵蓋封裝還原、來源／映射破壞、缺父／循環／跨版樹、stale／取消／一次確認、1分差異、原始metadata、後續history baseline、深拷貝及合計大小上限。完整build／E2E交PR CI。
 
-本階段只對schema1–4來源建立新schema5容器，尚未支援schema5混合專案的其餘舊樹續遷移；生產ProjectSchema／storage／UI仍未開放schema5，既有匯入持續明確拒絕。這些整合及真人流程仍待完成，#43保持open。
+本切片當時只對schema1–4來源建立新schema5容器，尚未支援schema5混合專案的其餘舊樹續遷移；生產ProjectSchema／storage／UI仍未開放schema5，既有匯入持續明確拒絕。這些整合及真人流程仍待完成，#43保持open。PR #63 head CI 45777212743 success，已合併main `13ef1d9`，main CI／Pages另驗。
 
 ## #43 第四切片：顯式來源映射（PR #62已合併）
 
@@ -27,7 +35,7 @@ migration-v3-session封裝純記憶體協定：匯出原始JSON請求→預覽�
 
 同一來源跨current／history及同樹分支的目標ID保持穩定，每個revision均要有完整映射。未知來源、重複分配、改變利率／排程／分類／期間、未對應新實體或事件均拒絕。這個保留原始輸入的映射模式不代填市場或個人假設；新的財務選擇由後續明確編輯交付。驗證後才調用全月份比較，尚未建schema5容器或提供套用／DB寫入。
 
-本地npm test 243/243（新增35項）、typecheck、git diff --check通過；涵蓋多來源、負債拆分／未配置餘額、V1摘要不猜租金、完整分支／history穩定ID、26組拒絕邊界、購屋零成本確認與原始輸入不變性。PR #62 head CI 45776355224 success，已合併main `a6264ca`，main CI／Pages另驗。#43仍待存檔版本路由、完整來源紀錄、預覽／備份／確認／取消／另外保存的整合，保持open。
+本地npm test 243/243（新增35項）、typecheck、git diff --check通過；涵蓋多來源、負債拆分／未配置餘額、V1摘要不猜租金、完整分支／history穩定ID、26組拒絕邊界、購屋零成本確認與原始輸入不變性。PR #62 head CI 45776355224 success，已合併main `a6264ca`，main CI 45777076236／Pages 45777076218均success。#43仍待存檔版本路由、完整來源紀錄、預覽／備份／確認／取消／另外保存的整合，保持open。
 
 ## #43 第三切片：遷移差異比較基礎（PR #61已合併）
 
