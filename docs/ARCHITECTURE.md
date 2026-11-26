@@ -1,3 +1,5 @@
+> #43遷移比較：`migration-v3-preview.ts`只比較明確候選的current／history全月份與精確利率，不推導映射、不套用或寫DB；完整schema5遷移與入口仍待整合。
+
 > #43實作切片：`model-v3.ts`／`engine-v3.ts`為獨立模型與月度運算，尚未接入production ProjectSchema、版本路由或遷移。V1／V2及現有匯入／匯出仍沿下方原契約。
 
 > 下一版資料與遷移設計見 [ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)（#42）；schema5／engine3尚未註冊或實作，下方仍是生產版本。
