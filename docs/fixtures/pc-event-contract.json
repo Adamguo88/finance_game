@@ -1,0 +1,593 @@
+{
+  "contractVersion": 1,
+  "status": "reference-only-not-implemented",
+  "moneyUnit": "TWD-cent",
+  "rateUnit": "basis-points",
+  "cases": [
+    {
+      "id": "targeted-pause",
+      "contracts": [
+        "C02",
+        "C03"
+      ],
+      "operation": "targetedIncome",
+      "inputs": {
+        "salary": 5000000,
+        "side": 1000000,
+        "start": 1,
+        "end": 3,
+        "replacement": 0,
+        "changeMonth": 2,
+        "newSalary": 5500000,
+        "horizon": 3
+      },
+      "expected": {
+        "income": [
+          1000000,
+          1000000,
+          6500000
+        ]
+      }
+    },
+    {
+      "id": "targeted-raise",
+      "contracts": [
+        "C02"
+      ],
+      "operation": "targetedIncome",
+      "inputs": {
+        "salary": 5000000,
+        "side": 1000000,
+        "start": 4,
+        "end": 5,
+        "replacement": 0,
+        "changeMonth": 2,
+        "newSalary": 5500000,
+        "horizon": 3
+      },
+      "expected": {
+        "income": [
+          6000000,
+          6500000,
+          6500000
+        ]
+      }
+    },
+    {
+      "id": "independent-debt-schedules",
+      "contracts": [
+        "C06",
+        "C10"
+      ],
+      "operation": "debtSchedules",
+      "inputs": {
+        "income": 5000000,
+        "living": 2000000,
+        "rent": 1000000,
+        "horizon": 2,
+        "loans": [
+          {
+            "balance": 120000,
+            "term": 12,
+            "first": 1,
+            "annualBps": 0
+          },
+          {
+            "balance": 240000,
+            "term": 24,
+            "first": 2,
+            "annualBps": 0
+          }
+        ]
+      },
+      "expected": {
+        "payment": [
+          10000,
+          20000
+        ],
+        "interest": [
+          0,
+          0
+        ],
+        "balance": [
+          350000,
+          330000
+        ],
+        "cashFlow": [
+          1990000,
+          1980000
+        ]
+      }
+    },
+    {
+      "id": "property-fee-stop-rent",
+      "contracts": [
+        "C01",
+        "C04"
+      ],
+      "operation": "purchase",
+      "inputs": {
+        "cash": 300000000,
+        "price": 1000000000,
+        "down": 200000000,
+        "fee": 1000000,
+        "annualBps": 0,
+        "term": 360,
+        "monthlyCost": 0,
+        "rent": 1000000,
+        "stopRent": true
+      },
+      "expected": {
+        "cash": 96777778,
+        "asset": 1000000000,
+        "debt": 797777778,
+        "payment": 2222222,
+        "netWorth": 299000000
+      }
+    },
+    {
+      "id": "vehicle-holding-cost",
+      "contracts": [
+        "C01"
+      ],
+      "operation": "purchase",
+      "inputs": {
+        "cash": 20000000,
+        "price": 10000000,
+        "down": 4000000,
+        "fee": 100000,
+        "annualBps": 0,
+        "term": 60,
+        "monthlyCost": 200000,
+        "rent": 0,
+        "stopRent": false
+      },
+      "expected": {
+        "cash": 15600000,
+        "asset": 10000000,
+        "debt": 5900000,
+        "payment": 100000,
+        "netWorth": 19700000
+      }
+    },
+    {
+      "id": "expense-replacement",
+      "contracts": [
+        "C04"
+      ],
+      "operation": "expenseChange",
+      "inputs": {
+        "income": 5000000,
+        "oldLiving": 2000000,
+        "newLiving": 1800000,
+        "rent": 1000000
+      },
+      "expected": {
+        "cashFlow": 2200000
+      }
+    },
+    {
+      "id": "one-off-bonus-and-consumption",
+      "contracts": [
+        "C05"
+      ],
+      "operation": "oneOff",
+      "inputs": {
+        "income": 1000000,
+        "expense": 300000
+      },
+      "expected": {
+        "cashFlow": 700000
+      }
+    },
+    {
+      "id": "dependent-education-period",
+      "contracts": [
+        "C06",
+        "C08"
+      ],
+      "operation": "periodExpenses",
+      "inputs": {
+        "start": 3,
+        "end": 6,
+        "amount": 600000,
+        "oneOffMonth": 3,
+        "oneOff": 2000000,
+        "horizon": 6
+      },
+      "expected": {
+        "expenses": [
+          0,
+          0,
+          2600000,
+          600000,
+          600000,
+          0
+        ],
+        "total": 3800000
+      }
+    },
+    {
+      "id": "member-no-inferred-cost",
+      "contracts": [
+        "C07"
+      ],
+      "operation": "member",
+      "inputs": {
+        "start": 3,
+        "end": 5,
+        "horizon": 6
+      },
+      "expected": {
+        "active": [
+          false,
+          false,
+          true,
+          true,
+          false,
+          false
+        ],
+        "cashChange": 0
+      }
+    },
+    {
+      "id": "sale-with-settlement",
+      "contracts": [
+        "C09"
+      ],
+      "operation": "sale",
+      "inputs": {
+        "cash": 5000000,
+        "book": 20000000,
+        "proceeds": 18000000,
+        "fee": 200000,
+        "debt": 10000000,
+        "annualBps": 1200
+      },
+      "expected": {
+        "cash": 12700000,
+        "asset": 0,
+        "debt": 0,
+        "interest": 100000,
+        "netWorth": 12700000
+      }
+    },
+    {
+      "id": "explicit-loan-no-early-interest",
+      "contracts": [
+        "C10"
+      ],
+      "operation": "draw",
+      "inputs": {
+        "principal": 10000000,
+        "month": 1,
+        "first": 2,
+        "term": 12,
+        "annualBps": 1200
+      },
+      "expected": {
+        "cash": 10000000,
+        "debt": 10000000,
+        "interest": 0,
+        "payment": 0,
+        "income": 0,
+        "netWorth": 0
+      }
+    },
+    {
+      "id": "full-payoff-once",
+      "contracts": [
+        "C11"
+      ],
+      "operation": "settlement",
+      "inputs": {
+        "cash": 2000000,
+        "principal": 1000000,
+        "annualBps": 1200,
+        "fee": 5000
+      },
+      "expected": {
+        "cash": 985000,
+        "debt": 0,
+        "interest": 10000,
+        "cost": 15000
+      }
+    },
+    {
+      "id": "partial-prepay-keep-payment",
+      "contracts": [
+        "C11"
+      ],
+      "operation": "prepay",
+      "inputs": {
+        "principal": 1000000,
+        "annualBps": 0,
+        "term": 10,
+        "extra": 300000,
+        "fee": 0,
+        "mode": "keepPayment"
+      },
+      "expected": {
+        "regular": 100000,
+        "balance": 600000,
+        "cashOut": 400000,
+        "nextPayment": 100000,
+        "remainingTerm": 6
+      }
+    },
+    {
+      "id": "partial-prepay-recast",
+      "contracts": [
+        "C11"
+      ],
+      "operation": "prepay",
+      "inputs": {
+        "principal": 1000000,
+        "annualBps": 0,
+        "term": 10,
+        "extra": 300000,
+        "fee": 0,
+        "mode": "recast"
+      },
+      "expected": {
+        "regular": 100000,
+        "balance": 600000,
+        "cashOut": 400000,
+        "nextPayment": 66667,
+        "remainingTerm": 9
+      }
+    },
+    {
+      "id": "refinance-starts-next-month",
+      "contracts": [
+        "C12"
+      ],
+      "operation": "refinance",
+      "inputs": {
+        "oldPrincipal": 1000000,
+        "oldAnnualBps": 1200,
+        "fee": 5000,
+        "newPrincipal": 1000000,
+        "month": 1,
+        "newFirst": 2
+      },
+      "expected": {
+        "cashChange": -15000,
+        "debt": 1000000,
+        "interest": 10000,
+        "oldRegularPayment": 0
+      }
+    },
+    {
+      "id": "retirement-keeps-side-income",
+      "contracts": [
+        "C13"
+      ],
+      "operation": "retirement",
+      "inputs": {
+        "stoppedSalary": 5000000,
+        "side": 1000000,
+        "pension": 2000000,
+        "living": 2500000,
+        "rent": 1000000
+      },
+      "expected": {
+        "income": 3000000,
+        "cashFlow": -500000
+      }
+    },
+    {
+      "id": "loss-deferred-claim",
+      "contracts": [
+        "C14",
+        "C15",
+        "C16"
+      ],
+      "operation": "lossClaims",
+      "inputs": {
+        "loss": 10000000,
+        "excluded": 2000000,
+        "deductible": 1000000,
+        "shareBps": 8000,
+        "remainingCap": 5000000,
+        "premium": 100000,
+        "lossMonth": 1,
+        "claimMonth": 2,
+        "horizon": 2
+      },
+      "expected": {
+        "approved": 5000000,
+        "cashFlow": [
+          -10100000,
+          4900000
+        ],
+        "remainingCap": 0
+      }
+    },
+    {
+      "id": "reserve-cap-before-payment",
+      "contracts": [
+        "C14",
+        "C16"
+      ],
+      "operation": "reserveClaims",
+      "inputs": {
+        "cap": 5000000,
+        "requests": [
+          3000000,
+          4000000
+        ]
+      },
+      "expected": {
+        "approved": [
+          3000000,
+          2000000
+        ],
+        "remaining": 0
+      }
+    },
+    {
+      "id": "investment-opening-value-only",
+      "contracts": [
+        "C17",
+        "C18"
+      ],
+      "operation": "invest",
+      "inputs": {
+        "cash": 1000000,
+        "asset": 1000000,
+        "monthlyBps": 100,
+        "amount": 500000,
+        "fee": 10000,
+        "direction": "in"
+      },
+      "expected": {
+        "cash": 490000,
+        "asset": 1510000,
+        "netWorth": 2000000,
+        "valuationGain": 10000,
+        "income": 0
+      }
+    },
+    {
+      "id": "investment-redemption-not-income",
+      "contracts": [
+        "C17"
+      ],
+      "operation": "invest",
+      "inputs": {
+        "cash": 0,
+        "asset": 1000000,
+        "monthlyBps": 0,
+        "amount": 500000,
+        "fee": 5000,
+        "direction": "out"
+      },
+      "expected": {
+        "cash": 495000,
+        "asset": 500000,
+        "netWorth": 995000,
+        "valuationGain": 0,
+        "income": 0
+      }
+    },
+    {
+      "id": "investment-loss",
+      "contracts": [
+        "C18"
+      ],
+      "operation": "return",
+      "inputs": {
+        "asset": 1000000,
+        "monthlyBps": -1000
+      },
+      "expected": {
+        "asset": 900000,
+        "valuationGain": -100000,
+        "cashChange": 0
+      }
+    },
+    {
+      "id": "investment-total-loss",
+      "contracts": [
+        "C18"
+      ],
+      "operation": "return",
+      "inputs": {
+        "asset": 1000000,
+        "monthlyBps": -10000
+      },
+      "expected": {
+        "asset": 0,
+        "valuationGain": -1000000,
+        "cashChange": 0
+      }
+    },
+    {
+      "id": "valuation-round-value-before-delta",
+      "contracts": [
+        "C18"
+      ],
+      "operation": "return",
+      "inputs": {
+        "asset": 1,
+        "monthlyBps": -5000
+      },
+      "expected": {
+        "asset": 1,
+        "valuationGain": 0,
+        "cashChange": 0
+      }
+    },
+    {
+      "id": "inflation-explicit-amount-wins",
+      "contracts": [
+        "C04",
+        "C19"
+      ],
+      "operation": "inflation",
+      "inputs": {
+        "base": 1000000,
+        "monthlyBps": 100,
+        "rent": 500000,
+        "overrideMonth": 2,
+        "overrideAmount": 2000000,
+        "horizon": 3
+      },
+      "expected": {
+        "selectedExpense": [
+          1010000,
+          2000000,
+          2020000
+        ],
+        "totalExpense": [
+          1510000,
+          2500000,
+          2520000
+        ]
+      }
+    },
+    {
+      "id": "variable-rate-recast",
+      "contracts": [
+        "C20"
+      ],
+      "operation": "rateChange",
+      "inputs": {
+        "principal": 100000,
+        "annualBps": 1200,
+        "term": 2
+      },
+      "expected": {
+        "payment": [
+          50751,
+          50751
+        ],
+        "interest": [
+          1000,
+          502
+        ],
+        "balance": [
+          50249,
+          0
+        ]
+      }
+    },
+    {
+      "id": "asset-revaluation-not-cash",
+      "contracts": [
+        "C21"
+      ],
+      "operation": "revalue",
+      "inputs": {
+        "oldValue": 1000000,
+        "newValue": 800000
+      },
+      "expected": {
+        "asset": 800000,
+        "netWorthChange": -200000,
+        "cashChange": 0
+      }
+    }
+  ]
+}
