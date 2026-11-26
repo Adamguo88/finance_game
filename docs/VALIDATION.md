@@ -1,3 +1,14 @@
+# #20 PC 時間軸縮放與密集事件導覽（2026-11-26）
+
+- Node 24.22.3 / Chromium 156.0.8078.79。`npm test`：74/74，`npm run typecheck`、根路徑 `npm run build` 通過。
+- `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3110 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e -- --workers=1`：最終 48/48 通過，2.6 分鐘。既有財務、分支、事件編輯、歷史、保存/還原、動畫與 renderer 生命週期測試保留；沒有刪既有手機回歸測試或更改 CI 觸發。
+- 新增 5 項導覽 E2E：月/年/全人生縮放不改時間或 JSON、跳至 0/360/864 月及分數/超界拒絕、20 方案各 100 事件/864 月、卡片無重疊/鍵盤首末/切方案、改比例後衝突/鎖定/一次拖曳提交/Escape 取消、跨相鄰卡片改期焦點保留與一次歷史、長短人生共同比較上限拒絕。全部與既有 4 項 timeline 測試相容。
+- 合法 20×100 上限資料匯入到第一張完整時間軸約 1.6–2.0 秒（最近一次 1,573ms），包含首頁、驗證、模擬及瀏覽器自動化，不是 100ms 純 UI 延遲證據。100 個事件全為原生可聚焦按鈕；上限資料導覽不等於同時以 20 個 GPU renderers 壓測，GPU 仍最多 4。
+- 檢視 PC 概覽截圖後修正 70/72 年末端刻度重疊；補單元測試保留終點與標籤間隔。增加重排後焦點回復及比較 seekLimit，避免卡片 DOM 重排丟焦點或把超過短人生的輸入靜默截短。
+- `NEXT_PUBLIC_BASE_PATH=/finance_game npm run build` 通過；3112 真實子目錄掛載測月份/概覽切換、跳至第 700 月、超界拒絕與游標定位，pageerror/requestfailed=0。
+- 首次新 E2E 的 alert 定位撞到 Next route announcer；改為時間軸區域內的 alert，沒有移除錯誤顯示或略過驗證。錯誤欄位加上 aria-invalid/aria-describedby。
+- 根路徑 initial gzip JS 261,997 bytes，全部 chunks 451,646；相較 #19 紀錄新增約 1.6KB。未新增依賴/素材，未修改 domain、財務計算/版本、Project/JSON 格式或 history 契約。詳見 [TIMELINE_NAVIGATION.md](TIMELINE_NAVIGATION.md)。真人硬體/多瀏覽器/長時間記憶體與 PC 全功能總驗收仍待 #24；這不表示 #27–#29 已完成。
+
 # #19 有限動畫與可控音效實測（2026-11-25）
 
 - `npm test`：72/72；`npm run typecheck`、`npm run build` 靜態根路徑輸出通過。沒有新增依賴、財務 domain/公式/版本/Project schema 變更。
