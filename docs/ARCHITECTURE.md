@@ -1,3 +1,5 @@
+> #43來源映射：`migration-v3-mappings.ts`驗證明細／排程／事件與各revision的明確對應及參數保留，再產生差異比較；schema5容器、套用與使用者確認／另存仍待整合。
+
 > #43遷移比較：`migration-v3-preview.ts`只比較明確候選的current／history全月份與精確利率，不推導映射、不套用或寫DB；完整schema5遷移與入口仍待整合。
 
 > #43實作切片：`model-v3.ts`／`engine-v3.ts`為獨立模型與月度運算，尚未接入production ProjectSchema、版本路由或遷移。V1／V2及現有匯入／匯出仍沿下方原契約。
