@@ -1,3 +1,5 @@
+> 下一版資料與遷移設計見 [ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)（#42）；schema5／engine3尚未註冊或實作，下方仍是生產版本。
+
 > 場景資產：#17 已接入 LifeWorld/models 的原創向量與 HTML 區域入口，仍只消費快照；規格見 WORLD_ASSETS.md。
 
 > 現行渲染：#17 資產與 #18 可延遲載入的 PixiJS renderer 已接入，保留 SVG 備援；見 PIXI_RENDERER.md。#29／#28 已交付明細／視覺資料；後續 #27 → #42–#44 先落定分項財務契約與新引擎／遷移，規劃見 ROADMAP.md／NEXT_PHASE.md。本次規劃不改公開型別、公式或版本。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。

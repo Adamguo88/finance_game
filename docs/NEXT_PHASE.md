@@ -9,7 +9,7 @@
 | 順序 | Issue | 交付 | 啟動前置 |
 |---|---|---|---|
 | 1／已完成 | [#27](https://github.com/Adamguo88/finance_game/issues/27) | 原始PC需求、事件清單及數值／關聯契約盤點 | #15已完成，回讀main及原討論 |
-| 2／下一項 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 分項實體、穩定ID、生命週期、事件目標與版本契約 | #27完成 |
+| 2／下一項 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 分項實體、穩定ID、生命週期、事件目標與版本契約；[候選契約](ITEMIZED_FINANCIAL_CONTRACT.md) | #27完成 |
 | 3／待前置 | [#43](https://github.com/Adamguo88/finance_game/issues/43) | 新引擎／存檔與顯式遷移 | #42完成且契約可測 |
 | 4／待前置 | [#44](https://github.com/Adamguo88/finance_game/issues/44) | 既有事件可指定財務項目 | #43完成 |
 
