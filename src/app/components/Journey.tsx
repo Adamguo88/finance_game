@@ -1,6 +1,8 @@
 'use client';
 import {useMemo,useState,type ChangeEvent,type ReactNode} from 'react';
 import {initialProject,type Project,type ProfileV2} from '@/domain/model';
+import {InitialDetailsEditor} from './InitialDetailsEditor';
+import {detailsFromProfile,detailKeys,detailTotal,type InitialDetails,type DetailKey} from '@/domain/initial-details';
 import {createLifeProject} from '@/domain/setup';
 import {simulateForDisplay} from '@/domain/engine';
 import {userMessage} from '../messages';
@@ -13,13 +15,17 @@ export function LifeSetup({onComplete,onCancel,world}:{onComplete:(project:Proje
  const initial=initialProject.scenarios[0].profile;
  const [step,setStep]=useState(0),[name,setName]=useState('我的人生'),[error,setError]=useState('');
  const [values,setValues]=useState<Record<string,string>>({age:String(initial.age),income:String(initial.income/100),expenses:String(initial.expenses/100),rent:'0',cash:String(initial.cash/100),assets:String(initial.assets/100),debt:'0'});
+ const [details,setDetails]=useState<InitialDetails|null>(null);
+ function updateValue(key:string,value:string){setValues({...values,[key]:value});if(details&&detailKeys.includes(key as DetailKey))setDetails({...details,[key]:[{id:key+'-summary',name:'彙總調整',amount:value===''?NaN:Math.round(Number(value)*100)}]});}
+ function editDetails(next:InitialDetails){setDetails(next);setValues({...values,...Object.fromEntries(detailKeys.map(key=>[key,Number.isFinite(detailTotal(next,key))?String(detailTotal(next,key)/100):'']))});}
  const profile:ProfileV2={...initial,age:Number(values.age),income:Math.round(Number(values.income)*100),expenses:Math.round(Number(values.expenses)*100),rent:Math.round(Number(values.rent)*100),cash:Math.round(Number(values.cash)*100),assets:Math.round(Number(values.assets)*100),debt:Math.round(Number(values.debt)*100),debtSchedules:[]};
- const preview=useMemo(()=>{try{const p=createLifeProject(name||'我的人生',profile,'setup-preview');return simulateForDisplay(p.scenarios[0],1);}catch{return null;}},[name,values]);
+ const preview=useMemo(()=>{try{const p=createLifeProject(name||'我的人生',profile,'setup-preview',details??undefined);return simulateForDisplay(p.scenarios[0],1);}catch{return null;}},[name,values,details]);
  const fields=step===0?[['age','初始年齡']]:step===1?[['income','正常月收入（元）']]:step===2?[['expenses','生活費，不含租金（元）'],['rent','每月租金（元）']]:step===3?[['cash','可動用現金（元）'],['assets','其他資產（元）']]:[['debt','既有負債總額（元）']];
- function submit(event:React.FormEvent<HTMLFormElement>){event.preventDefault();setError('');if(step<4){setStep(step+1);return;}try{onComplete(createLifeProject(name,profile,crypto.randomUUID()));}catch(error){setError(userMessage(error,'請確認初始資料'));}}
+ function submit(event:React.FormEvent<HTMLFormElement>){event.preventDefault();setError('');if(step<4){setStep(step+1);return;}try{onComplete(createLifeProject(name,profile,crypto.randomUUID(),details??detailsFromProfile(profile)));}catch(error){setError(userMessage(error,'請確認初始資料'));}}
  return <main className="setupPage"><header><div className="brand">LIFE STUDIO<span>每段人生，都從一個起點開始。</span></div><button onClick={onCancel}>取消建立</button></header><div className="setupLayout"><section className="setupQuestions"><p className="eyebrow">CREATE YOUR STORY · STEP {step+1} / 5</p><h1>{steps[step]}</h1><ol className="setupSteps" aria-label="建立步驟">{steps.map((title,i)=><li key={title} aria-current={i===step?'step':undefined}><span>{i+1}</span>{title}</li>)}</ol><form onSubmit={submit} key={step}>
  {step===0&&<label>人生名稱<input autoFocus required maxLength={80} value={name} onChange={e=>setName(e.target.value)}/></label>}
- {fields.map(([key,label],i)=><label key={key}>{label}<input autoFocus={step>0&&i===0} name={key} required type="number" min={key==='age'?18:0} max={key==='age'?89:10000000000} step={key==='age'?1:.01} value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})}/></label>)}
+ {fields.map(([key,label],i)=><label key={key}>{label}<input autoFocus={step>0&&i===0} name={key} required type="number" min={key==='age'?18:0} max={key==='age'?89:10000000000} step={key==='age'?1:.01} value={values[key]} onChange={e=>updateValue(key,e.target.value)}/></label>)}
+ {step>0&&<>{!details?<button type="button" onClick={()=>setDetails(detailsFromProfile(profile))}>展開財務明細</button>:<InitialDetailsEditor details={details} groups={step===1?['income']:step===2?['expenses']:step===3?['assets']:['debt']} onChange={editDetails}/>}</>}
  <p className="muted">{step===0?'給這段人生一個名字。年齡決定從現在到 90 歲的模擬期間。':step===1?'先設定每月正常收入，未來仍能透過事件安排加薪或職涯暫停。':step===2?'生活費與租金分開輸入，避免在購屋或換屋後重複計算。':step===3?'其他資產不含現金；開始後的房屋會依購屋事件另外加入。':'既有負債先保留固定餘額，進入工作室後可設定還款排程。這些資料會建立新的工作，尚未寫入本機存檔。'}</p>
  {step===4&&<div className="setupReview"><h2>準備好探索你的未來了嗎？</h2><p>{name} · {values.age} 歲</p><p>收入 {money(profile.income)} · 生活費 {money(profile.expenses)} · 租金 {money(profile.rent)}</p><p>現金 {money(profile.cash)} · 其他資產 {money(profile.assets)}</p><p className="muted">確認後取代目前工作；已有工作請先返回並匯出備份。本機存檔不會自動覆寫。</p></div>}
  {error&&<p role="alert">{error}</p>}<div className="setupNavigation"><button type="button" disabled={step===0} onClick={()=>{setError('');setStep(step-1);}}>上一步</button><button className="primary" type="submit">{step===4?'建立這段人生':'下一步'}</button></div></form></section><aside className="setupPreview"><p className="eyebrow">YOUR STARTING POINT</p>{preview?world(preview[0]):<div className="setupPlaceholder">請完成有效的起始資料。</div>}<h2>{name||'我的人生'}</h2><p>{values.age||'—'} 歲的起點</p><div className="setupNumbers"><div><small>每月剩餘現金流</small><strong>{preview?money(preview[1].cashFlow):'—'}</strong></div><div><small>目前淨資產</small><strong>{preview?money(preview[0].netWorth):'—'}</strong></div></div></aside></div></main>;

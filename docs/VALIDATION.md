@@ -14,6 +14,16 @@
 
 移除初始任務、一次性建單 JSON 與舊建單腳本；有效財務、建模及呈現契約與 fixtures 保留。現況入口與矩陣同步完成證據，歷史由 Git／PR 及下方實測紀錄追溯。本輪沒有產品程式、公式、存檔版本或 workflow 變更，沒有啟動背景開發；本輪檢查：37 個 Markdown 相對連結全部存在；過時任務／建單檔案的有效入口引用已清除（下方歷史原文保留）；git diff --check 通過；src、tests、依賴與 .github/workflows 均無變更。GitHub 8 項議題已逐項回讀，正文與預期一致，#7 closed，其餘 7 項 open，階段標籤正確。本輪本地未重跑產品測試；完整驗證交由本整理 PR 的既有 CI 執行。GitHub 目前工具不提供建立 milestone，階段以 stage:next 標籤及正文分組，不冒稱已建立原生 milestone。
 
+## #29 多筆財務初始化（2026-11-26）
+
+- 契約先以獨立提交建立 INITIAL_DETAILS.md，再實作 schema3、initialDetails／history 驗證、舊格式保留與引擎轉接；沒有修改 V1/V2 公式或 engineVersion，沒有新增依賴／改 CI。
+- npm ci 首次因預設快取 /home/agent/.npm 不可寫失敗，改用 `npm ci --cache /tmp/finance-npm-cache --no-audit --no-fund` 成功。之後 npm test 86/86、typecheck、根路徑 build 通過。
+- 完整靜態 E2E：`PLAYWRIGHT_BASE_URL=http://127.0.0.1:3120 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e -- --workers=1`，58/58 通過（3.0分鐘），保留既有手機、GPU／動畫及全部財務回歸。
+- 新增4項單元涵蓋全月份逐分一致、明細與租金／負債／還款不重複、歷史明細、父子深拷貝／鎖定、未知版本／重複ID／金額不一致及舊存檔不改寫。
+- 新增2項PC E2E涵蓋明細增刪改、摘要同步、草稿還原與匯出不套用、格式升級、本機重載、分支明細與鎖定、未知格式匯入不覆蓋。首輪測試誤找重載後的首頁按鈕，改為既有工作室讀取並等待保存成功，沒有放寬timeout。
+- 已檢視1440×900明細截圖，調整側欄為單欄避免擁擠。`NEXT_PUBLIC_BASE_PATH=/finance_game npm run build` 通過；3121真子路徑實測新建2筆收入、schema3匯出／還原，pageerror／requestfailed=0。
+- git diff --check 與文件相對連結檢查通過。#28 尚待後續實作；真人、多瀏覽器與實機效能留 #6／#24，不以本輪代理測試代填。
+
 ## 歷次實測證據（保留原始紀錄）
 
 # #22 確定性人生回憶錄（2026-11-26）
