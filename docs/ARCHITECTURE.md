@@ -66,3 +66,7 @@ Project schemaVersion=1、engineVersion=1.0.0；事件參數 version=1。匯入�
 ## 呈現動畫/音效
 
 #19 的 `src/presentation` 只讀取月度播放與使用者事件，提供共用有限 cue、可取消 RAF、獨立 localStorage 偏好與使用者啟用的 Web Audio。財務 domain 與版本化 Project 不包含這些設定，細節見 [PRESENTATION.md](PRESENTATION.md)。
+
+## 長期時間軸導覽
+
+#20 的縮放/刻度/卡片分列由純 `timeline-layout.ts` 處理，僅產生呈現座標。跳月與事件尋找操作共用既有月份；拖曳/鍵盤仍走 `rescheduleEvent`，不另寫 history 或金融規則。見 [TIMELINE_NAVIGATION.md](TIMELINE_NAVIGATION.md)。
