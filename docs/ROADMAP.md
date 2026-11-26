@@ -14,7 +14,7 @@
 
 | 次序 | Issue | 交付與閘門 |
 |---|---|---|
-| S1 | [#27](https://github.com/Adamguo88/finance_game/issues/27) | 原始需求／完整PC事件清單、納入理由、數值／期間／同月順序／關聯契約，責任與缺口可追溯 |
+| S1 | [#27](https://github.com/Adamguo88/finance_game/issues/27) | 已由PR #57交付：原始需求／完整PC事件清單、納入理由、數值／期間／同月順序／關聯契約；不代表新事件已實作 |
 | S2 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 收入、支出、資產、負債的穩定ID與生命週期，事件目標／排程映射，版本／遷移設計及數值例 |
 | S3 | [#43](https://github.com/Adamguo88/finance_game/issues/43) | 分項引擎、可追溯快照、新版本與顯式遷移，保留舊版本結果、明細／造型／history／分支 |
 | S4 | [#44](https://github.com/Adamguo88/finance_game/issues/44) | 既有購屋／失業／租金／薪資事件適配指定項目，完成設定→預覽→套用→分支→備份還原 |
