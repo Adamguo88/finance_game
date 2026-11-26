@@ -1,3 +1,5 @@
+> #43實作切片：`model-v3.ts`／`engine-v3.ts`為獨立模型與月度運算，尚未接入production ProjectSchema、版本路由或遷移。V1／V2及現有匯入／匯出仍沿下方原契約。
+
 > 下一版資料與遷移設計見 [ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)（#42）；schema5／engine3尚未註冊或實作，下方仍是生產版本。
 
 > 場景資產：#17 已接入 LifeWorld/models 的原創向量與 HTML 區域入口，仍只消費快照；規格見 WORLD_ASSETS.md。
