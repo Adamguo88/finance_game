@@ -1,4 +1,4 @@
-import { ScenarioV2Schema, type ScenarioV2, type SnapshotV2, type DebtSchedule } from './model';
+import { BaseScenarioV2Schema as ScenarioV2Schema, type ScenarioV2, type SnapshotV2, type DebtSchedule } from './model';
 import { payment } from './engine-v1';
 
 export function validateScenarioV2(input:unknown):ScenarioV2 {

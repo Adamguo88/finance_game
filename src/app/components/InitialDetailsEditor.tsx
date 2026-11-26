@@ -1,0 +1,8 @@
+'use client';
+import {detailTotal,type DetailKey,type InitialDetails} from '@/domain/initial-details';
+export const detailLabels:Record<DetailKey,string>={income:'收入',expenses:'生活費',assets:'其他資產',debt:'既有負債'};
+export function InitialDetailsEditor({details,groups,onChange}:{details:InitialDetails;groups:DetailKey[];onChange:(next:InitialDetails)=>void}){
+ return <div className="initialDetails"><p className="muted">明細會同步加總至摘要。直接修改摘要會將該類明細合併成一筆彙總。現金、租金及負債還款排程另列，請勿重複填入生活費。</p>{groups.map(key=><details key={key}><summary>{detailLabels[key]}明細 · {details[key].length} 筆 · {Number.isFinite(detailTotal(details,key))?(detailTotal(details,key)/100).toLocaleString('zh-TW'):'—'} 元</summary>
+ {details[key].map((row,i)=><div className="detailRow" key={row.id}><label>{detailLabels[key]} {i+1} 名稱<input required maxLength={80} value={row.name} onChange={e=>onChange({...details,[key]:details[key].map(x=>x.id===row.id?{...x,name:e.target.value}:x)})}/></label><label>{detailLabels[key]} {i+1} 金額（元）<input required type="number" min="0" max="10000000000" step=".01" value={Number.isFinite(row.amount)?row.amount/100:''} onChange={e=>onChange({...details,[key]:details[key].map(x=>x.id===row.id?{...x,amount:e.target.value===''?NaN:Math.round(Number(e.target.value)*100)}:x)})}/></label><button type="button" onClick={()=>onChange({...details,[key]:details[key].filter(x=>x.id!==row.id)})}>移除{detailLabels[key]} {i+1}</button></div>)}
+ <button type="button" disabled={details[key].length>=20} onClick={()=>onChange({...details,[key]:[...details[key],{id:crypto.randomUUID(),name:'新'+detailLabels[key],amount:0}]})}>新增{detailLabels[key]}明細</button></details>)}</div>;
+}

@@ -1,4 +1,6 @@
 'use client';
+import {InitialDetailsEditor} from './InitialDetailsEditor';
+import {detailsFromProfile,detailKeys,detailTotal,type InitialDetails,type DetailKey} from '@/domain/initial-details';
 import { EventImpactPreview } from './EventImpactPreview';
 import { useEffect, useRef, useState } from 'react';
 import type { DebtSchedule, LifeEvent, Profile, Scenario } from '@/domain/model';
@@ -16,19 +18,24 @@ export function eventTitle(event:LifeEvent):string {
  }
 }
 
-export function ProfileForm({scenario,onSave,onDirty}:{scenario:Scenario;onSave:(profile:Profile)=>void;onDirty:()=>void}){
+export function ProfileForm({scenario,onSave,onDirty}:{scenario:Scenario;onSave:(profile:Profile,details?:InitialDetails)=>void;onDirty:()=>void}){
  const isV2=scenario.engineVersion==='2.0.0';
+ const formRef=useRef<HTMLFormElement>(null);
+ const [details,setDetails]=useState<InitialDetails>(()=>structuredClone(scenario.initialDetails??detailsFromProfile(scenario.profile)));
+ const [enabled,setEnabled]=useState(!!scenario.initialDetails);
+ function editDetails(next:InitialDetails){setDetails(next);for(const key of detailKeys){const input=formRef.current?.elements.namedItem(key) as HTMLInputElement|null;if(input)input.value=Number.isFinite(detailTotal(next,key))?String(detailTotal(next,key)/100):'';}onDirty();}
  const [schedules,setSchedules]=useState<DebtSchedule[]>(()=>isV2?structuredClone(scenario.profile.debtSchedules):[]);
  function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();const data=new FormData(event.currentTarget);
   const base={...scenario.profile,age:numeric(data,'age'),cash:amount(data,'cash'),assets:amount(data,'assets'),debt:amount(data,'debt'),income:amount(data,'income'),expenses:amount(data,'expenses')};
-  if(isV2)onSave({...base,rent:amount(data,'rent'),debtSchedules:schedules.map((row,i)=>({id:row.id,openingBalance:amount(data,`loan-${i}-balance`),annualRate:annualRate(data,`loan-${i}-rate`,row.annualRate),firstPaymentMonth:numeric(data,`loan-${i}-start`),termMonths:numeric(data,`loan-${i}-term`)}))});
+  if(isV2)onSave({...base,rent:amount(data,'rent'),debtSchedules:schedules.map((row,i)=>({id:row.id,openingBalance:amount(data,`loan-${i}-balance`),annualRate:annualRate(data,`loan-${i}-rate`,row.annualRate),firstPaymentMonth:numeric(data,`loan-${i}-start`),termMonths:numeric(data,`loan-${i}-term`)}))},enabled?details:undefined);
   else onSave(base);
  }
- return <form onSubmit={submit} onChange={onDirty}><fieldset disabled={scenario.parentId!==null}>
+ return <form ref={formRef} onSubmit={submit} onChange={event=>{const target=event.target as unknown as HTMLInputElement;if(enabled&&detailKeys.includes(target.name as DetailKey)){const key=target.name as DetailKey;setDetails({...details,[key]:[{id:key+'-summary',name:'彙總調整',amount:target.value===''?NaN:Math.round(Number(target.value)*100)}]});}onDirty();}}><fieldset disabled={scenario.parentId!==null}>
   <label>初始年齡<input required name="age" type="number" min="18" max="89" defaultValue={scenario.profile.age}/></label>
   {([['cash','現金'],['assets','其他資產'],['debt','既有負債'],['income','月收入'],['expenses',isV2?'生活費（不含租金）':'月支出']] as const).map(([key,label])=><label key={key}>{label}（元）<input required type="number" step=".01" min="0" max="10000000000" name={key} defaultValue={scenario.profile[key]/100}/></label>)}
   {isV2&&<><label>月租金（元）<input required name="rent" type="number" min="0" max="10000000000" step=".01" defaultValue={scenario.profile.rent/100}/></label>
+   {!enabled?<button type="button" onClick={()=>{const data=new FormData(formRef.current!);setDetails(detailsFromProfile({...scenario.profile,...Object.fromEntries(detailKeys.map(key=>[key,amount(data,key)]))}));setEnabled(true);onDirty();}}>啟用財務明細</button>:<><p className="muted">套用明細會使用新版存檔格式；建議先匯出原始備份。套用後仍須另外儲存。</p><InitialDetailsEditor details={details} groups={[...detailKeys]} onChange={editDetails}/></>}
    <h3>既有負債還款排程</h3><p className="muted">排程分配上方既有負債，不增加借款。未分配的部分維持固定；第一付款月之前不累息。生活費請勿再包含下列還款。</p>
    {schedules.map((row,i)=><div className="debtSchedule" key={row.id}>
     <h4>負債排程 {i+1}</h4>

@@ -78,3 +78,7 @@ Project schemaVersion=1、engineVersion=1.0.0；事件參數 version=1。匯入�
 ## 人生回憶錄
 
 #22 `memoir.ts` 只讀取目前版本的 Scenario 與引擎快照，產生確定性、具來源/未來標記的摘要。沒有AI、成功評分或新事件；點選記錄重用共同月份並進入對應單人生體驗，Project/history不改。見 [LIFE_MEMOIR.md](LIFE_MEMOIR.md)。
+
+## 多筆財務初始化（schema=3）
+
+[INITIAL_DETAILS.md](INITIAL_DETAILS.md) 定義 Scenario.initialDetails 與歷史欄位；彙總是引擎介面，明細是版本化輸入，兩者必須一致。schema1/2 契約保持 strict；啟用並確認套用明細才使用 schema3，新建流程直接使用 schema3。引擎入口驗證明細後剝離擴充欄位，再呼叫原 V1/V2 計算，沒有新增公式。changeProfile／changeEvents 保存明細歷史，fork 深拷貝，子方案初始資料鎖定；舊資料不自動覆寫。
