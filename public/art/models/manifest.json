@@ -13,8 +13,8 @@
         180,
         180
       ],
-      "bytes": 1386,
-      "sha256": "cda7d352b03a523241854e4f1f6cc37e33121afbaae50f8ac13dd4c9831a247c"
+      "bytes": 1446,
+      "sha256": "46b5f93537f0a558cb25c7193dd5364f1890eb884e3fe775ec22c7d66257ae5a"
     },
     {
       "id": "avatar-resting",
@@ -26,8 +26,8 @@
         180,
         180
       ],
-      "bytes": 1250,
-      "sha256": "1b0562788694ab201ec4ba542dec5687392199a2a6bce2b9370d35ef85d75950"
+      "bytes": 1310,
+      "sha256": "2ee4b76263fb45948ad60f7eb654eabe882578e39efbb34f5077418049f656bf"
     },
     {
       "id": "home-rented",
@@ -158,6 +158,474 @@
       ],
       "bytes": 986,
       "sha256": "d43f8269ef364d6d545d24e9f12f68fd4480f30a152711fb08466178145a82d1"
+    },
+    {
+      "id": "avatar-short-forest-young-standing",
+      "name": "角色 · 短髮 · 森林綠 · 青年 · 工作中",
+      "file": "avatar-short-forest-young-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1479,
+      "sha256": "cc007ddb66ca97c4be9c8284a4d62eacdb1f060af78b332d00c858bf8e996509"
+    },
+    {
+      "id": "avatar-short-forest-young-resting",
+      "name": "角色 · 短髮 · 森林綠 · 青年 · 休息中",
+      "file": "avatar-short-forest-young-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1340,
+      "sha256": "30b2f44d3f98673e287af5724a9508ff135120bbfd2ee5851343a403ba0bde6e"
+    },
+    {
+      "id": "avatar-short-forest-midlife-standing",
+      "name": "角色 · 短髮 · 森林綠 · 中年 · 工作中",
+      "file": "avatar-short-forest-midlife-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1481,
+      "sha256": "1d7b2b31ff451f3f1adc9890b1433649a09a729317765f38c6760e292e70c0b9"
+    },
+    {
+      "id": "avatar-short-forest-midlife-resting",
+      "name": "角色 · 短髮 · 森林綠 · 中年 · 休息中",
+      "file": "avatar-short-forest-midlife-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1342,
+      "sha256": "65dab3068e6adafca824fc82e02e5816528a06904892c58d6e9c53896ec6a9c8"
+    },
+    {
+      "id": "avatar-short-forest-senior-standing",
+      "name": "角色 · 短髮 · 森林綠 · 熟齡 · 工作中",
+      "file": "avatar-short-forest-senior-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1480,
+      "sha256": "01156fc545548087ce823d73b758d3ec6b3b69acd5e849b5ee95c484e4ce2471"
+    },
+    {
+      "id": "avatar-short-forest-senior-resting",
+      "name": "角色 · 短髮 · 森林綠 · 熟齡 · 休息中",
+      "file": "avatar-short-forest-senior-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1341,
+      "sha256": "911011ed43950f8d3bde91a06e15880fa76636dd45a6b7a1b700f23d12ca826f"
+    },
+    {
+      "id": "avatar-short-ocean-young-standing",
+      "name": "角色 · 短髮 · 海洋藍 · 青年 · 工作中",
+      "file": "avatar-short-ocean-young-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1478,
+      "sha256": "da6f079406b43d30266dea61c68b87bceae08cb2edd7489d85554814f37078cf"
+    },
+    {
+      "id": "avatar-short-ocean-young-resting",
+      "name": "角色 · 短髮 · 海洋藍 · 青年 · 休息中",
+      "file": "avatar-short-ocean-young-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1339,
+      "sha256": "4628136396fd6aa6d7b559df027f02d48973026cd855f1524b3964b5e19b44f7"
+    },
+    {
+      "id": "avatar-short-ocean-midlife-standing",
+      "name": "角色 · 短髮 · 海洋藍 · 中年 · 工作中",
+      "file": "avatar-short-ocean-midlife-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1480,
+      "sha256": "0197c5118459ae6f7409ff1460115147f22141afae8115cfe6ee783cb2060ed5"
+    },
+    {
+      "id": "avatar-short-ocean-midlife-resting",
+      "name": "角色 · 短髮 · 海洋藍 · 中年 · 休息中",
+      "file": "avatar-short-ocean-midlife-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1341,
+      "sha256": "a3de5f75384e5bbcde4e9f4a33bcb9e6b48cd1221d6e6b3d0b1620ece18e7c78"
+    },
+    {
+      "id": "avatar-short-ocean-senior-standing",
+      "name": "角色 · 短髮 · 海洋藍 · 熟齡 · 工作中",
+      "file": "avatar-short-ocean-senior-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1479,
+      "sha256": "691dac40f113e38cc0420aa506305be2cacdee60df23f9e8c1fe02c124f6a76c"
+    },
+    {
+      "id": "avatar-short-ocean-senior-resting",
+      "name": "角色 · 短髮 · 海洋藍 · 熟齡 · 休息中",
+      "file": "avatar-short-ocean-senior-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1340,
+      "sha256": "e1f7041b50d06a25498e21d73104dcc9422b25a0bd1475ceefe1bea92f7f6ee1"
+    },
+    {
+      "id": "avatar-short-clay-young-standing",
+      "name": "角色 · 短髮 · 陶土紅 · 青年 · 工作中",
+      "file": "avatar-short-clay-young-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1477,
+      "sha256": "6c6bbd207e1241e67e6b73e453b36f10f636e70b18bb473c583a557f4341d27e"
+    },
+    {
+      "id": "avatar-short-clay-young-resting",
+      "name": "角色 · 短髮 · 陶土紅 · 青年 · 休息中",
+      "file": "avatar-short-clay-young-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1338,
+      "sha256": "8992305eee79233a87f7a7f02d5c065342b1d76638d27d4877674060f7f1c8b2"
+    },
+    {
+      "id": "avatar-short-clay-midlife-standing",
+      "name": "角色 · 短髮 · 陶土紅 · 中年 · 工作中",
+      "file": "avatar-short-clay-midlife-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1479,
+      "sha256": "f398e433ffe14f08682d04199b5e82eb6bf10553876d6898aa0ee39b8e33f696"
+    },
+    {
+      "id": "avatar-short-clay-midlife-resting",
+      "name": "角色 · 短髮 · 陶土紅 · 中年 · 休息中",
+      "file": "avatar-short-clay-midlife-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1340,
+      "sha256": "422b12bbbe9e7ad663d144544cfb1c68756a55790ed7bc5c03769b5a299d025c"
+    },
+    {
+      "id": "avatar-short-clay-senior-standing",
+      "name": "角色 · 短髮 · 陶土紅 · 熟齡 · 工作中",
+      "file": "avatar-short-clay-senior-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1478,
+      "sha256": "c365f7dc99a53ecc785c6b378f52f1c52429a1a8971a12280b6f4b666cecd280"
+    },
+    {
+      "id": "avatar-short-clay-senior-resting",
+      "name": "角色 · 短髮 · 陶土紅 · 熟齡 · 休息中",
+      "file": "avatar-short-clay-senior-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1339,
+      "sha256": "c6fcb84e58aaed6ba22b2923713b8c2d038bb9ccd1b4e59ec271e1f5fcec732b"
+    },
+    {
+      "id": "avatar-long-forest-young-standing",
+      "name": "角色 · 長髮 · 森林綠 · 青年 · 工作中",
+      "file": "avatar-long-forest-young-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1550,
+      "sha256": "3aca1743faba044eb510881d9423b244c28f5ebb7c7a49063b771f00e14559f7"
+    },
+    {
+      "id": "avatar-long-forest-young-resting",
+      "name": "角色 · 長髮 · 森林綠 · 青年 · 休息中",
+      "file": "avatar-long-forest-young-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1411,
+      "sha256": "e953b0772b5123817c8ab9c6483435b44f13710077239e09e00118dd3628cb4e"
+    },
+    {
+      "id": "avatar-long-forest-midlife-standing",
+      "name": "角色 · 長髮 · 森林綠 · 中年 · 工作中",
+      "file": "avatar-long-forest-midlife-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1552,
+      "sha256": "c8bfd2fe304b72598375fd31be42887998d8908d6e842b0660930f82dbf1a374"
+    },
+    {
+      "id": "avatar-long-forest-midlife-resting",
+      "name": "角色 · 長髮 · 森林綠 · 中年 · 休息中",
+      "file": "avatar-long-forest-midlife-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1413,
+      "sha256": "e1eaff7582d1d9e6799ae0c5190db4e70d8dd138d2d59a61bbac4ae93e762d65"
+    },
+    {
+      "id": "avatar-long-forest-senior-standing",
+      "name": "角色 · 長髮 · 森林綠 · 熟齡 · 工作中",
+      "file": "avatar-long-forest-senior-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1551,
+      "sha256": "b6642f101fdb0c6cf27152899e3c64709a78717c6943dcc25b07ecd33f299c9c"
+    },
+    {
+      "id": "avatar-long-forest-senior-resting",
+      "name": "角色 · 長髮 · 森林綠 · 熟齡 · 休息中",
+      "file": "avatar-long-forest-senior-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1412,
+      "sha256": "ef96e730d710b72a7ebe7be895113983b785d878a97d5410b80fe2be63e76ce9"
+    },
+    {
+      "id": "avatar-long-ocean-young-standing",
+      "name": "角色 · 長髮 · 海洋藍 · 青年 · 工作中",
+      "file": "avatar-long-ocean-young-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1549,
+      "sha256": "25325bf10f1b789f4963facaecb79e03ced232b2ea33c7dab40c02ece040266d"
+    },
+    {
+      "id": "avatar-long-ocean-young-resting",
+      "name": "角色 · 長髮 · 海洋藍 · 青年 · 休息中",
+      "file": "avatar-long-ocean-young-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1410,
+      "sha256": "ed15ae1cd543ab4b0c26ff139a1d5d79e144b30c0954cb6bced68cecbbb6804d"
+    },
+    {
+      "id": "avatar-long-ocean-midlife-standing",
+      "name": "角色 · 長髮 · 海洋藍 · 中年 · 工作中",
+      "file": "avatar-long-ocean-midlife-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1551,
+      "sha256": "71397024c254bb45fde66706a9d69cd267a107606c45cd28b92af1cd7ccf0ce2"
+    },
+    {
+      "id": "avatar-long-ocean-midlife-resting",
+      "name": "角色 · 長髮 · 海洋藍 · 中年 · 休息中",
+      "file": "avatar-long-ocean-midlife-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1412,
+      "sha256": "984b73952672173af4b15c817e3f301b6e6e5c906094af56bb60810bec943732"
+    },
+    {
+      "id": "avatar-long-ocean-senior-standing",
+      "name": "角色 · 長髮 · 海洋藍 · 熟齡 · 工作中",
+      "file": "avatar-long-ocean-senior-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1550,
+      "sha256": "c477ea52e297ef826ba9e44526c48497e738f67402d2b68edad3149938c1338e"
+    },
+    {
+      "id": "avatar-long-ocean-senior-resting",
+      "name": "角色 · 長髮 · 海洋藍 · 熟齡 · 休息中",
+      "file": "avatar-long-ocean-senior-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1411,
+      "sha256": "087944e908cd6fb0b90e10255ab1282d0695be5ce31a1b50acae3af4b0ebd859"
+    },
+    {
+      "id": "avatar-long-clay-young-standing",
+      "name": "角色 · 長髮 · 陶土紅 · 青年 · 工作中",
+      "file": "avatar-long-clay-young-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1548,
+      "sha256": "78fd65bdbc03a760da4d87368c0973ffba7b0086c63f1b2bfeec711b85394362"
+    },
+    {
+      "id": "avatar-long-clay-young-resting",
+      "name": "角色 · 長髮 · 陶土紅 · 青年 · 休息中",
+      "file": "avatar-long-clay-young-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1409,
+      "sha256": "c14650225f96cd98c5ed414b229d81fb1b0009014fd6fe418e63eece69db1c2f"
+    },
+    {
+      "id": "avatar-long-clay-midlife-standing",
+      "name": "角色 · 長髮 · 陶土紅 · 中年 · 工作中",
+      "file": "avatar-long-clay-midlife-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1550,
+      "sha256": "a9f187ecd08f968b05810f4d8e8d31ffa49aed4bddfc402d99cc0142bde037dd"
+    },
+    {
+      "id": "avatar-long-clay-midlife-resting",
+      "name": "角色 · 長髮 · 陶土紅 · 中年 · 休息中",
+      "file": "avatar-long-clay-midlife-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1411,
+      "sha256": "622a565269c75b3cedb06824ebd55a6872e3e77ee712cb4e3a52752133a78dae"
+    },
+    {
+      "id": "avatar-long-clay-senior-standing",
+      "name": "角色 · 長髮 · 陶土紅 · 熟齡 · 工作中",
+      "file": "avatar-long-clay-senior-standing.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1549,
+      "sha256": "819c50834a5355e4be04fbd4d8c0d383af643de5774347438b9544136bfd36a8"
+    },
+    {
+      "id": "avatar-long-clay-senior-resting",
+      "name": "角色 · 長髮 · 陶土紅 · 熟齡 · 休息中",
+      "file": "avatar-long-clay-senior-resting.svg",
+      "viewBox": [
+        -90,
+        -145,
+        180,
+        180
+      ],
+      "bytes": 1410,
+      "sha256": "c18c90f7dd56d02a2613c494eeee6cb1963e639c736d1cc96aa31cf6741002f8"
     }
   ]
 }

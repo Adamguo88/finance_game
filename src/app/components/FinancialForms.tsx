@@ -1,4 +1,6 @@
 'use client';
+import {AvatarSettings} from './AvatarSettings';
+import {defaultAvatar,type AvatarPresentation} from '@/domain/avatar-metadata';
 import {InitialDetailsEditor} from './InitialDetailsEditor';
 import {detailsFromProfile,detailKeys,detailTotal,type InitialDetails,type DetailKey} from '@/domain/initial-details';
 import { EventImpactPreview } from './EventImpactPreview';
@@ -18,8 +20,11 @@ export function eventTitle(event:LifeEvent):string {
  }
 }
 
-export function ProfileForm({scenario,onSave,onDirty}:{scenario:Scenario;onSave:(profile:Profile,details?:InitialDetails)=>void;onDirty:()=>void}){
+export function ProfileForm({scenario,onSave,onDirty}:{scenario:Scenario;onSave:(profile:Profile,details?:InitialDetails,presentation?:AvatarPresentation)=>void;onDirty:()=>void}){
  const isV2=scenario.engineVersion==='2.0.0';
+ const [appearance,setAppearance]=useState<AvatarPresentation>(()=>structuredClone(scenario.presentation??defaultAvatar));
+ const [avatarEnabled,setAvatarEnabled]=useState(!!scenario.presentation);
+ const [age,setAge]=useState(scenario.profile.age);
  const formRef=useRef<HTMLFormElement>(null);
  const [details,setDetails]=useState<InitialDetails>(()=>structuredClone(scenario.initialDetails??detailsFromProfile(scenario.profile)));
  const [enabled,setEnabled]=useState(!!scenario.initialDetails);
@@ -28,10 +33,10 @@ export function ProfileForm({scenario,onSave,onDirty}:{scenario:Scenario;onSave:
  function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();const data=new FormData(event.currentTarget);
   const base={...scenario.profile,age:numeric(data,'age'),cash:amount(data,'cash'),assets:amount(data,'assets'),debt:amount(data,'debt'),income:amount(data,'income'),expenses:amount(data,'expenses')};
-  if(isV2)onSave({...base,rent:amount(data,'rent'),debtSchedules:schedules.map((row,i)=>({id:row.id,openingBalance:amount(data,`loan-${i}-balance`),annualRate:annualRate(data,`loan-${i}-rate`,row.annualRate),firstPaymentMonth:numeric(data,`loan-${i}-start`),termMonths:numeric(data,`loan-${i}-term`)}))},enabled?details:undefined);
-  else onSave(base);
+  if(isV2)onSave({...base,rent:amount(data,'rent'),debtSchedules:schedules.map((row,i)=>({id:row.id,openingBalance:amount(data,`loan-${i}-balance`),annualRate:annualRate(data,`loan-${i}-rate`,row.annualRate),firstPaymentMonth:numeric(data,`loan-${i}-start`),termMonths:numeric(data,`loan-${i}-term`)}))},enabled?details:undefined,avatarEnabled?appearance:undefined);
+  else onSave(base,undefined,avatarEnabled?appearance:undefined);
  }
- return <form ref={formRef} onSubmit={submit} onChange={event=>{const target=event.target as unknown as HTMLInputElement;if(enabled&&detailKeys.includes(target.name as DetailKey)){const key=target.name as DetailKey;setDetails({...details,[key]:[{id:key+'-summary',name:'彙總調整',amount:target.value===''?NaN:Math.round(Number(target.value)*100)}]});}onDirty();}}><fieldset disabled={scenario.parentId!==null}>
+ return <form ref={formRef} onSubmit={submit} onChange={event=>{const target=event.target as unknown as HTMLInputElement;if(enabled&&detailKeys.includes(target.name as DetailKey)){const key=target.name as DetailKey;setDetails({...details,[key]:[{id:key+'-summary',name:'彙總調整',amount:target.value===''?NaN:Math.round(Number(target.value)*100)}]});}if(target.name==='age'&&target.value!=='')setAge(Number(target.value));onDirty();}}><fieldset disabled={scenario.parentId!==null}>
   <label>初始年齡<input required name="age" type="number" min="18" max="89" defaultValue={scenario.profile.age}/></label>
   {([['cash','現金'],['assets','其他資產'],['debt','既有負債'],['income','月收入'],['expenses',isV2?'生活費（不含租金）':'月支出']] as const).map(([key,label])=><label key={key}>{label}（元）<input required type="number" step=".01" min="0" max="10000000000" name={key} defaultValue={scenario.profile[key]/100}/></label>)}
   {isV2&&<><label>月租金（元）<input required name="rent" type="number" min="0" max="10000000000" step=".01" defaultValue={scenario.profile.rent/100}/></label>
@@ -47,6 +52,7 @@ export function ProfileForm({scenario,onSave,onDirty}:{scenario:Scenario;onSave:
    </div>)}
    <button type="button" disabled={schedules.length>=20} onClick={()=>{setSchedules([...schedules,{id:crypto.randomUUID(),openingBalance:0,annualRate:0,firstPaymentMonth:1,termMonths:12}]);onDirty();}}>新增負債排程</button>
   </>}
+  {avatarEnabled?<><AvatarSettings value={appearance} age={age} onChange={next=>{setAppearance(next);onDirty();}}/><p className="muted">套用角色設定會使用新版存檔格式，建議先匯出原始備份；仍需另外儲存。</p></>:<button type="button" onClick={()=>{setAvatarEnabled(true);onDirty();}}>設定角色外觀</button>}
   <button className="primary" type="submit">更新基礎資料</button>
  </fieldset></form>;
 }

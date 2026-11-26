@@ -8,7 +8,7 @@ SSR/靜態輸出先呈現同構 SVG；確認支援 WebGL 後才 dynamic import P
 
 ## 資產與座標
 
-`model-catalog.ts` 固定 12 個原創 SVG 的 local viewBox。`node scripts/export-models.mjs` 直接編譯已知純 TSX 來源並 renderToStaticMarkup，不需 Playwright、網路或 production server。manifest 記錄可重現 bytes/SHA-256；合計 15,783 bytes。角色休息 texture 不包含長椅，避免重複合成；清償住宅獨立於有房貸住宅。
+`model-catalog.ts` 固定 48 個原創 SVG（含 #28 的36個角色變體） 的 local viewBox。`node scripts/export-models.mjs` 直接編譯已知純 TSX 來源並 renderToStaticMarkup，不需 Playwright、網路或 production server。manifest 記錄可重現 bytes/SHA-256；合計 67,923 bytes（原 #17 基準為15,783 bytes）。角色休息 texture 不包含長椅，避免重複合成；清償住宅獨立於有房貸住宅。
 
 使用 Pixi 預設 SVG image texture loader（resolution=2），保留 SVG viewBox/group transform。不能改用目前無法完整解析這些 transform 的 SVG Graphics parser。texture anchor 由負 local origin/viewBox 尺寸換算，模型切換保持位置。資產 URL 帶 `NEXT_PUBLIC_BASE_PATH`，沒有外部圖片/服務。
 
@@ -19,7 +19,7 @@ SSR/靜態輸出先呈現同構 SVG；確認支援 WebGL 後才 dynamic import P
 - `autoStart:false`、`sharedTicker:false`。互動全由 HTML 負責，立即使用 Pixi 文件允許的 `events.setTargetElement(null)` 移除其 pointer tracking/system ticker；8.23 的宣告漏掉 nullable，原始實作明確支援。
 - 固定素材由 teardown 回收，不需背景 GC，初始化完成後清理 renderer scheduler（同樣移除其 system ticker listener）；不停止全域 Ticker，以免影響其他世界。
 - 四旗標改變才 `app.render()`，同狀態月份沒有多餘重繪；沒有每世界 RAF 或動畫佇列。renderer destroy 清理 stage/canvas/ticker/GPU context。
-- 共用固定 12 個 CPU texture sources，跨世界/模式重用；destroy 不刪共用 source，每 renderer 的 GPU 資源由其 context 回收。失敗 promise 清除；沒有依月份/方案增長的 texture cache。頁面關閉由瀏覽器回收 sources。
+- 共用固定 48 個 CPU texture sources，跨世界/模式重用；destroy 不刪共用 source，每 renderer 的 GPU 資源由其 context 回收。失敗 promise 清除；沒有依月份/方案增長的 texture cache。頁面關閉由瀏覽器回收 sources。
 - 不自動把新釋出的 GPU 名額搶回既有 SVG 世界，避免比較中抖動；下次重新掛載可取得名額。
 
 ## 驗證範圍

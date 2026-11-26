@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import {AvatarPresentationSchema} from './avatar-metadata';
 import {InitialDetailsSchema} from './initial-details';
 import {
  ENGINE_VERSION, ProfileSchema, EventSchema, ScenarioSchema as BaseScenarioV1Schema,
@@ -28,14 +29,20 @@ export const BaseScenarioV2Schema=BaseScenarioV1Schema.extend({
  history:z.array(z.object({revision:z.number().int().positive(),profile:ProfileV2Schema,events:z.array(EventV2Schema).max(100)}).strict()).max(1000).default([])
 }).strict();
 const detailExtension={initialDetails:InitialDetailsSchema.optional()};
-export const ScenarioV1Schema=BaseScenarioV1Schema.extend({...detailExtension,history:z.array(BaseScenarioV1Schema.shape.history.unwrap().element.extend(detailExtension)).max(1000).default([])}).strict();
-export const ScenarioV2Schema=BaseScenarioV2Schema.extend({...detailExtension,history:z.array(BaseScenarioV2Schema.shape.history.unwrap().element.extend(detailExtension)).max(1000).default([])}).strict();
+const DetailScenarioV1Schema=BaseScenarioV1Schema.extend({...detailExtension,history:z.array(BaseScenarioV1Schema.shape.history.unwrap().element.extend(detailExtension)).max(1000).default([])}).strict();
+const DetailScenarioV2Schema=BaseScenarioV2Schema.extend({...detailExtension,history:z.array(BaseScenarioV2Schema.shape.history.unwrap().element.extend(detailExtension)).max(1000).default([])}).strict();
+const avatarExtension={presentation:AvatarPresentationSchema.optional()};
+export const ScenarioV1Schema=DetailScenarioV1Schema.extend({...avatarExtension,history:z.array(DetailScenarioV1Schema.shape.history.unwrap().element.extend(avatarExtension)).max(1000).default([])}).strict();
+export const ScenarioV2Schema=DetailScenarioV2Schema.extend({...avatarExtension,history:z.array(DetailScenarioV2Schema.shape.history.unwrap().element.extend(avatarExtension)).max(1000).default([])}).strict();
+const DetailScenarioSchema=z.discriminatedUnion('engineVersion',[DetailScenarioV1Schema,DetailScenarioV2Schema]);
 export const ScenarioSchema=z.discriminatedUnion('engineVersion',[ScenarioV1Schema,ScenarioV2Schema]);
 const BaseScenarioSchema=z.discriminatedUnion('engineVersion',[BaseScenarioV1Schema,BaseScenarioV2Schema]);
 export const MigrationRecordSchema=z.object({fromSchema:z.literal(1),fromEngine:z.literal(ENGINE_VERSION),sourceScenarioIds:z.array(z.string().min(1)).min(1).max(20)}).strict();
 export const ProjectV2Schema=z.object({schemaVersion:z.literal(2),scenarios:z.array(BaseScenarioSchema).min(1).max(20),migration:MigrationRecordSchema.nullable()}).strict();
-export const ProjectV3Schema=ProjectV2Schema.extend({schemaVersion:z.literal(3),scenarios:z.array(ScenarioSchema).min(1).max(20)}).strict();
-export const ProjectSchema=z.discriminatedUnion('schemaVersion',[ProjectV1Schema,ProjectV2Schema,ProjectV3Schema]);
+export const ProjectV3Schema=ProjectV2Schema.extend({schemaVersion:z.literal(3),scenarios:z.array(DetailScenarioSchema).min(1).max(20)}).strict();
+export const MetadataMigrationRecordSchema=MigrationRecordSchema.extend({fromSchema:z.union([z.literal(1),z.literal(3),z.literal(4)])}).strict();
+export const ProjectV4Schema=ProjectV3Schema.extend({schemaVersion:z.literal(4),scenarios:z.array(ScenarioSchema).min(1).max(20),migration:MetadataMigrationRecordSchema.nullable()}).strict();
+export const ProjectSchema=z.discriminatedUnion('schemaVersion',[ProjectV1Schema,ProjectV2Schema,ProjectV3Schema,ProjectV4Schema]);
 export type DebtSchedule=z.infer<typeof DebtScheduleSchema>;
 export type ProfileV2=z.infer<typeof ProfileV2Schema>;
 export type LifeEventV2=z.infer<typeof EventV2Schema>;
@@ -46,7 +53,8 @@ export type Profile=ProfileV1|ProfileV2;
 export type LifeEvent=LifeEventV1|LifeEventV2;
 export type Scenario=ScenarioV1|ScenarioV2;
 export type ProjectV3=z.infer<typeof ProjectV3Schema>;
-export type Project=ProjectV1|ProjectV2|ProjectV3;
+export type ProjectV4=z.infer<typeof ProjectV4Schema>;
+export type Project=ProjectV1|ProjectV2|ProjectV3|ProjectV4;
 export type Snapshot=SnapshotV1;
 export interface SnapshotV2 extends SnapshotV1 {
  baseIncome:number;livingExpenses:number;rent:number;mortgagePayment:number;mortgageInterest:number;

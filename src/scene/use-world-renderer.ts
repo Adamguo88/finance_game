@@ -34,6 +34,6 @@ export function useWorldRenderer(view:WorldView,cue?:MotionCue){
    else if(!initializing)release();
   };
  },[]);
- useEffect(()=>{controller.current?.update(view,cue);},[view.owned,view.employed,view.mortgage,view.gap,cue]);
+ useEffect(()=>{controller.current?.update(view,cue);},[view.owned,view.employed,view.mortgage,view.gap,view.avatar,cue]);
  return {host,state};
 }

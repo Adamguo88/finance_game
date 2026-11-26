@@ -82,3 +82,7 @@ Project schemaVersion=1、engineVersion=1.0.0；事件參數 version=1。匯入�
 ## 多筆財務初始化（schema=3）
 
 [INITIAL_DETAILS.md](INITIAL_DETAILS.md) 定義 Scenario.initialDetails 與歷史欄位；彙總是引擎介面，明細是版本化輸入，兩者必須一致。schema1/2 契約保持 strict；啟用並確認套用明細才使用 schema3，新建流程直接使用 schema3。引擎入口驗證明細後剝離擴充欄位，再呼叫原 V1/V2 計算，沒有新增公式。changeProfile／changeEvents 保存明細歷史，fork 深拷貝，子方案初始資料鎖定；舊資料不自動覆寫。
+
+## 角色資料與 schema=4
+
+[AVATAR_PRESENTATION.md](AVATAR_PRESENTATION.md) 定義 Scenario.presentation 及history，獨立於財務Profile；引擎轉接層驗證後剝離，V1/V2公式不變。新建使用schema4；舊schema1/2/3不自動插入預設欄位，確認套用造型才升格式，仍需另存。純V1的schema3/4保留顯式財務升級與原始備份，結果保持schema4並記錄真實來源版本；混合或已V2專案不再次轉換。

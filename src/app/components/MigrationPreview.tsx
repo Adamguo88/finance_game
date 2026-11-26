@@ -1,13 +1,13 @@
 'use client';
 import { useMemo, useState } from 'react';
-import type { ProjectV1 } from '@/domain/model';
+import type { Project } from '@/domain/model';
 import type { MigratedProject } from '@/domain/migration';
 import { simulate } from '@/domain/engine';
 import { exportProject } from '@/storage/project';
 import { useModalFocus } from './FinancialForms';
 import { userMessage } from '../messages';
 
-export function MigrationPreview({source,target,month,onConfirm,onClose,returnFocus}:{source:ProjectV1;returnFocus:HTMLElement|null;target:MigratedProject;month:number;onConfirm:()=>void;onClose:()=>void}){
+export function MigrationPreview({source,target,month,onConfirm,onClose,returnFocus}:{source:Project;returnFocus:HTMLElement|null;target:MigratedProject;month:number;onConfirm:()=>void;onClose:()=>void}){
  const ref=useModalFocus(true,onClose,returnFocus),[backupReady,setBackupReady]=useState(false),[error,setError]=useState('');
  const previews=useMemo(()=>source.scenarios.map((scenario,i)=>{
   const at=Math.min(month,(90-scenario.profile.age)*12),before=simulate(scenario,at)[at],after=simulate(target.scenarios[i],at)[at];

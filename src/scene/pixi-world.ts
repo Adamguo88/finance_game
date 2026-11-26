@@ -2,7 +2,7 @@ import {Application,Assets,Graphics,Sprite,type Texture} from 'pixi.js';
 import {transition,type MotionCue} from '../presentation/motion';
 import {modelFrames,type ModelKey} from './model-catalog';
 import {worldPalette as c} from './models';
-export interface WorldView {owned:boolean;employed:boolean;mortgage:boolean;gap:boolean}
+export interface WorldView {avatar?:import('./model-catalog').AvatarModelKey;owned:boolean;employed:boolean;mortgage:boolean;gap:boolean}
 export interface WorldRenderer {update:(view:WorldView,cue?:MotionCue)=>void;destroy:()=>void}
 let texturesPromise:Promise<Record<ModelKey,Texture>>|null=null;
 function textures(){if(!texturesPromise)texturesPromise=Promise.all((Object.keys(modelFrames) as ModelKey[]).map(async key=>[key,await Assets.load<Texture>({src:(process.env.NEXT_PUBLIC_BASE_PATH??'')+'/art/models/'+key+'.svg',data:{resolution:2}})] as const)).then(rows=>Object.fromEntries(rows) as Record<ModelKey,Texture>).catch(error=>{texturesPromise=null;throw error;});return texturesPromise;}
@@ -24,8 +24,8 @@ export async function createWorldRenderer(host:HTMLElement,signal:AbortSignal,on
   const office=sprite('office-active',365,231),home=sprite('home-rented',675,323),finance=sprite('finance-steady',315,358);sprite('bench',544,404);sprite('tree',617,420,.65);sprite('tree',470,421,.48);const avatar=sprite('avatar-standing',515,287,.82);
   app.stage.addChild(new Graphics().moveTo(465,178).lineTo(465,145).stroke({color:'#a38e6d',width:3}).poly([465,145,494,156,465,166]).fill('#e3bd75'));
   canvas=app.canvas;canvas.style.width='100%';canvas.style.height='100%';canvas.setAttribute('aria-hidden','true');canvas.dataset.pixiWorld='true';canvas.addEventListener('webglcontextlost',onLost);host.append(canvas);
-  let key='',motionToken=-1;const update=(v:WorldView,cue?:MotionCue)=>{if(destroyed)return;const next=[v.owned,v.employed,v.mortgage,v.gap].join(':');if(next===key&&(cue?.token??-1)===motionToken)return;cancelMotion();key=next;motionToken=cue?.token??-1;
-   office.texture=images[v.employed?'office-active':'office-paused'];home.texture=images[v.owned?(v.mortgage?'home-owned':'home-owned-clear'):'home-rented'];finance.texture=images[v.gap?'finance-attention':'finance-steady'];avatar.texture=images[v.employed?'avatar-standing':'avatar-resting'];avatar.position.set(v.employed?515:544,v.employed?287:404);canvas!.dataset.worldState=key;
+  let key='',motionToken=-1;const update=(v:WorldView,cue?:MotionCue)=>{if(destroyed)return;const next=[v.owned,v.employed,v.mortgage,v.gap,v.avatar].join(':');if(next===key&&(cue?.token??-1)===motionToken)return;cancelMotion();key=next;motionToken=cue?.token??-1;
+   office.texture=images[v.employed?'office-active':'office-paused'];home.texture=images[v.owned?(v.mortgage?'home-owned':'home-owned-clear'):'home-rented'];finance.texture=images[v.gap?'finance-attention':'finance-steady'];avatar.texture=images[v.avatar??(v.employed?'avatar-standing':'avatar-resting')];avatar.position.set(v.employed?515:544,v.employed?287:404);canvas!.dataset.worldState=[v.owned,v.employed,v.mortgage,v.gap].join(':');canvas!.dataset.avatar=v.avatar??'default';
    const settle=()=>{avatar.position.set(v.employed?515:544,v.employed?287:404);home.alpha=office.alpha=1;canvas!.dataset.motion='idle';if(!destroyed)app.render();};
    if(cue?.animate){app.render();canvas!.dataset.motion='running';cancelMotion=transition(cue,p=>{avatar.y=(v.employed?287:404)-Math.sin(p*Math.PI)*5;if(cue.kind==='home')home.alpha=.72+p*.28;if(cue.kind==='work')office.alpha=.72+p*.28;app.render();},settle);}else settle();
   };
