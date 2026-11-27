@@ -4,14 +4,24 @@
 
 | 類別 | 最新已確認證據 | 界線 |
 |---|---|---|
-| 財務與應用回歸 | #28：91單元、typecheck、根路徑／Pages build；61 E2E；最後補強後3項重跑 | 詳見下方本輪紀錄與PR最新head CI |
+| 財務與應用回歸 | #65 head／main CI與Pages成功（284單元／66 E2E）；本輪候選311單元、root／Pages各6項入口測試 | 候選最新head完整CI仍須核對，不代表PC全功能完成 |
 | #29正式交付 | PR #40；head CI 45744994208、main CI 45763083370 success | main 5a28284；獨立於真人簽核 |
 | #29正式發布 | Pages run 45763083300 success | 不表示 PC 全功能完成 |
 | #28子路徑 | schema4明細／造型／history匯出還原、65歲階段正確，pageerror/requestfailed=0 | main 7a2519c：CI 45764983216／Pages 45764983221 success |
 | 真人／多瀏覽器／實機效能 | #6／#24 尚待驗收 | 軟體 GPU 不能證明硬體 60fps；未測不填通過 |
 | 待開發 | #42–#44短期 → #45–#55中期 → #23報表 | #27契約已交付；#25行動端等#24完成 |
 
-## #43 第七切片：產品版本分派與分項讀取／保存（候選）
+## #43 第八切片：V3原子修改／命名分支（候選）
+
+新增scenarios-v3，以完整專案及scenarioId／revision為命令基準；先驗原工作再驗候選。項目與受影響事件可由changeV3State一次驗證／提交，僅保留一個有效revision，不保存中間不一致狀態。事件修改保留前一版profile／events／presentation與scenario.revision，profile修改另profile.version+1；無參數變更不產生history。來源／映射紀錄不被改寫，後續仍能從history取回原V3 baseline。過期counter、未知引用、同月衝突、溢出與容量都拒絕整體候選。
+
+命名分支複製全部分項／排程／事件／造型，parentId／forkMonth明確、revision重起1；父子後改不互相傳播。<=forkMonth所有事件payload及集合鎖定，子方案初始profile亦鎖定；新分支不得早於來源自己的forkMonth，需更早規劃時選原始或更早來源。畫面增加分支名稱／建立入口、鎖定與容量說明，建立後比較來源及新方案；不自動儲存或宣稱財務改善。比較時間超過未選中短人生終點時，首頁摘要改用實際快照月份／年齡，避免餘額標錯月份。V3事件／profile表單留#44交付，參見ITEMIZED_MUTATIONS。
+
+本地npm test 311/311（新增27項）、typecheck、root build通過；分項工作室6/6 E2E通過（16.6秒），新增分支／原始紀錄保留、較早點停用、未另存重新讀取仍為原資料、儲存後JSON往返。Pages build／`/finance_game/` 子路徑6/6通過（16.0秒），包含最後的首頁終點標記補強。root初始gzip JS 280,928 bytes、全部chunks470,220 bytes，較PR #65各增730 bytes；沒有新依賴。包含歷史1000筆容量拒絕測試，沒有為了成功而刪掉舊版本；不宣稱已量測全合法上限互動延遲或真人硬體表現。
+
+PR #65已合併main `43787fb`，head CI 45950491623、main CI 45951584843、Pages 45951584827均success。#43仍待完整遷移產品映射／備份／確認／取消／另存流程及最終聯合驗收，不結案。
+
+## #43 第七切片：產品版本分派與分項讀取／保存（PR #65已交付）
 
 新增workspace.parseStoredProject分派schema1–4／schema5，IndexedDB沿用原DB version1與current key；原ProjectSchema／V1/V2公式不改。UI根節點按容器選擇原工作室或分項工作室，新資料不交給舊表單覆寫。分項檢視、逐月資金來源、混合版本比較、首頁／取消建立、JSON往返及IndexedDB另存已接線，完整邊界見ITEMIZED_WORKSPACE。
 
