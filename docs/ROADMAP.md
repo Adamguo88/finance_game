@@ -15,9 +15,9 @@
 | 次序 | Issue | 交付與閘門 |
 |---|---|---|
 | S1 | [#27](https://github.com/Adamguo88/finance_game/issues/27) | 已由PR #57交付：原始需求／完整PC事件清單、納入理由、數值／期間／同月順序／關聯契約；不代表新事件已實作 |
-| S2 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 收入、支出、資產、負債的穩定ID與生命週期，事件目標／排程映射，版本／遷移設計及數值例 |
-| S3 | [#43](https://github.com/Adamguo88/finance_game/issues/43) | 分項引擎、可追溯快照、新版本與顯式遷移，保留舊版本結果、明細／造型／history／分支 |
-| S4 | [#44](https://github.com/Adamguo88/finance_game/issues/44) | 既有購屋／失業／租金／薪資事件適配指定項目，完成設定→預覽→套用→分支→備份還原 |
+| S2／已交付 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 收入、支出、資產、負債的穩定ID與生命週期，事件目標／排程映射，版本／遷移設計及數值例 |
+| S3／已交付 | [#43](https://github.com/Adamguo88/finance_game/issues/43) | 分項引擎、可追溯快照、新版本與顯式遷移，保留舊版本結果、明細／造型／history／分支 |
+| S4／進行中 | [#44](https://github.com/Adamguo88/finance_game/issues/44) | 既有購屋／失業／租金／薪資事件適配指定項目，完成設定→預覽→套用→分支→備份還原 |
 
 短期完成必須證明：薪資5萬＋兼職1萬能只中斷指定來源；調薪只影響目標；兩筆負債按對應排程還款；現金、租金、生活費與本金不重複計算。原有V1/V2與schema1–4按原語意重播，新公式不假裝與舊公式相同。新型別、引擎／schema編號、期間與遷移規則由#42契約及#43落定，本輪不引入新API或公式。
 
@@ -56,3 +56,5 @@
 - 每項可審查PR交付，更新數值／流程證據、核對最新head CI；依既有授權通過後合併並另查main CI／Pages。未完成或未測項保留，驗收規則見[CI.md](CI.md)。
 - docs記產品方向／契約／依賴，issues記即時工作狀態與子任務，PR／VALIDATION記證據。三者變更需同步；依需求完成度而非closed比例衡量進度。
 - 已依後續開發指令啟動#27；[PC事件契約](PC_EVENT_CONTRACT.md)定義C01–C21、來源與參考算例，合併後依序執行#42及後續任務。契約不是新功能完成證據。
+
+#43已由PR #59–#67交付；main `8207fbc` 的CI 45957655449及Pages 45957655517均success。#44接指定項目四事件表單／預覽，再完成初始分項表單與關聯修改；即時進度見NEXT_PHASE及issue。

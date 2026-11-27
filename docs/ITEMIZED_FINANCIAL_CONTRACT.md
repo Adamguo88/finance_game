@@ -1,6 +1,6 @@
 # 分項財務實體、版本與遷移契約（#42）
 
-更新：2026-11-26；基準main `83f5c0e`。承接[PC_EVENT_CONTRACT](PC_EVENT_CONTRACT.md)的C01–C21。本文定義下一個模型；**schema5／engine3已提供domain實作，本輪接入讀取／保存；完整遷移介面與指定事件操作仍待交付**，#43實作與驗證後才可供產品建立／匯入。#44再交付指定項目的四類事件操作。V1/V2及schema1–4的解析、重播及原始匯出不變。
+更新：2026-11-26；基準main `83f5c0e`。承接[PC_EVENT_CONTRACT](PC_EVENT_CONTRACT.md)的C01–C21。本文定義分項模型；**schema5／engine3、讀取保存、修改分支與完整遷移已由#43交付**。#44指定項目的四類事件操作候選見[ITEMIZED_EVENTS.md](ITEMIZED_EVENTS.md)，初始分項表單及關聯修改仍待後續整合。V1/V2及schema1–4的解析、重播及原始匯出不變。
 
 ## 版本與唯一資料來源
 
@@ -85,7 +85,7 @@ schema5的`migration`保存舊migration原物件（legacy）、及`itemized`紀�
 
 ## schema5續遷移的實際封套
 
-sourceSchema=5時，sourceEnvelope為 `{schemaVersion:5,migration:{legacy,itemizedRecordIndexes}}`。indexes是紀錄建立前已存在的itemized紀錄完整前綴 `[0,…,n−1]`；不重複嵌套原紀錄，只在本紀錄sourceScenarios保存此次選中舊樹。解析同時重驗所有前序來源與baseline，拒絕缺漏／重排／前向引用。紀錄與來源備份仍計入同一2 MB上限，已V3者不可再次遷移。續遷移domain能力已交付；讀取／保存入口見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)，完整映射／確認介面仍待整合。
+sourceSchema=5時，sourceEnvelope為 `{schemaVersion:5,migration:{legacy,itemizedRecordIndexes}}`。indexes是紀錄建立前已存在的itemized紀錄完整前綴 `[0,…,n−1]`；不重複嵌套原紀錄，只在本紀錄sourceScenarios保存此次選中舊樹。解析同時重驗所有前序來源與baseline，拒絕缺漏／重排／前向引用。紀錄與來源備份仍計入同一2 MB上限，已V3者不可再次遷移。續遷移domain能力已交付；讀取／保存入口見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)，完整映射／確認介面已由PR #67交付，見[ITEMIZED_MIGRATION_UI.md](ITEMIZED_MIGRATION_UI.md)。
 
 ## 可重用數值與驗收閘門
 
@@ -93,4 +93,4 @@ sourceSchema=5時，sourceEnvelope為 `{schemaVersion:5,migration:{legacy,itemiz
 
 #43必須加真實引擎adapter及數值／不變量測試，涵蓋目標不存在／失效、跨類重複ID、兩來源只停一筆、兩負債獨立、期初／首付／末期、half-cent、overflow、關聯刪除、same-month衝突、history／分支、舊版全月份回歸。#44交付表單→預覽→套用→定位／分支→JSON／IndexedDB還原。後續C05–C21由對應Epic逐組註冊、版本化並接同一reference fixtures；#43不能宣稱未註冊事件已可執行。
 
-#42僅文件／接口設計，不向生產parser註冊schema5，不變更現有公式。工作量按交付切片：#43模型／驗證、核心計算、版本路由／顯式遷移各一組審查；#44四事件表單及完整垂直驗收；中期每Epic再按#27待拆清單細分。數值／遷移為最高風險，準確工作日待#43首個切片量測後更新；不以虛構日期承諾掩蓋依賴。
+#42交付時僅文件／接口設計；生產schema5及新公式已由#43按版本交付，不改舊引擎公式。工作量按交付切片：#43模型／驗證、核心計算、版本路由／顯式遷移各一組審查；#44四事件表單及完整垂直驗收；中期每Epic再按#27待拆清單細分。數值／遷移為最高風險，準確工作日待#43首個切片量測後更新；不以虛構日期承諾掩蓋依賴。

@@ -26,7 +26,7 @@ export function ItemizedMigrationWizard({source,returnFocus,onConfirm,onClose}:{
  const summary=review?.preview.comparison.summaries[reviewIndex];
  const months=useMemo(()=>review&&summary?compareV3MigrationMonths(review.comparisonSource,review.preview.comparison.proposedScenarios,summary):[],[review,summary]);
  return <section ref={ref} role="dialog" aria-modal="true" aria-label="分項財務升級" className="editor"><div className="migrationPreview itemizedMigration">
- <h2>升級分項財務模型</h2><p>分項模型目前支援逐月檢視、比較、分支與存檔；指定項目的事件編輯仍在後續開發。逐一確認整棵人生樹及每個歷史版本。取消會保留目前工作；套用後仍須另按「儲存」。舊版計算結果可能與新版不同。</p>
+ <h2>升級分項財務模型</h2><p>分項模型支援指定收入／租金及購屋事件的設定、預覽與確認，並可逐月檢視、比較、分支與存檔。逐一確認整棵人生樹及每個歷史版本。取消會保留目前工作；套用後仍須另按「儲存」。舊版計算結果可能與新版不同。</p>
  {!review?<>
  <h3>1. 保存原始備份</h3><button type="button" onClick={download}>下載升級前原始備份</button><label><input type="checkbox" disabled={!backup} checked={backupSaved} onChange={e=>setBackupSaved(e.target.checked)}/>我已確認備份檔案保存在裝置上</label>
  <fieldset disabled={!backupSaved}><legend>2. 選擇整棵人生樹</legend>{draft.roots.map(root=><label key={root.id}><input type="checkbox" checked={roots.includes(root.id)} onChange={e=>{setRoots(previous=>e.target.checked?[...previous,root.id]:previous.filter(id=>id!==root.id));setIndex(0);}}/>{root.name}（含 {root.scenarioIds.length} 個人生）</label>)}{!draft.roots.length&&<p>所有人生已使用分項模型。</p>}</fieldset>

@@ -1,6 +1,6 @@
 # 分項存檔的讀取、檢視與保存（#43切片）
 
-本輪接入workspace版本邊界；不代表#43全部完成，也不取代#44事件編輯或#51完整生活世界。財務／遷移規則見[ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)，完整產品責任見[PC_SCOPE.md](PC_SCOPE.md)。
+本頁記錄workspace版本邊界。#43已由PR #59–#67完整交付；#44四事件編輯候選見[ITEMIZED_EVENTS.md](ITEMIZED_EVENTS.md)，完整生活世界仍由#51接續。財務／遷移規則見[ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)，完整產品責任見[PC_SCOPE.md](PC_SCOPE.md)。
 
 ## 版本與操作邊界
 
@@ -9,7 +9,7 @@
 | schema1–4 | 原parseProject、V1／V2原引擎 | 原工作室、原表單／預覽／分支及舊升級入口維持原行為 |
 | schema5 | parseProjectV5驗原始來源／映射／baseline；Scenario按自身engineVersion重播 | 分項工作室提供月度檢視、資金來源、混合版本比較、命名分支、JSON匯入／匯出及IndexedDB另存 |
 
-workspace.parseStoredProject分派容器，不把engine3資料交給舊ProfileForm或changeProfile。原ProjectSchema仍只接受schema1–4，是舊型別的明確邊界；產品storage改走workspace邊界。schema5中的V1／V2根人生仍由原引擎運算，但留在同一完整容器中檢視，不抽出來交給舊表單覆寫來源紀錄。V3命名分支與修改管理見[ITEMIZED_MUTATIONS.md](ITEMIZED_MUTATIONS.md)；參數／事件編輯表單仍待#44。
+workspace.parseStoredProject分派容器，不把engine3資料交給舊ProfileForm或changeProfile。原ProjectSchema仍只接受schema1–4，是舊型別的明確邊界；產品storage改走workspace邊界。schema5中的V1／V2根人生仍由原引擎運算，但留在同一完整容器中檢視，不抽出來交給舊表單覆寫來源紀錄。V3命名分支與修改管理見[ITEMIZED_MUTATIONS.md](ITEMIZED_MUTATIONS.md)；四事件編輯表單候選見[ITEMIZED_EVENTS.md](ITEMIZED_EVENTS.md)；初始分項表單及關聯修改仍由#44接續。
 
 共用財務總覽顯示實際總貸款本息：舊版房貸與其他排程相加，V3使用自己的total payment／interest。原simulateForDisplay及舊Ledger不改，避免把畫面欄位正規化誤稱公式變更。分項／flow直接消費V3快照，不在React計息、推測職涯、家庭或額外費用。
 
