@@ -1,10 +1,10 @@
 # 當前開發佇列：先補分項財務底座
 
-更新：2026-11-26（Asia/Taipei），基準main `45c552e`。完整短／中／長期目標以[ROADMAP.md](ROADMAP.md)為準，逐項責任與完成證據見[PC_SCOPE.md](PC_SCOPE.md)；即時狀態須回讀GitHub，不把下表當已完成宣告。
+更新：2026-11-26（Asia/Taipei），基準main `43787fb`。完整短／中／長期目標以[ROADMAP.md](ROADMAP.md)為準，逐項責任與完成證據見[PC_SCOPE.md](PC_SCOPE.md)；即時狀態須回讀GitHub，不把下表當已完成宣告。
 
 ## 下一個執行項目
 
-**#27／#42契約已合併，正在#43分項引擎；維持先底座、後#23報表。** #28／#29的角色與初始化明細已交付，分項引擎另由#42–#44擴充；四張現有卡片不能代表完整事件庫。已合併#27契約交付（PR #57）：[完整事件清單及參考算例](PC_EVENT_CONTRACT.md)。分項模型／引擎與遷移domain已交付；本輪讀取／保存候選見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)，#43仍待完整映射／確認產品流程與修改／分支驗證。
+**#27／#42契約已合併，正在#43分項引擎；維持先底座、後#23報表。** #28／#29的角色與初始化明細已交付，分項引擎另由#42–#44擴充；四張現有卡片不能代表完整事件庫。已合併#27契約交付（PR #57）：[完整事件清單及參考算例](PC_EVENT_CONTRACT.md)。分項模型／引擎與遷移domain已交付；PR #65已交付的讀取／保存見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)，#43接續完整映射／確認產品流程；修改管理與命名分支候選見[ITEMIZED_MUTATIONS.md](ITEMIZED_MUTATIONS.md)。
 
 | 順序 | Issue | 交付 | 啟動前置 |
 |---|---|---|---|

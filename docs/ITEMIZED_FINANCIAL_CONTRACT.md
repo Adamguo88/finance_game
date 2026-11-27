@@ -54,7 +54,7 @@ C05／C06由具用途的建立／終止型別承接；C07/C08需memberId；C09�
 
 解析／預覽前先建實體定義表、建立來源與引用表，再依時間及階段驗證。目標不存在、類型不合、尚未建立／已終止、重複ID／sequence、未滿足依賴、同月同屬性互斥、提前還本模式缺少、出現未註冊事件均拒絕候選。引用未來建立的資產不可因它出現在完整事件陣列就通過。C03的覆蓋與C02的基準更新可同月，C04的明確金額優先於C19當月因子，其餘同屬性重複設定拒絕。
 
-刪除回傳依賴清單（事件ID、目標ID、原因），不直接丟棄引用。使用者移除或重新指定全部受影響項後，一次validate並提交完整候選；失敗保留原工作、revision與DB。終止與刪除不同：終止保留原始實體／歷史供追溯；刪除定義若仍被引用則拒絕。root可改初始資料；child禁止初始資料修改且<=forkMonth事件不可新增／移除／改payload／sequence／dependsOn。複製／重新排序不能繞過鎖定。
+刪除回傳依賴清單（事件ID、目標ID、原因），不直接丟棄引用。使用者移除或重新指定全部受影響項後，一次validate並提交完整候選；失敗保留原工作、revision與DB。終止與刪除不同：終止保留原始實體／歷史供追溯；刪除定義若仍被引用則拒絕。root可改初始資料；child禁止初始資料修改且<=forkMonth事件不可新增／移除／改payload／sequence／dependsOn。複製／重新排序不能繞過鎖定。V3新建子分支的操作不得早於來源自身forkMonth；更早規劃先選更早來源，沿用既有危機入口規則，不自動改寫舊分支點。完整候選可由changeV3State一次替換項目並重新指定其事件引用，見[ITEMIZED_MUTATIONS.md](ITEMIZED_MUTATIONS.md)。
 
 每次套用保存前一版完整profile、events及presentation到history，revision+1；profile改動另profile.version+1。單純預覽、取消、拖曳草稿不改history。history每筆亦需完整校驗與可重播，不只校驗current。舊版history不能塞入V3型別；遷移來源另存原始revision映射。
 
