@@ -23,7 +23,8 @@ interface ItemState{ id:string;value:bigint;start:number;end:number|null;kind:st
 interface LoanState extends ItemState{schedule:ScheduleV3|null;remaining:number;due:bigint}
 function source(id:string){return {sourceId:id,sourceKind:'entity' as const,originEventId:null};}
 function active(item:ItemState,month:number){return item.start<=month&&(item.end===null||month<item.end);}
-function orderedEvents(events:LifeEventV3[]):LifeEventV3[]{
+/** Canonical execution order for already validated events, also used by read-only timelines. */
+export function orderV3Events(events:readonly LifeEventV3[]):LifeEventV3[]{
  const pending=[...events],seen=new Set<string>(),result:LifeEventV3[]=[];
  while(pending.length){
   const ready=pending.filter(e=>e.dependsOn.every(id=>seen.has(id))).sort((a,b)=>a.month-b.month||Number(a.type==='buyHouse')-Number(b.type==='buyHouse')||a.sequence-b.sequence||a.id.localeCompare(b.id,'en'));
@@ -43,7 +44,7 @@ export function simulateV3(input:ScenarioV3,horizon=(90-input.profile.age)*12):S
  const assets:ItemState[]=p.assets.map(x=>({id:x.id,value:BigInt(x.openingValue),start:0,end:null,kind:x.kind,...source(x.id)}));
  function createLoan(id:string,balance:number,schedule:ScheduleV3|null,start:number,originEventId:string|null):LoanState{return {id,value:BigInt(balance),start,end:null,kind:schedule?'amortizing':'static',...source(id),originEventId,schedule,remaining:schedule?.termMonths??0,due:schedule?BigInt(loanPaymentV3(balance,schedule.annualRatePpm,schedule.termMonths)):0n};}
  const loans:LoanState[]=p.liabilities.map(x=>createLoan(x.id,x.openingBalance,x.schedule,0,null));
- const events=orderedEvents(s.events),rows:SnapshotV3[]=[];
+ const events=orderV3Events(s.events),rows:SnapshotV3[]=[];
  for(let month=0;month<=horizon;month++){
   const opening=cash,flows:CashFlowV3[]=[],effects:EffectV3[]=[],incomeValues=new Map<string,bigint>(),expenseValues=new Map<string,bigint>();
   let income=0n,expense=0n,payment=0n,interest=0n;

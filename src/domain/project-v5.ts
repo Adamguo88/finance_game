@@ -1,8 +1,9 @@
 import {z} from 'zod';
 import {ScenarioV1Schema,ScenarioV2Schema,ScenarioSchema,ProjectV1Schema,ProjectV2Schema,ProjectV3Schema,ProjectV4Schema,MetadataMigrationRecordSchema,type Scenario} from './model';
-import {ScenarioV3Schema,validateScenarioV3,type ScenarioV3} from './model-v3';
+import {ScenarioV3Schema,type ScenarioV3} from './model-v3';
 import {validateScenario} from './engine';
 import {parseProject} from './scenarios';
+import {simulateV3} from './engine-v3';
 import {V3MappingPlanSchema,validateV3SourceMappings} from './migration-v3-mappings';
 
 /** Staged codec: deliberately separate from the current application's schema1–4 parser. */
@@ -38,7 +39,12 @@ export function parseProjectV5(input:unknown):ProjectV5{
  const p=ProjectV5Schema.parse(input),map=new Map(p.scenarios.map(s=>[s.id,s]));
  if(map.size!==p.scenarios.length)throw Error('人生 ID 重複');
  for(const s of p.scenarios){
-  if(s.engineVersion==='3.0.0')validateScenarioV3(s);else validateScenario(s);
+  if(s.engineVersion==='3.0.0'){
+   // Shape-valid per-source changes can still overflow after many future months.
+   simulateV3(s);
+   const {presentation:_presentation,...base}=s;
+   for(const entry of s.history)simulateV3({...base,...entry,history:[]});
+  }else validateScenario(s);
   if(s.parentId!==null){
    const parent=map.get(s.parentId);if(!parent||parent.engineVersion!==s.engineVersion)throw Error('分支來源不存在或引擎版本不一致');
    const visited=new Set([s.id]);let node:typeof parent|undefined=parent;

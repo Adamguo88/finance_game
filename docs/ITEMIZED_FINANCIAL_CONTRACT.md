@@ -1,6 +1,6 @@
 # 分項財務實體、版本與遷移契約（#42）
 
-更新：2026-11-26；基準main `83f5c0e`。承接[PC_EVENT_CONTRACT](PC_EVENT_CONTRACT.md)的C01–C21。本文定義下一個模型；**schema5尚未註冊；engine3模型與運算已獨立交付，尚未接入產品入口**，#43實作與驗證後才可供產品建立／匯入。#44再交付指定項目的四類事件操作。V1/V2及schema1–4的解析、重播及原始匯出不變。
+更新：2026-11-26；基準main `83f5c0e`。承接[PC_EVENT_CONTRACT](PC_EVENT_CONTRACT.md)的C01–C21。本文定義下一個模型；**schema5／engine3已提供domain實作，本輪接入讀取／保存；完整遷移介面與指定事件操作仍待交付**，#43實作與驗證後才可供產品建立／匯入。#44再交付指定項目的四類事件操作。V1/V2及schema1–4的解析、重播及原始匯出不變。
 
 ## 版本與唯一資料來源
 
@@ -85,7 +85,7 @@ schema5的`migration`保存舊migration原物件（legacy）、及`itemized`紀�
 
 ## schema5續遷移的實際封套
 
-sourceSchema=5時，sourceEnvelope為 `{schemaVersion:5,migration:{legacy,itemizedRecordIndexes}}`。indexes是紀錄建立前已存在的itemized紀錄完整前綴 `[0,…,n−1]`；不重複嵌套原紀錄，只在本紀錄sourceScenarios保存此次選中舊樹。解析同時重驗所有前序來源與baseline，拒絕缺漏／重排／前向引用。紀錄與來源備份仍計入同一2 MB上限，已V3者不可再次遷移。這是獨立domain能力，尚未代表生產入口已開放schema5。
+sourceSchema=5時，sourceEnvelope為 `{schemaVersion:5,migration:{legacy,itemizedRecordIndexes}}`。indexes是紀錄建立前已存在的itemized紀錄完整前綴 `[0,…,n−1]`；不重複嵌套原紀錄，只在本紀錄sourceScenarios保存此次選中舊樹。解析同時重驗所有前序來源與baseline，拒絕缺漏／重排／前向引用。紀錄與來源備份仍計入同一2 MB上限，已V3者不可再次遷移。續遷移domain能力已交付；讀取／保存入口見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)，完整映射／確認介面仍待整合。
 
 ## 可重用數值與驗收閘門
 
