@@ -1,15 +1,15 @@
 # 當前開發佇列：先補分項財務底座
 
-更新：2026-11-26（Asia/Taipei），基準main `43787fb`。完整短／中／長期目標以[ROADMAP.md](ROADMAP.md)為準，逐項責任與完成證據見[PC_SCOPE.md](PC_SCOPE.md)；即時狀態須回讀GitHub，不把下表當已完成宣告。
+更新：2026-11-27（Asia/Taipei），基準main `c6eddbb`。完整短／中／長期目標以[ROADMAP.md](ROADMAP.md)為準，逐項責任與完成證據見[PC_SCOPE.md](PC_SCOPE.md)；即時狀態須回讀GitHub，不把下表當已完成宣告。
 
 ## 下一個執行項目
 
-**#27／#42契約已合併，正在#43分項引擎；維持先底座、後#23報表。** #28／#29的角色與初始化明細已交付，分項引擎另由#42–#44擴充；四張現有卡片不能代表完整事件庫。已合併#27契約交付（PR #57）：[完整事件清單及參考算例](PC_EVENT_CONTRACT.md)。分項模型／引擎與遷移domain已交付；PR #65已交付的讀取／保存見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)，#43接續完整映射／確認產品流程；修改管理與命名分支候選見[ITEMIZED_MUTATIONS.md](ITEMIZED_MUTATIONS.md)。
+**#27／#42契約已合併，正在#43分項引擎；維持先底座、後#23報表。** #28／#29的角色與初始化明細已交付，分項引擎另由#42–#44擴充；四張現有卡片不能代表完整事件庫。已合併#27契約交付（PR #57）：[完整事件清單及參考算例](PC_EVENT_CONTRACT.md)。分項模型／引擎與遷移domain已交付；PR #65已交付的讀取／保存見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)，#43接續完整映射／確認產品流程；PR #66修改管理與命名分支已合併，見[ITEMIZED_MUTATIONS.md](ITEMIZED_MUTATIONS.md)。
 
 | 順序 | Issue | 交付 | 啟動前置 |
 |---|---|---|---|
 | 1／已完成 | [#27](https://github.com/Adamguo88/finance_game/issues/27) | 原始PC需求、事件清單及數值／關聯契約盤點 | #15已完成，回讀main及原討論 |
-| 2／已交付契約 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 分項實體、穩定ID、生命週期、事件目標與版本契約；[候選契約](ITEMIZED_FINANCIAL_CONTRACT.md) | #27完成 |
+| 2／已交付契約 | [#42](https://github.com/Adamguo88/finance_game/issues/42) | 分項實體、穩定ID、生命週期、事件目標與版本契約；[分項契約](ITEMIZED_FINANCIAL_CONTRACT.md) | #27完成 |
 | 3／進行中 | [#43](https://github.com/Adamguo88/finance_game/issues/43) | 新引擎／存檔與顯式遷移 | #42完成且契約可測 |
 | 4／待前置 | [#44](https://github.com/Adamguo88/finance_game/issues/44) | 既有事件可指定財務項目 | #43完成 |
 
@@ -30,4 +30,6 @@
 
 已收到後續開發指令，沿本佇列持續執行。PR #57已合併，head CI 45772121540、main CI 45772426844及Pages 45772426835均success，#42前置已解除；不以參考算例代替新引擎驗收。
 
-#42契約由PR #58合併main `7a2a035`，head CI 45773218715 success。#43先交付獨立模型／關聯驗證，再月度運算、版本路由／顯式遷移；全部完成前不結案或開放schema5匯入。
+#42契約由PR #58合併main `7a2a035`，head CI 45773218715 success。#43模型／引擎／codec與schema5讀取保存已交付，匯入均經完整容器及全期間數值驗證；完整遷移精靈及聯合驗收完成後才結案。
+
+#43產品遷移精靈候選見[ITEMIZED_MIGRATION_UI.md](ITEMIZED_MIGRATION_UI.md)：實際原始備份下載、整樹選擇、逐版配對、全月差異及確認後另存；待最新head CI、合併與發布驗證。#44仍待#43聯合驗收完成。

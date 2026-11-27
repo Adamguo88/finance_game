@@ -44,7 +44,10 @@ function validateStateMappings(old:Scenario,next:ScenarioV3,plan:V3MappingPlan,s
    total+=BigInt('amount' in item?item.amount:'openingValue' in item?item.openingValue:item.openingBalance);
   }
   if(total!==BigInt(row.amount))throw Error('來源明細金額分配不一致');
-  stable(key('row',row.category,row.sourceId),mapping.targetIds);
+  // Debt details are source pools, not executable liabilities; adding/removing an old
+  // schedule legitimately changes that pool's decomposition across revisions.
+  if(row.category!=='debt')stable(key('row',row.category,row.sourceId),mapping.targetIds);
+  else{const residual=mapping.targetIds.filter(id=>next.profile.liabilities.find(x=>x.id===id)?.kind==='static');if(residual.length)stable(key('debt-static',row.sourceId),residual);}
  }
  if(used.size!==newRows.length||newRows.some(x=>!used.has(x.id)))throw Error('存在未對應來源的初始實體');
  const schedules='debtSchedules' in old.profile?old.profile.debtSchedules:[],scheduleMap=new Map(plan.schedules.map(x=>[x.sourceId,x.targetLiabilityId])),allocated=new Set<string>();
@@ -86,7 +89,9 @@ function validateStateMappings(old:Scenario,next:ScenarioV3,plan:V3MappingPlan,s
    const rentIds='stopRent' in event&&event.stopRent?next.profile.expenses.filter(x=>x.kind==='rent').map(x=>x.id):[];
    if(!sameSet(target.stopExpenseIds,rentIds))throw Error('購屋停租目標與來源不一致');
   }
-  stable(key('event',event.id),ids);
+  // A global legacy event expands once per target. Sources can be added in later
+  // profile revisions, so preserve each surviving (source event,target) identity.
+  for(const target of targets){if(target.type==='buyHouse'){stable(key('event',event.id),[target.id]);stable(key('house-asset',event.id),[target.assetId]);if(target.loan)stable(key('house-loan',event.id),[target.loan.liabilityId]);}else{const subject='incomeId' in target?target.incomeId:target.expenseId;stable(key('event',event.id,subject),[target.id]);}}
  }
  if(usedEvents.size!==next.events.length)throw Error('存在未對應來源的新事件');
 }

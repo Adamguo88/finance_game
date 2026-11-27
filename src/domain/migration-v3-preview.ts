@@ -15,7 +15,7 @@ export interface MigrationMonthV3{month:number;before:Values;after:Values;differ
 export interface MigrationSummaryV3 extends MigrationContextV3{
  beforeEngineVersion:Scenario['engineVersion'];afterEngineVersion:'3.0.0';monthsCompared:number;changedMonths:number;
  firstDifference:{month:number;differences:MigrationDifferenceV3[]}|null;
- maxAbsoluteDelta:Record<Field,string>;lastDelta:Record<Field,string>;
+ maxAbsoluteDelta:Record<Field,string>;lastDelta:Record<Field,string>;totalDelta:Record<Field,string>;
 }
 export interface MigrationComparisonV3{source:Project;sourceScenarioIds:string[];proposedScenarios:ScenarioV3[];summaries:MigrationSummaryV3[];hasDifferences:boolean}
 /** Convert the serialized legacy decimal exactly; never round a missing precision into a new rate. */
@@ -76,10 +76,10 @@ export function previewV3TreeComparison(input:unknown,proposals:unknown):Migrati
   const old=sourceMap.get(next.id)!;
   for(const state of contexts(old,next)){
    const rows=compare(state.old,state.next),changed=rows.filter(r=>r.differences.length>0);
-   const maximum=Object.fromEntries(migrationFieldsV3.map(key=>[key,0n])) as Record<Field,bigint>;
-   for(const row of changed)for(const d of row.differences){const n=BigInt(d.delta),absolute=n<0n?-n:n;if(absolute>maximum[d.field])maximum[d.field]=absolute;}
+   const maximum=Object.fromEntries(migrationFieldsV3.map(key=>[key,0n])) as Record<Field,bigint>,total=Object.fromEntries(migrationFieldsV3.map(key=>[key,0n])) as Record<Field,bigint>;
+   for(const row of changed)for(const d of row.differences){const n=BigInt(d.delta),absolute=n<0n?-n:n;total[d.field]+=n;if(absolute>maximum[d.field])maximum[d.field]=absolute;}
    const last=rows[rows.length-1];
-   summaries.push({scenarioId:old.id,context:state.context,revision:state.revision,beforeEngineVersion:old.engineVersion,afterEngineVersion:'3.0.0',monthsCompared:rows.length,changedMonths:changed.length,firstDifference:changed[0]?{month:changed[0].month,differences:changed[0].differences}:null,maxAbsoluteDelta:Object.fromEntries(migrationFieldsV3.map(key=>[key,maximum[key].toString()])) as Record<Field,string>,lastDelta:Object.fromEntries(migrationFieldsV3.map(key=>[key,(BigInt(last.after[key])-BigInt(last.before[key])).toString()])) as Record<Field,string>});
+   summaries.push({scenarioId:old.id,context:state.context,revision:state.revision,beforeEngineVersion:old.engineVersion,afterEngineVersion:'3.0.0',monthsCompared:rows.length,changedMonths:changed.length,firstDifference:changed[0]?{month:changed[0].month,differences:changed[0].differences}:null,maxAbsoluteDelta:Object.fromEntries(migrationFieldsV3.map(key=>[key,maximum[key].toString()])) as Record<Field,string>,lastDelta:Object.fromEntries(migrationFieldsV3.map(key=>[key,(BigInt(last.after[key])-BigInt(last.before[key])).toString()])) as Record<Field,string>,totalDelta:Object.fromEntries(migrationFieldsV3.map(key=>[key,total[key].toString()])) as Record<Field,string>});
   }
  }
  return {source,sourceScenarioIds:candidates.map(s=>s.id),proposedScenarios:candidates,summaries,hasDifferences:summaries.some(s=>s.changedMonths>0)};
