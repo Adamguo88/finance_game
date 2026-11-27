@@ -83,6 +83,10 @@ schema5的`migration`保存舊migration原物件（legacy）、及`itemized`紀�
 
 預覽顯示每方案每月共同數字（現金／資產／負債／淨資產／收入／支出／本息／利息）及首次差異、合計差異、差異原因；不能只比目前月。V3採新取整／分項語意，可能與舊引擎相差分位，**不宣稱無損財務等價**。套用要求使用者確認完整差異與改動假設；若標示「保留結果」模式，任何一分差異都拒絕，沒有容差。舊結果依原sourceScenarios路由仍可重播；取消不改專案或IndexedDB。migration來源紀錄、未知格式與來源樹關聯也須strict驗證，不將任意JSON當可信備份。
 
+## schema5續遷移的實際封套
+
+sourceSchema=5時，sourceEnvelope為 `{schemaVersion:5,migration:{legacy,itemizedRecordIndexes}}`。indexes是紀錄建立前已存在的itemized紀錄完整前綴 `[0,…,n−1]`；不重複嵌套原紀錄，只在本紀錄sourceScenarios保存此次選中舊樹。解析同時重驗所有前序來源與baseline，拒絕缺漏／重排／前向引用。紀錄與來源備份仍計入同一2 MB上限，已V3者不可再次遷移。這是獨立domain能力，尚未代表生產入口已開放schema5。
+
 ## 可重用數值與驗收閘門
 
 [26個#27 reference fixtures](fixtures/pc-event-contract.json)保留原格式：新引擎adapter只換輸入表示，不修改expected以配合程式。指定薪資／兼職月收入例為1000000、1000000、6500000分；兩筆零息債務在月1／月2付款10000／20000分、餘額350000／330000分；租金1000000與生活費2000000分分離，不含本金。fixture中basis-points×100為新ppm。

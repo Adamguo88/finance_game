@@ -6,10 +6,11 @@ import {parseProject} from './scenarios';
 import {V3MappingPlanSchema,validateV3SourceMappings} from './migration-v3-mappings';
 
 /** Staged codec: deliberately separate from the current application's schema1–4 parser. */
+const resumedEnvelope=z.object({schemaVersion:z.literal(5),migration:z.object({legacy:MetadataMigrationRecordSchema.nullable(),itemizedRecordIndexes:z.array(z.number().int().min(0).max(19)).max(20)}).strict()}).strict();
 const sourceEnvelope=z.discriminatedUnion('schemaVersion',[
- ProjectV1Schema.omit({scenarios:true}),ProjectV2Schema.omit({scenarios:true}),ProjectV3Schema.omit({scenarios:true}),ProjectV4Schema.omit({scenarios:true})
+ ProjectV1Schema.omit({scenarios:true}),ProjectV2Schema.omit({scenarios:true}),ProjectV3Schema.omit({scenarios:true}),ProjectV4Schema.omit({scenarios:true}),resumedEnvelope
 ]);
-export const ItemizedMigrationRecordSchema=z.object({version:z.literal(1),sourceSchema:z.union([z.literal(1),z.literal(2),z.literal(3),z.literal(4)]),sourceScenarioIds:z.array(z.string().min(1)).min(1).max(20),sourceScenarios:z.array(ScenarioSchema).min(1).max(20),sourceEnvelope,mappings:z.array(V3MappingPlanSchema).max(20020)}).strict();
+export const ItemizedMigrationRecordSchema=z.object({version:z.literal(1),sourceSchema:z.union([z.literal(1),z.literal(2),z.literal(3),z.literal(4),z.literal(5)]),sourceScenarioIds:z.array(z.string().min(1)).min(1).max(20),sourceScenarios:z.array(ScenarioSchema).min(1).max(20),sourceEnvelope,mappings:z.array(V3MappingPlanSchema).max(20020)}).strict();
 export const ProjectV5Schema=z.object({schemaVersion:z.literal(5),scenarios:z.array(z.discriminatedUnion('engineVersion',[ScenarioV1Schema,ScenarioV2Schema,ScenarioV3Schema])).min(1).max(20),migration:z.object({legacy:MetadataMigrationRecordSchema.nullable(),itemized:z.array(ItemizedMigrationRecordSchema).max(20)}).strict()}).strict();
 export type ProjectV5=z.infer<typeof ProjectV5Schema>;
 export type ItemizedMigrationRecord=z.infer<typeof ItemizedMigrationRecordSchema>;
@@ -19,7 +20,7 @@ function sourceProject(record:ItemizedMigrationRecord){
  if(record.sourceSchema!==record.sourceEnvelope.schemaVersion)throw Error('遷移來源容器版本不一致');
  // Original global migration metadata is archived, but may name unselected independent trees.
  // Revalidate the selected original financial trees with that global reference removed.
- const envelope=record.sourceEnvelope.schemaVersion===1?record.sourceEnvelope:{...record.sourceEnvelope,migration:null};
+ const envelope=record.sourceEnvelope.schemaVersion===5?{schemaVersion:4,migration:null}:record.sourceEnvelope.schemaVersion===1?record.sourceEnvelope:{...record.sourceEnvelope,migration:null};
  return parseProject({...envelope,scenarios:record.sourceScenarios});
 }
 function originalBaseline(old:Scenario,target:ScenarioV3):ScenarioV3{
@@ -46,9 +47,13 @@ export function parseProjectV5(input:unknown):ProjectV5{
  }
  if(p.migration.legacy){const ids=p.migration.legacy.sourceScenarioIds;if(new Set(ids).size!==ids.length||ids.some(id=>!map.has(id)))throw Error('舊遷移來源紀錄無效');}
  const converted=new Set<string>();
- for(const record of p.migration.itemized){
+ for(const [index,record] of p.migration.itemized.entries()){
   if(!sameIds(record.sourceScenarioIds,record.sourceScenarios.map(s=>s.id)))throw Error('遷移來源方案清單不一致');
-  const legacy=record.sourceEnvelope.schemaVersion===1?null:record.sourceEnvelope.migration;
+  const legacy=record.sourceEnvelope.schemaVersion===5?record.sourceEnvelope.migration.legacy:record.sourceEnvelope.schemaVersion===1?null:record.sourceEnvelope.migration;
+  if(record.sourceEnvelope.schemaVersion===5){
+   const indexes=record.sourceEnvelope.migration.itemizedRecordIndexes;
+   if(indexes.length!==index||indexes.some((value,i)=>value!==i))throw Error('續遷移必須按序引用全部既有紀錄，不可前向、重複或遺漏');
+  }
   if(JSON.stringify(legacy)!==JSON.stringify(p.migration.legacy))throw Error('原始全域遷移資料未保留');
   const source=sourceProject(record),baselines:ScenarioV3[]=[];
   for(const old of source.scenarios){
