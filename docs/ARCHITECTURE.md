@@ -1,12 +1,12 @@
 > 場景資產：#17 已接入 LifeWorld/models 的原創向量與 HTML 區域入口，仍只消費快照；規格見 WORLD_ASSETS.md。
 
-> 現行渲染：#17 資產與 #18 可延遲載入的 PixiJS renderer 已接入，保留 SVG 備援；見 PIXI_RENDERER.md。#29／#28 已交付明細／視覺資料；後續 #27 → #42–#44 先落定分項財務契約與新引擎／遷移，規劃見 ROADMAP.md／NEXT_PHASE.md。已交付的V3獨立切片尚未接入此生產路由。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
+> 現行渲染：#17 資產與 #18 可延遲載入的 PixiJS renderer 已接入，保留 SVG 備援；見 PIXI_RENDERER.md。#29／#28 已交付明細／視覺資料；後續 #27 → #42–#44 先落定分項財務契約與新引擎／遷移，規劃見 ROADMAP.md／NEXT_PHASE.md。V3已接入分項讀取／保存及命名分支；完整世界映射與事件演出由#51接續。財務 domain 與渲染繼續分離。CI 觸發與 Pages 發布配置見 docs/CI.md（使用者 PR #14）。
 
 # V3分項與遷移切片（#43尚未完成）
 
 依[ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)逐步交付：model-v3／engine-v3提供獨立分項驗證與月度運算；migration-v3-preview比較current／history全月份；migration-v3-mappings驗證明確來源對應；project-v5與migration-v3-session提供獨立容器驗證及記憶體確認協定。
 
-產品storage經workspace.parseStoredProject分派schema1–4／schema5；舊ProjectSchema仍限制舊型別。根畫面按容器選擇原工作室或分項檢視／保存入口，詳見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)。schema5來源的舊樹續遷移以索引引用先前紀錄；真正備份下載／映射／差異確認的畫面仍待整合，domain確認回傳候選不代表已改工作或寫DB。V3原子修改／命名分支由scenarios-v3提供，保留歷史及來源baseline，見[ITEMIZED_MUTATIONS.md](ITEMIZED_MUTATIONS.md)。獨立codec沿用2 MB合計上限，來源備份與映射一併計算；歷史baseline不得丟失。
+產品storage經workspace.parseStoredProject分派schema1–4／schema5；舊ProjectSchema仍限制舊型別。根畫面按容器選擇原工作室或分項檢視／保存入口，詳見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)。schema5來源的舊樹續遷移以索引引用先前紀錄；真正備份下載／逐版映射／全月差異確認的畫面候選見[ITEMIZED_MIGRATION_UI.md](ITEMIZED_MIGRATION_UI.md)，domain確認回傳候選不代表已改工作或寫DB。V3原子修改／命名分支由scenarios-v3提供，保留歷史及來源baseline，見[ITEMIZED_MUTATIONS.md](ITEMIZED_MUTATIONS.md)。獨立codec沿用2 MB合計上限，來源備份與映射一併計算；歷史baseline不得丟失。
 
 # 版本路由與 v0.2 實作
 
