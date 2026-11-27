@@ -46,3 +46,11 @@
 .itemizedMigration table { width: 100%; border-collapse: collapse; }
 .itemizedMigration th, .itemizedMigration td { padding: .4rem; text-align: left; overflow-wrap: anywhere; border-bottom: 1px solid var(--border, #d4c9bb); }
 .migrationMonthTable { max-height: 24rem; overflow: auto; margin: 1rem 0; }
+
+.itemizedEventCards { display: flex; flex-wrap: wrap; gap: .5rem; }
+.itemizedEventCards p { flex-basis: 100%; font-size: 13px; }
+.itemizedBody section[aria-label="人生事件"] li { padding: .8rem 0; border-bottom: 1px solid var(--border); }
+.itemizedBody section[aria-label="人生事件"] .actions { margin-top: .6rem; flex-wrap: wrap; }
+.itemizedEventEditor label { margin: .75rem 0; }
+.itemizedEventEditor table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.itemizedEventEditor th, .itemizedEventEditor td { padding: .4rem; text-align: left; overflow-wrap: anywhere; border-bottom: 1px solid var(--border); }
