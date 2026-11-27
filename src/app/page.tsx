@@ -1,4 +1,7 @@
 'use client';
+import ItemizedWorkspace from './components/ItemizedWorkspace';
+import type {StoredProject} from '@/domain/workspace';
+import type {ProjectV5} from '@/domain/project-v5';
 import type {AvatarPresentation} from '@/domain/avatar-metadata';
 import type {InitialDetails} from '@/domain/initial-details';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -28,6 +31,12 @@ const currency=(n:number)=>new Intl.NumberFormat('zh-TW',{style:'currency',curre
 function Metrics({s}:{s:Snapshot}){return <div className="metrics">{[['可動用現金',s.cash],['其他／房屋資產',s.assets],['淨資產',s.netWorth],['總負債',s.debt],['本月現金變化',s.cashFlow]].map(([label,value])=><div key={String(label)}><small>{label}</small><strong className={Number(value)<0?'negative':''}>{currency(Number(value))}</strong></div>)}</div>;}
 function Ledger({snapshot:s,isV2}:{snapshot:SnapshotV2;isV2:boolean}){return <div className="ledger"><span>月收入 {currency(s.income)}</span><span>{isV2?'生活費（不含租金）':'生活支出'} {currency(isV2?s.livingExpenses:s.expenses)}</span>{isV2&&<span>月租金 {currency(s.rent)}</span>}<span>房貸本息 {currency(s.payment)}</span><span>其中利息 {currency(s.interest)}</span>{isV2&&<><span>其他負債本息 {currency(s.scheduledDebtPayment)}</span><span>其他負債利息 {currency(s.scheduledDebtInterest)}</span><span>未排程負債 {currency(s.unallocatedDebt)}</span></>}</div>;}
 export default function Studio(){
+ const [entry,setEntry]=useState<{project:StoredProject;saved:boolean;key:number}|null>(null);
+ function open(project:StoredProject,saved:boolean){setEntry(current=>({project,saved,key:(current?.key??0)+1}));}
+ if(entry?.project.schemaVersion===5)return <ItemizedWorkspace key={entry.key} initialProject={entry.project} initiallySaved={entry.saved} onOpenLegacy={open}/>;
+ return <LegacyStudio key={entry?.key??0} openedProject={entry?.project} openedSaved={entry?.saved??false} onOpenV5={open}/>;
+}
+function LegacyStudio({openedProject,openedSaved,onOpenV5}:{openedProject?:Project;openedSaved:boolean;onOpenV5:(project:ProjectV5,saved:boolean)=>void}){
  const [memoir,setMemoir]=useState(false);
  const [gapChoices,setGapChoices]=useState(false),[gapError,setGapError]=useState('');
  const [gapFollowUp,setGapFollowUp]=useState<{source:string;branch:string;month:number;workspace:number}|null>(null);
@@ -35,9 +44,9 @@ export default function Studio(){
  const [libraryCategory,setLibraryCategory]=useState('全部');
  const profileDetails=useRef<HTMLDetailsElement>(null);
  const editModeButton=useRef<HTMLButtonElement>(null);
- const [screen,setScreen]=useState<'welcome'|'setup'|'studio'>('welcome');
+ const [screen,setScreen]=useState<'welcome'|'setup'|'studio'>(openedProject?'studio':'welcome');
  const [setupReturn,setSetupReturn]=useState<'welcome'|'studio'>('welcome');
- const [hasSession,setHasSession]=useState(false),[workspaceSaved,setWorkspaceSaved]=useState(false),[created,setCreated]=useState(false);
+ const [hasSession,setHasSession]=useState(!!openedProject),[workspaceSaved,setWorkspaceSaved]=useState(openedSaved),[created,setCreated]=useState(false);
  function showScreen(next:'welcome'|'setup'|'studio'){setScreen(next);try{sessionStorage.setItem('life-studio-screen',next==='studio'?'studio':'welcome');}catch{}}
  const [library,setLibrary]=useState(false);
  const [modalOpener,setModalOpener]=useState<HTMLElement|null>(null);
@@ -47,10 +56,10 @@ export default function Studio(){
  const [workspaceRevision,setWorkspaceRevision]=useState(0);
  const [hydrated,setHydrated]=useState(false);
  useEffect(()=>{try{if(sessionStorage.getItem('life-studio-screen')==='studio'){setScreen('studio');setHasSession(true);}}catch{}setHydrated(true);},[]);
- const [project,setProject]=useState<Project>(()=>structuredClone(initialProject));
- const [active,setActive]=useState('original'),[mode,setMode]=useState<Mode>('編輯'),[message,setMessage]=useState('從你的起點開始，或先探索範例人生。');
+ const [project,setProject]=useState<Project>(()=>structuredClone(openedProject??initialProject));
+ const [active,setActive]=useState(openedProject?.scenarios[0].id??'original'),[mode,setMode]=useState<Mode>('編輯'),[message,setMessage]=useState(openedProject?(openedSaved?'已載入本機存檔。':'人生參數已就緒，尚未儲存至本機。'):'從你的起點開始，或先探索範例人生。');
  const [editorError,setEditorError]=useState('');
- const [editing,setEditing]=useState<LifeEvent|null>(null),[branchName,setBranchName]=useState('另一種可能'),[compare,setCompare]=useState<string[]>(['original']),[busy,setBusy]=useState(false);
+ const [editing,setEditing]=useState<LifeEvent|null>(null),[branchName,setBranchName]=useState('另一種可能'),[compare,setCompare]=useState<string[]>([openedProject?.scenarios[0].id??'original']),[busy,setBusy]=useState(false);
  const {month,playing,speed,setMonth,setPlaying,setSpeed}=usePlayback();
  useEffect(()=>{
   if(busy)return;
@@ -75,14 +84,14 @@ export default function Studio(){
  function checkDraft(){if(!profileDirty)return true;setPlaying(false);setMessage('請先按「更新基礎資料」套用表單，或選擇「還原未套用資料」。');return false;}
  function startStorage(){storageOpener.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setBusy(true);setPlaying(false);}
  function update(s:Scenario){const next=replaceScenario(project,s);setProject(next);setWorkspaceSaved(false);}
- async function persist(load=false){if(!checkDraft())return;startStorage();try{if(load){const p=await loadProject();if(!p)throw new Error('尚無本機存檔');setProject(p);setProfileDirty(false);setWorkspaceRevision(v=>v+1);setActive(p.scenarios[0].id);setCompare(p.scenarios.slice(0,2).map(s=>s.id));setMonth(0);setEditing(null);setMigration(null);}else await saveProject(project);setWorkspaceSaved(true);setHasSession(true);showScreen('studio');setMessage(load?'已載入本機存檔。':'已存入此瀏覽器。建議另行匯出備份。');}catch(e){setMessage('存檔操作失敗：'+userMessage(e));}finally{setBusy(false);}}
+ async function persist(load=false){if(!checkDraft())return;startStorage();try{if(load){const p=await loadProject();if(!p)throw new Error('尚無本機存檔');if(p.schemaVersion===5){onOpenV5(p,true);return;}setProject(p);setProfileDirty(false);setWorkspaceRevision(v=>v+1);setActive(p.scenarios[0].id);setCompare(p.scenarios.slice(0,2).map(s=>s.id));setMonth(0);setEditing(null);setMigration(null);}else await saveProject(project);setWorkspaceSaved(true);setHasSession(true);showScreen('studio');setMessage(load?'已載入本機存檔。':'已存入此瀏覽器。建議另行匯出備份。');}catch(e){setMessage('存檔操作失敗：'+userMessage(e));}finally{setBusy(false);}}
  function fork(){act(()=>{if(!checkDraft())return;if(project.scenarios.length>=20)throw new Error('最多 20 個人生');const b=forkScenario(scenario,crypto.randomUUID(),branchName.trim(),safeMonth);setProject(parseProject({...project,scenarios:[...project.scenarios,b]}));setWorkspaceSaved(false);setCompare([scenario.id,b.id]);setActive(b.id);setProfileDirty(false);setEditing(null);setPlaying(false);setMode('編輯');setMessage('已建立分支；此前歷史保留，之後的事件可自由編輯。');});}
  function saveEvent(next:LifeEvent){try{update(changeEvents(scenario,[...scenario.events.filter(e=>e.id!==editing?.id),next]));setEditing(null);setEditorError('');setMessage('事件已更新，所有後續月份已重新計算。');}catch(error){setEditorError(userMessage(error,'事件設定無效'));}}
  function saveProfile(profile:Profile,details?:InitialDetails,presentation?:AvatarPresentation){act(()=>{update(changeProfile(scenario,profile,details,presentation));setProfileDirty(false);setMonth(Math.min(month,(90-profile.age)*12));setMessage('已保留新版基礎資料，既有分支不受影響。');});}
  function previewMigration(){setModalOpener(document.activeElement instanceof HTMLElement?document.activeElement:null);act(()=>{if(!canMigrateProject(project))throw new Error('專案已升級或混用引擎，不再次轉換');if(profileDirty)throw new Error('請先按「更新基礎資料」保存表單內容，再升級模型。');setPlaying(false);setEditing(null);setMigration({source:structuredClone(project),target:migrateProject(project)});});}
  function confirmMigration(){act(()=>{if(!migration)return;setProject(parseProject(migration.target));setWorkspaceSaved(false);setProfileDirty(false);setWorkspaceRevision(v=>v+1);setMigration(null);setMessage('已轉換新版模型，尚未儲存；原始備份可還原舊格式。');});}
  function openEditor(event:LifeEvent){if(!checkDraft())return;setModalOpener(document.activeElement instanceof HTMLElement?document.activeElement:null);setEditorError('');setPlaying(false);setEditing(event);}
- async function handleImport(e:React.ChangeEvent<HTMLInputElement>){const file=e.target.files?.[0];e.target.value='';if(!file||!checkDraft())return;startStorage();try{if(file.size>2000000)throw new Error('存檔不可超過 2 MB');const p=importProject(await file.text());setProject(p);setWorkspaceSaved(false);setCreated(false);setHasSession(true);showScreen('studio');setProfileDirty(false);setWorkspaceRevision(v=>v+1);setActive(p.scenarios[0].id);setCompare(p.scenarios.slice(0,2).map(s=>s.id));setMonth(0);setEditing(null);setMigration(null);setMessage('匯入成功；可儲存到此瀏覽器。');}catch(error){setMessage('匯入失敗：'+userMessage(error));}finally{setBusy(false);}}
+ async function handleImport(e:React.ChangeEvent<HTMLInputElement>){const file=e.target.files?.[0];e.target.value='';if(!file||!checkDraft())return;startStorage();try{if(file.size>2000000)throw new Error('存檔不可超過 2 MB');const p=importProject(await file.text());if(p.schemaVersion===5){onOpenV5(p,false);return;}setProject(p);setWorkspaceSaved(false);setCreated(false);setHasSession(true);showScreen('studio');setProfileDirty(false);setWorkspaceRevision(v=>v+1);setActive(p.scenarios[0].id);setCompare(p.scenarios.slice(0,2).map(s=>s.id));setMonth(0);setEditing(null);setMigration(null);setMessage('匯入成功；可儲存到此瀏覽器。');}catch(error){setMessage('匯入失敗：'+userMessage(error));}finally{setBusy(false);}}
  function enterProject(p:Project,isCreated=false){setProject(p);setActive(p.scenarios[0].id);setCompare([p.scenarios[0].id]);setMonth(0);setPlaying(false);setMode('編輯');setEditing(null);setMigration(null);setLibrary(false);setProfileDirty(false);setWorkspaceRevision(v=>v+1);setWorkspaceSaved(false);setHasSession(true);setCreated(isCreated);setMessage(isCreated?'人生起點已建立，工作尚未儲存。從一張事件卡開始探索。':'範例資料已就緒，從一張事件卡開始。');showScreen('studio');}
  function returnHome(){if(!checkDraft())return;setPlaying(false);setMessage('目前工作保留在此分頁，返回即可繼續；重新整理後請讀取本機存檔。');showScreen('welcome');}
  function beginEvent(type:EventType){act(()=>{if(!checkDraft())return;openEditor(createEventDraft(type,scenario,safeMonth));});}

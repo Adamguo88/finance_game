@@ -1,0 +1,52 @@
+'use client';
+import {useEffect,useMemo,useRef,useState,type ChangeEvent} from 'react';
+import {orderV3Events} from '@/domain/engine-v3';
+import {initialProject,type Project} from '@/domain/model';
+import type {ProjectV5} from '@/domain/project-v5';
+import {simulateStoredScenario,type StoredProject,type StoredScenario} from '@/domain/workspace';
+import {saveProject,loadProject,exportProject,importProject} from '@/storage/project';
+import {Welcome,LifeSetup} from './Journey';
+import {LifeWorld} from '@/scene/LifeWorld';
+import {userMessage} from '../messages';
+import {formatCents as money} from '../money';
+type Row=ReturnType<typeof simulateStoredScenario>[number];
+const eventLabels={buyHouse:'購買住宅',unemployment:'收入中斷',rentChange:'租金變更',incomeChange:'收入變更'};
+const groupLabels={incomes:'收入來源',expenses:'支出項目',assets:'持有資產',liabilities:'負債餘額'};
+const flowLabels={income:'收入',expense:'支出',interest:'利息',principalDraw:'借入本金',principalRepay:'償還本金',assetPurchase:'購買資產',assetSale:'出售資產',investmentTransfer:'投資轉換',fee:'費用',claim:'理賠'};
+function Totals({row}:{row:Row}){return <><div className="metrics">{[['可動用現金',row.cash],['資產',row.assets],['負債',row.debt],['淨資產',row.netWorth],['本月現金變化',row.cashFlow]].map(([label,value])=><div key={label}><small>{label}</small><strong className={Number(value)<0?'negative':''}>{money(Number(value))}</strong></div>)}</div><div className="ledger"><span data-testid="itemized-income">本月收入 {money(row.income)}</span><span>本月支出 {money(row.expenses)}</span><span>貸款本息 {money(row.payment)}</span><span>其中利息 {money(row.interest)}</span></div></>;}
+function names(s:StoredScenario){const result=new Map<string,string>();if(s.engineVersion==='3.0.0'){for(const list of [s.profile.incomes,s.profile.expenses,s.profile.assets,s.profile.liabilities])for(const x of list)result.set(x.id,x.name);for(const e of s.events)if(e.type==='buyHouse'){result.set(e.assetId,e.name);if(e.loan)result.set(e.loan.liabilityId,e.loan.name);if(e.holdingExpense)result.set(e.holdingExpense.expenseId,e.holdingExpense.name);}}return result;}
+export default function ItemizedWorkspace({initialProject:initial,initiallySaved,onOpenLegacy}:{initialProject:ProjectV5;initiallySaved:boolean;onOpenLegacy:(p:Project,saved:boolean)=>void}){
+ const root=useRef<HTMLElement>(null);
+ useEffect(()=>{root.current?.focus();},[]);
+ const [project,setProject]=useState(initial),[active,setActive]=useState(initial.scenarios[0].id),[selected,setSelected]=useState(initial.scenarios.slice(0,2).map(s=>s.id));
+ const [screen,setScreen]=useState<'welcome'|'setup'|'studio'>('studio'),[mode,setMode]=useState<'體驗'|'平行人生'>('體驗');
+ const [month,setMonth]=useState(0),[playing,setPlaying]=useState(false),[busy,setBusy]=useState(false),[saved,setSaved]=useState(initiallySaved),[message,setMessage]=useState(initiallySaved?'已讀取本機人生存檔。':'已匯入完整人生參數，尚未儲存至本機。');
+ const scenario=project.scenarios.find(s=>s.id===active)??project.scenarios[0];
+ const shown=useMemo(()=>mode==='平行人生'?project.scenarios.filter(s=>selected.includes(s.id)):[scenario],[mode,project,selected,scenario]);
+ const views=useMemo(()=>shown.map(s=>({scenario:s,rows:simulateStoredScenario(s)})),[shown]);
+ const horizon=shown.length?Math.min(...shown.map(s=>(90-s.profile.age)*12)):(90-scenario.profile.age)*12;
+ const at=Math.min(month,horizon),currentRows=useMemo(()=>simulateStoredScenario(scenario),[scenario]),current=currentRows[Math.min(at,currentRows.length-1)];
+ const labels=useMemo(()=>names(scenario),[scenario]);
+ const eventList=useMemo(()=>scenario.engineVersion==='3.0.0'?orderV3Events(scenario.events):[...scenario.events].sort((a,b)=>a.month-b.month||a.id.localeCompare(b.id,'en')),[scenario]);
+ useEffect(()=>{if(!playing||busy||screen!=='studio')return;const timer=setInterval(()=>setMonth(m=>Math.min(m+1,horizon)),1000);return()=>clearInterval(timer);},[playing,busy,screen,horizon]);
+ useEffect(()=>{if(month>=horizon)setPlaying(false);},[month,horizon]);
+ useEffect(()=>{setMonth(m=>Math.min(m,horizon));},[horizon]);
+ function open(p:StoredProject,isSaved:boolean){setPlaying(false);if(p.schemaVersion!==5){onOpenLegacy(p,isSaved);return;}setProject(p);setActive(p.scenarios[0].id);setSelected(p.scenarios.slice(0,2).map(s=>s.id));setMonth(0);setSaved(isSaved);setScreen('studio');setMessage(isSaved?'已讀取本機人生存檔。':'匯入成功，尚未儲存至本機。');}
+ async function persist(read=false){setPlaying(false);setBusy(true);try{if(read){const p=await loadProject();if(!p)throw Error('尚無本機存檔');open(p,true);}else{await saveProject(project);setSaved(true);setMessage('已存入此瀏覽器，完整來源與歷史均已保留。');}}catch(e){setMessage('存檔操作失敗：'+userMessage(e));}finally{setBusy(false);}}
+ async function handleImport(e:ChangeEvent<HTMLInputElement>){const file=e.target.files?.[0];e.target.value='';if(!file)return;setPlaying(false);setBusy(true);try{if(file.size>2000000)throw Error('存檔不可超過 2 MB');open(importProject(await file.text()),false);}catch(error){setMessage('匯入失敗：'+userMessage(error));}finally{setBusy(false);}}
+ function download(){try{const json=exportProject(project),url=URL.createObjectURL(new Blob([json],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='life-studio.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);setMessage('已匯出完整人生、來源與歷史版本。');}catch(error){setMessage('匯出失敗：'+userMessage(error));}}
+ const summary=<div className="setupPreview"><p className="eyebrow">YOUR LIFE, YOUR CHOICES</p><h2>{scenario.name}</h2><p>第 {at} 月 · {scenario.profile.age+Math.floor(at/12)} 歲</p><Totals row={current}/></div>;
+ if(screen==='welcome')return <Welcome world={summary} busy={busy} message={message} canResume onResume={()=>setScreen('studio')} onNew={()=>setScreen('setup')} onExample={()=>onOpenLegacy(structuredClone(initialProject),false)} onLoad={()=>persist(true)} onImport={handleImport}/>;
+ if(screen==='setup')return <LifeSetup onComplete={p=>onOpenLegacy(p,false)} onCancel={()=>setScreen('welcome')} world={(s,appearance,age)=><LifeWorld snapshot={s} appearance={appearance} age={age}/>}/>;
+ return <main ref={root} tabIndex={-1} className="studio itemizedStudio" aria-label="分項人生工作室" aria-busy={busy}><header><div className="brand">LIFE STUDIO<span>人生，沒有唯一的劇本。</span></div><span className="workspaceState">{saved?'已儲存至本機':'工作尚未儲存'}</span><div className="actions"><button disabled={busy} onClick={()=>{setPlaying(false);setScreen('welcome');}}>首頁</button><button disabled={busy} onClick={()=>persist()}>儲存</button><button disabled={busy} onClick={()=>persist(true)}>讀取</button><button disabled={busy} onClick={download}>匯出</button><label className="fileButton">匯入<input disabled={busy} aria-label="匯入人生存檔" type="file" accept=".json,application/json" onChange={handleImport}/></label></div></header>
+ <div className="intro"><div><small>YOUR LIFE, YOUR CHOICES</small><h1>先體驗，再選擇。</h1><p>用每月的變化，理解不同人生的財務影響。</p></div><div className="age">{mode==='平行人生'?<><strong>{at}</strong> 個月 <small>共同時間位置</small></>:<><strong>{scenario.profile.age+Math.floor(at/12)}</strong> 歲 <small>第 {at} 月</small></>}</div></div>
+ <nav aria-label="人生模式">{(['體驗','平行人生'] as const).map(m=><button disabled={busy} key={m} className={mode===m?'selected':''} aria-pressed={mode===m} onClick={()=>{setMode(m);setPlaying(false);}}>{m}</button>)}</nav>
+ <fieldset className="itemizedControls" disabled={busy}><label>目前人生<select aria-label="目前人生" value={scenario.id} onChange={e=>{setActive(e.target.value);setPlaying(false);}}>{project.scenarios.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label><div className="timelineControls"><button aria-label={playing?'暫停人生':'播放人生'} disabled={at>=horizon} onClick={()=>setPlaying(p=>!p)}>{playing?'暫停':'播放'}</button><button disabled={at===0} onClick={()=>{setPlaying(false);setMonth(at-1);}}>上一個月</button><button disabled={at>=horizon} onClick={()=>{setPlaying(false);setMonth(at+1);}}>下一個月</button><label>第 {at} 月<input aria-label="人生時間軸" type="range" min={0} max={horizon} step={1} value={at} onChange={e=>{setPlaying(false);setMonth(Number(e.target.value));}}/></label></div>
+ {mode==='平行人生'&&<fieldset><legend>選擇比較人生</legend>{project.scenarios.map(s=><label key={s.id}><input type="checkbox" checked={selected.includes(s.id)} onChange={e=>setSelected(xs=>e.target.checked?[...xs,s.id]:xs.filter(id=>id!==s.id))}/>{s.name}</label>)}</fieldset>}</fieldset>
+ {mode==='平行人生'?<section aria-label="平行人生比較"><p>各人生沿用標示的財務模型；比較不會自動轉換版本。</p>{views.length?views.map(v=><article key={v.scenario.id}><h2>{v.scenario.name}</h2><p>{v.scenario.profile.age+Math.floor(at/12)} 歲 · 第 {at%12} 個月（經過 {at} 月） · 財務模型 {v.scenario.engineVersion}</p><Totals row={v.rows[at]}/></article>):<p>請至少選擇一個人生。</p>}</section>:<section aria-label="目前人生財務"><p className="engineVersion">財務模型 {scenario.engineVersion} · 第 {at} 月</p><Totals row={current}/>
+ {'items' in current&&<div className="itemizedGroups">{Object.entries(groupLabels).map(([group,title])=><section key={group}><h2>{title}</h2><table><thead><tr><th>項目</th><th>月額／期末餘額</th><th>本月現金流</th><th>狀態</th></tr></thead><tbody>{Object.entries(current.items[group as keyof typeof groupLabels]).map(([id,item])=><tr key={id}><th scope="row">{labels.get(id)??'原有項目'}</th><td>{money(item.value)}</td><td>{money(item.flow)}</td><td>{item.active?'有效':'已結束'}</td></tr>)}{Object.keys(current.items[group as keyof typeof groupLabels]).length===0&&<tr><td colSpan={4}>尚無{title}</td></tr>}</tbody></table></section>)}</div>}
+ {'flows' in current&&<details><summary>查看本月資金來源</summary><table><thead><tr><th>項目</th><th>用途</th><th>現金變化</th></tr></thead><tbody>{current.flows.map((flow,i)=><tr key={i}><td>{labels.get(flow.entityId)??'原有項目'}</td><td>{flowLabels[flow.category]}</td><td>{money(flow.amount)}</td></tr>)}</tbody></table></details>}
+ </section>}
+ <section aria-label="人生事件"><h2>人生事件</h2>{scenario.events.length?<ol>{eventList.map(e=><li key={e.id}>第 {e.month} 月 · {eventLabels[e.type]}{'incomeId' in e?' · '+(labels.get(e.incomeId)??'收入來源'):''}{'expenseId' in e?' · '+(labels.get(e.expenseId)??'租金項目'):''}</li>)}</ol>:<p>尚未安排事件。</p>}</section>
+ <p role="status">{busy?'正在處理存檔，請稍候…':message}</p><footer><small>匯入只替換目前工作，須另按儲存才會寫入本機。原始來源與歷史版本保留於完整 JSON 備份。</small></footer></main>;
+}

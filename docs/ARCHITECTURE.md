@@ -6,7 +6,7 @@
 
 依[ITEMIZED_FINANCIAL_CONTRACT.md](ITEMIZED_FINANCIAL_CONTRACT.md)逐步交付：model-v3／engine-v3提供獨立分項驗證與月度運算；migration-v3-preview比較current／history全月份；migration-v3-mappings驗證明確來源對應；project-v5與migration-v3-session提供獨立容器驗證及記憶體確認協定。
 
-生產ProjectSchema、storage與現有UI仍沿schema1–4／V1–V2，沒有開放新版匯入。schema5來源的舊樹續遷移已由獨立codec／session支援，以索引引用先前紀錄；產品版本路由、真正備份下載／差異確認／保存入口仍待整合；domain確認回傳候選不代表已改工作或寫DB。獨立codec沿用2 MB合計上限，來源備份與映射一併計算；歷史baseline不得丟失。
+產品storage經workspace.parseStoredProject分派schema1–4／schema5；舊ProjectSchema仍限制舊型別。根畫面按容器選擇原工作室或分項檢視／保存入口，詳見[ITEMIZED_WORKSPACE.md](ITEMIZED_WORKSPACE.md)。schema5來源的舊樹續遷移以索引引用先前紀錄；真正備份下載／映射／差異確認的畫面仍待整合，domain確認回傳候選不代表已改工作或寫DB。獨立codec沿用2 MB合計上限，來源備份與映射一併計算；歷史baseline不得丟失。
 
 # 版本路由與 v0.2 實作
 

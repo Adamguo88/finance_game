@@ -1,6 +1,6 @@
 # 驗證現況與證據
 
-更新：2026-11-26（Asia/Taipei）。本階段依序完成 #29／#28 實作與聯合測試；下方各段保留當時基準，舊「待實作」文字不代表目前狀態。正式合併／CI／Pages證據由對應PR回讀核對。
+更新：2026-11-27（Asia/Taipei）。當前推進#43分項存檔／遷移與產品入口；下方各段保留當時基準，舊「待實作」文字不代表目前狀態。正式合併／CI／Pages證據由對應PR回讀核對。
 
 | 類別 | 最新已確認證據 | 界線 |
 |---|---|---|
@@ -11,7 +11,19 @@
 | 真人／多瀏覽器／實機效能 | #6／#24 尚待驗收 | 軟體 GPU 不能證明硬體 60fps；未測不填通過 |
 | 待開發 | #42–#44短期 → #45–#55中期 → #23報表 | #27契約已交付；#25行動端等#24完成 |
 
-## #43 第六切片：schema5混合來源續遷移（候選）
+## #43 第七切片：產品版本分派與分項讀取／保存（候選）
+
+新增workspace.parseStoredProject分派schema1–4／schema5，IndexedDB沿用原DB version1與current key；原ProjectSchema／V1/V2公式不改。UI根節點按容器選擇原工作室或分項工作室，新資料不交給舊表單覆寫。分項檢視、逐月資金來源、混合版本比較、首頁／取消建立、JSON往返及IndexedDB另存已接線，完整邊界見ITEMIZED_WORKSPACE。
+
+補上current／history全期間的數值重播：格式合法但未來累計超出safe integer的資料，在匯入／保存前拒絕並保留工作，避免到畫面render才拋錯。比較標示各人生年齡與共同經過月份；事件清單共用原引擎階段／依賴排序。大額顯示以整數分格式化至安全整數極限，不經Number/100丟失分位。
+
+本地npm test 284/284、typecheck、root build通過；完整root E2E 66/66（4.0分鐘），最後顯示補強後Pages build及 `/finance_game/` 子路徑5/5通過（11.8秒）；root新入口亦曾5/5通過。新增5個瀏覽器案例涵蓋來源／history與JSON完整保留、指定收入逐月結果、IndexedDB儲存／讀取、混合版本／跨年齡比較與舊格式切回、首頁／取消、損壞本機資料與未來溢出拒絕。首次瀏覽器啟動遇環境重啟導致server失連，改在同一程序管理服務後重跑通過，不算產品失敗。
+
+root初始gzip JS 280,198 bytes、全部chunks469,490 bytes，依HTML script URLs去重逐檔gzip(mtime=0)，較#28基準各增10,103 bytes；沒有新依賴、後端或外部資料服務。已檢視1440×900 synthetic資料截圖，桌面1280×800／1440×900／1920×1080無水平溢出由新增案例檢查；不冒稱真人、多瀏覽器、合法最大資料延遲或硬體效能已完成。
+
+本輪不交付V3參數／事件編輯、分支變更或完整遷移映射／確認介面；#43尚待這些整合前置與保存流程驗收，#44及中期維持原順序，不結案。PR #64合併main `45c552e`，head CI 45777843600、main CI 45948676840、Pages 45948676904均success。
+
+## #43 第六切片：schema5混合來源續遷移（PR #64已交付）
 
 記憶體session可對schema5中尚未升級的完整舊樹建立下一批候選，既有V3人生與itemized紀錄維持原值，不再轉換。新紀錄sourceSchema=5，sourceEnvelope只以itemizedRecordIndexes引用先前完整紀錄前綴，不嵌套複製整份遷移紀錄；選中舊樹的來源參數與history仍完整保留。解析拒絕前向／重複／遺漏索引或移除／重排舊紀錄，合計2 MB上限不變。
 
@@ -27,7 +39,7 @@ migration-v3-session封裝純記憶體協定：匯出原始JSON請求→預覽�
 
 本地npm test 261/261（新增18項）、typecheck及diff檢查通過；涵蓋封裝還原、來源／映射破壞、缺父／循環／跨版樹、stale／取消／一次確認、1分差異、原始metadata、後續history baseline、深拷貝及合計大小上限。完整build／E2E交PR CI。
 
-本切片當時只對schema1–4來源建立新schema5容器，尚未支援schema5混合專案的其餘舊樹續遷移；生產ProjectSchema／storage／UI仍未開放schema5，既有匯入持續明確拒絕。這些整合及真人流程仍待完成，#43保持open。PR #63 head CI 45777212743 success，已合併main `13ef1d9`，main CI／Pages另驗。
+本切片當時只對schema1–4來源建立新schema5容器，尚未支援schema5混合專案的其餘舊樹續遷移；生產ProjectSchema／storage／UI仍未開放schema5，既有匯入持續明確拒絕。這些整合及真人流程仍待完成，#43保持open。PR #63 head CI 45777212743 success，已合併main `13ef1d9`，main CI 45777703469／Pages 45777703399均success。
 
 ## #43 第四切片：顯式來源映射（PR #62已合併）
 
